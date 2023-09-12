@@ -8,27 +8,26 @@ pub mod math {
 
     impl Vector3 {
         fn new(x: f32, y: f32, z: f32) -> Vector3 {
-            return Vector3 { x, y, z };
+            Vector3 { x, y, z }
         }
         fn length_squared(&self) -> f32 {
-            return self.x * self.x + self.y * self.y + self.z * self.z;
+            self.x * self.x + self.y * self.y + self.z * self.z
         }
         fn length(&self) -> f32 {
-            return self.length_squared().sqrt();
+            self.length_squared().sqrt()
         }
         fn normolize(&self) -> Vector3 {
-            let length = self.length();
-            return self / length;
+            self / self.length()
         }
-        fn dot(&self, rhs: Vector3) -> f32 {
-            return self[0] * rhs[0] + self[1] * rhs[1] + self[2] * rhs[2];
+        fn dot(&self, rhs: &Vector3) -> f32 {
+            self[0] * rhs[0] + self[1] * rhs[1] + self[2] * rhs[2]
         }
-        fn cross(&self, rhs: Vector3) -> Vector3 {
-            return Vector3::new(
+        fn cross(&self, rhs: &Vector3) -> Vector3 {
+            Vector3::new(
                 self[1] * rhs[2] - self[2] * rhs[1],
                 self[2] * rhs[0] - self[0] * rhs[2],
                 self[0] * rhs[1] - self[1] * rhs[0],
-            );
+            )
         }
     }
 
@@ -45,34 +44,34 @@ pub mod math {
         }
     }
 
-    impl std::ops::Add<Vector3> for &Vector3 {
+    impl std::ops::Add<&Vector3> for Vector3 {
         type Output = Vector3;
 
-        fn add(self, rhs: Vector3) -> Self::Output {
+        fn add(self, rhs: &Vector3) -> Self::Output {
             Vector3::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
         }
     }
 
-    impl std::ops::Sub<Vector3> for Vector3 {
+    impl std::ops::Sub<&Vector3> for Vector3 {
         type Output = Vector3;
 
-        fn sub(self, rhs: Vector3) -> Self::Output {
+        fn sub(self, rhs: &Vector3) -> Self::Output {
             Vector3::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
         }
     }
 
-    impl std::ops::Mul<Vector3> for Vector3 {
+    impl std::ops::Mul<&Vector3> for Vector3 {
         type Output = Vector3;
 
-        fn mul(self, rhs: Vector3) -> Self::Output {
+        fn mul(self, rhs: &Vector3) -> Self::Output {
             Vector3::new(self.x * rhs.x, self.y * rhs.y, self.z * rhs.z)
         }
     }
 
-    impl std::ops::Div<Vector3> for Vector3 {
+    impl std::ops::Div<&Vector3> for Vector3 {
         type Output = Vector3;
 
-        fn div(self, rhs: Vector3) -> Self::Output {
+        fn div(self, rhs: &Vector3) -> Self::Output {
             Vector3::new(self.x / rhs.x, self.y / rhs.y, self.z / rhs.z)
         }
     }
@@ -85,32 +84,32 @@ pub mod math {
         }
     }
 
-    impl std::ops::AddAssign<Vector3> for Vector3 {
-        fn add_assign(&mut self, rhs: Vector3) {
+    impl std::ops::AddAssign<&Vector3> for Vector3 {
+        fn add_assign(&mut self, rhs: &Vector3) {
             self.x += rhs.x;
             self.y += rhs.y;
             self.z += rhs.z;
         }
     }
 
-    impl std::ops::SubAssign<Vector3> for Vector3 {
-        fn sub_assign(&mut self, rhs: Vector3) {
+    impl std::ops::SubAssign<&Vector3> for Vector3 {
+        fn sub_assign(&mut self, rhs: &Vector3) {
             self.x -= rhs.x;
             self.y -= rhs.y;
             self.z -= rhs.z;
         }
     }
 
-    impl std::ops::MulAssign<Vector3> for Vector3 {
-        fn mul_assign(&mut self, rhs: Vector3) {
+    impl std::ops::MulAssign<&Vector3> for Vector3 {
+        fn mul_assign(&mut self, rhs: &Vector3) {
             self.x *= rhs.x;
             self.y *= rhs.y;
             self.z *= rhs.z;
         }
     }
 
-    impl std::ops::DivAssign<Vector3> for Vector3 {
-        fn div_assign(&mut self, rhs: Vector3) {
+    impl std::ops::DivAssign<&Vector3> for Vector3 {
+        fn div_assign(&mut self, rhs: &Vector3) {
             self.x /= rhs.x;
             self.y /= rhs.y;
             self.z /= rhs.z;
