@@ -44,7 +44,7 @@ pub mod math {
         }
     }
 
-    impl std::ops::Add<&Vector3> for Vector3 {
+    impl std::ops::Add<&Vector3> for &Vector3 {
         type Output = Vector3;
 
         fn add(self, rhs: &Vector3) -> Self::Output {
@@ -52,7 +52,7 @@ pub mod math {
         }
     }
 
-    impl std::ops::Sub<&Vector3> for Vector3 {
+    impl std::ops::Sub<&Vector3> for &Vector3 {
         type Output = Vector3;
 
         fn sub(self, rhs: &Vector3) -> Self::Output {
@@ -60,7 +60,7 @@ pub mod math {
         }
     }
 
-    impl std::ops::Mul<&Vector3> for Vector3 {
+    impl std::ops::Mul<&Vector3> for &Vector3 {
         type Output = Vector3;
 
         fn mul(self, rhs: &Vector3) -> Self::Output {
@@ -68,7 +68,7 @@ pub mod math {
         }
     }
 
-    impl std::ops::Div<&Vector3> for Vector3 {
+    impl std::ops::Div<&Vector3> for &Vector3 {
         type Output = Vector3;
 
         fn div(self, rhs: &Vector3) -> Self::Output {
