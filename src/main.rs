@@ -1,4 +1,4 @@
-mod math;
+pub mod math;
 use std::{fs::File, io::Write};
 
 fn render() -> std::io::Result<()> {
