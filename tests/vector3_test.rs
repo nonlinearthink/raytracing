@@ -1,14 +1,8 @@
 extern crate rst_raytrace;
 
-use rst_raytrace::math::Vector3;
+mod common;
 
-macro_rules! assert_vector3_eq {
-    ($vec:expr, $x:expr, $y:expr, $z:expr) => {
-        assert_eq!($vec.x, $x);
-        assert_eq!($vec.y, $y);
-        assert_eq!($vec.z, $z);
-    };
-}
+use rst_raytrace::core::Vector3;
 
 #[test]
 fn vector_dot_test() {

@@ -1,4 +1,4 @@
-pub mod math;
+use rst_raytrace::core::Vector3 as Color3;
 use std::{fs::File, io::Write};
 
 fn render() -> std::io::Result<()> {
@@ -13,13 +13,15 @@ fn render() -> std::io::Result<()> {
     write!(ppm, "P3\n{} {}\n255\n", width, height)?;
     for y in 0..height {
         for x in 0..width {
-            let r = x as f32 / (width - 1) as f32;
-            let g = y as f32 / (height - 1) as f32;
-            let b = 0 as f32;
+            let color = Color3::new(
+                f32::from(x) / f32::from(width - 1),
+                f32::from(y) / f32::from(height - 1),
+                0.,
+            );
 
-            let ir = (255.999 * r) as u8;
-            let ig = (255.999 * g) as u8;
-            let ib = (255.999 * b) as u8;
+            let ir = (255.999 * color.x) as u8;
+            let ig = (255.999 * color.y) as u8;
+            let ib = (255.999 * color.z) as u8;
 
             write!(ppm, "{} {} {}\n", ir, ig, ib)?;
         }
