@@ -66,6 +66,14 @@ impl std::ops::Mul<&Vector3> for &Vector3 {
     }
 }
 
+impl std::ops::Mul<f32> for &Vector3 {
+    type Output = Vector3;
+
+    fn mul(self, rhs: f32) -> Self::Output {
+        Vector3::new(self.x * rhs, self.y * rhs, self.z * rhs)
+    }
+}
+
 impl std::ops::Div<&Vector3> for &Vector3 {
     type Output = Vector3;
 
@@ -106,10 +114,26 @@ impl std::ops::MulAssign<&Vector3> for Vector3 {
     }
 }
 
+impl std::ops::MulAssign<f32> for Vector3 {
+    fn mul_assign(&mut self, rhs: f32) {
+        self.x *= rhs;
+        self.y *= rhs;
+        self.z *= rhs;
+    }
+}
+
 impl std::ops::DivAssign<&Vector3> for Vector3 {
     fn div_assign(&mut self, rhs: &Vector3) {
         self.x /= rhs.x;
         self.y /= rhs.y;
         self.z /= rhs.z;
+    }
+}
+
+impl std::ops::DivAssign<f32> for Vector3 {
+    fn div_assign(&mut self, rhs: f32) {
+        self.x /= rhs;
+        self.y /= rhs;
+        self.z /= rhs;
     }
 }
