@@ -119,11 +119,27 @@ impl std::ops::AddAssign<&Vector3> for Vector3 {
     }
 }
 
+impl std::ops::AddAssign<f32> for Vector3 {
+    fn add_assign(&mut self, rhs: f32) {
+        self.x += rhs;
+        self.y += rhs;
+        self.z += rhs;
+    }
+}
+
 impl std::ops::SubAssign<&Vector3> for Vector3 {
     fn sub_assign(&mut self, rhs: &Vector3) {
         self.x -= rhs.x;
         self.y -= rhs.y;
         self.z -= rhs.z;
+    }
+}
+
+impl std::ops::SubAssign<f32> for Vector3 {
+    fn sub_assign(&mut self, rhs: f32) {
+        self.x -= rhs;
+        self.y -= rhs;
+        self.z -= rhs;
     }
 }
 

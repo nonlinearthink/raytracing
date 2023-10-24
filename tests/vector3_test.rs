@@ -70,10 +70,16 @@ fn vector_add_test() {
     let v1 = Vector3::new(1., 2., 3.);
     let v2 = Vector3::new(4., 5., 6.);
 
+    // add by vector3
     let result = &v1 + &v2;
     assert_vector3_eq!(v1, 1., 2., 3.);
     assert_vector3_eq!(v2, 4., 5., 6.);
     assert_vector3_eq!(result, 5., 7., 9.);
+
+    // add by f32
+    let result = &v1 + 2.;
+    assert_vector3_eq!(v1, 1., 2., 3.);
+    assert_vector3_eq!(result, 3., 4., 5.);
 }
 
 #[test]
@@ -81,10 +87,17 @@ fn vector_sub_test() {
     let v1 = Vector3::new(1., 2., 3.);
     let v2 = Vector3::new(4., 5., 6.);
 
+    // sub by vector3
     let result = &v1 - &v2;
     assert_vector3_eq!(v1, 1., 2., 3.);
     assert_vector3_eq!(v2, 4., 5., 6.);
     assert_vector3_eq!(result, -3., -3., -3.);
+
+    // sub by f32
+    let result = &v1 - 2.;
+    assert_vector3_eq!(v1, 1., 2., 3.);
+    assert_vector3_eq!(result, -1., 0., 1.);
+
 }
 
 #[test]
@@ -98,7 +111,7 @@ fn vector_mul_test() {
     assert_vector3_eq!(v2, 4., 5., 6.);
     assert_vector3_eq!(result, 4., 10., 18.);
 
-    // mul by vector3
+    // mul by f32
     let result = &v1 * 2.;
     assert_vector3_eq!(v1, 1., 2., 3.);
     assert_vector3_eq!(result, 2., 4., 6.);
@@ -124,21 +137,31 @@ fn vector_div_test() {
 #[test]
 fn vector_add_assign_test() {
     let mut v1 = Vector3::new(1., 2., 3.);
-    let v2 = Vector3::new(4., 5., 6.);
+    let mut v2 = Vector3::new(4., 5., 6.);
 
+    // sub assign by vector3
     v1 += &v2;
     assert_vector3_eq!(v1, 5., 7., 9.);
     assert_vector3_eq!(v2, 4., 5., 6.);
+
+    // mul assign by f32
+    v2 += 2.;
+    assert_vector3_eq!(v2, 6., 7., 8.);
 }
 
 #[test]
 fn vector_sub_assign_test() {
     let mut v1 = Vector3::new(1., 2., 3.);
-    let v2 = Vector3::new(4., 5., 6.);
+    let mut v2 = Vector3::new(4., 5., 6.);
 
+    // sub assign by vector3
     v1 -= &v2;
     assert_vector3_eq!(v1, -3., -3., -3.);
     assert_vector3_eq!(v2, 4., 5., 6.);
+
+    // sub assign by f32
+    v2 -= 2.;
+    assert_vector3_eq!(v2, 2., 3., 4.);
 }
 
 #[test]
@@ -151,7 +174,7 @@ fn vector_mul_assign_test() {
     assert_vector3_eq!(v1, 4., 10., 18.);
     assert_vector3_eq!(v2, 4., 5., 6.);
 
-    // mul assign by vector3
+    // mul assign by f32
     v2 *= 2.;
     assert_vector3_eq!(v2, 8., 10., 12.);
 }
