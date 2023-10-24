@@ -5,6 +5,15 @@ mod common;
 use rst_raytrace::core::Vector3;
 
 #[test]
+fn vector_new_test() {
+    let v1 = Vector3::new(1., 2., 3.);
+    let v2 = Vector3::zero();
+
+    assert_vector3_eq!(v1, 1., 2., 3.);
+    assert_vector3_eq!(v2, 0., 0., 0.);
+}
+
+#[test]
 fn vector_dot_test() {
     let v1 = Vector3::new(1., 2., 3.);
     let v2 = Vector3::new(4., 5., 6.);

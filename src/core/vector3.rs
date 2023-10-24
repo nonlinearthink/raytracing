@@ -9,6 +9,10 @@ impl Vector3 {
     pub fn new(x: f32, y: f32, z: f32) -> Vector3 {
         Vector3 { x, y, z }
     }
+    pub fn zero() -> Vector3 {
+        Vector3::new(0., 0., 0.)
+    }
+
     pub fn dot(&self, rhs: &Vector3) -> f32 {
         self[0] * rhs[0] + self[1] * rhs[1] + self[2] * rhs[2]
     }
@@ -51,11 +55,27 @@ impl std::ops::Add<&Vector3> for &Vector3 {
     }
 }
 
+impl std::ops::Add<f32> for &Vector3 {
+    type Output = Vector3;
+
+    fn add(self, rhs: f32) -> Self::Output {
+        Vector3::new(self.x + rhs, self.y + rhs, self.z + rhs)
+    }
+}
+
 impl std::ops::Sub<&Vector3> for &Vector3 {
     type Output = Vector3;
 
     fn sub(self, rhs: &Vector3) -> Self::Output {
         Vector3::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
+    }
+}
+
+impl std::ops::Sub<f32> for &Vector3 {
+    type Output = Vector3;
+
+    fn sub(self, rhs: f32) -> Self::Output {
+        Vector3::new(self.x - rhs, self.y - rhs, self.z - rhs)
     }
 }
 

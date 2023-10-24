@@ -2,11 +2,11 @@ extern crate rst_raytrace;
 
 mod common;
 
-use rst_raytrace::core::{Ray, Vector3};
+use rst_raytrace::core::{Ray, Vector3, Point3};
 
 #[test]
 fn ray_compute() {
-    let origin = Vector3::new(1., 2., 3.);
+    let origin = Point3::new(1., 2., 3.);
     let direction = Vector3::new(4., 5., 6.);
     let ray = Ray::new(origin, direction);
 
