@@ -71,13 +71,13 @@ fn vector_add_test() {
     let v2 = Vector3::new(4., 5., 6.);
 
     // add by vector3
-    let result = &v1 + &v2;
+    let result = v1 + v2;
     assert_vector3_eq!(v1, 1., 2., 3.);
     assert_vector3_eq!(v2, 4., 5., 6.);
     assert_vector3_eq!(result, 5., 7., 9.);
 
     // add by f32
-    let result = &v1 + 2.;
+    let result = v1 + 2.;
     assert_vector3_eq!(v1, 1., 2., 3.);
     assert_vector3_eq!(result, 3., 4., 5.);
 }
@@ -88,7 +88,7 @@ fn vector_sub_test() {
     let v2 = Vector3::new(4., 5., 6.);
 
     // sub by vector3
-    let result = &v1 - &v2;
+    let result = v1 - v2;
     assert_vector3_eq!(v1, 1., 2., 3.);
     assert_vector3_eq!(v2, 4., 5., 6.);
     assert_vector3_eq!(result, -3., -3., -3.);

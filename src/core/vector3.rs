@@ -47,7 +47,15 @@ impl std::ops::Index<usize> for Vector3 {
     }
 }
 
-impl std::ops::Add<&Vector3> for &Vector3 {
+impl std::ops::Neg for Vector3 {
+    type Output = Vector3;
+
+    fn neg(self) -> Self::Output {
+        Vector3::new(-self.x, -self.y, -self.z)
+    }
+}
+
+impl std::ops::Add<&Vector3> for Vector3 {
     type Output = Vector3;
 
     fn add(self, rhs: &Vector3) -> Self::Output {
@@ -55,7 +63,7 @@ impl std::ops::Add<&Vector3> for &Vector3 {
     }
 }
 
-impl std::ops::Add<f32> for &Vector3 {
+impl std::ops::Add<f32> for Vector3 {
     type Output = Vector3;
 
     fn add(self, rhs: f32) -> Self::Output {
@@ -63,7 +71,7 @@ impl std::ops::Add<f32> for &Vector3 {
     }
 }
 
-impl std::ops::Sub<&Vector3> for &Vector3 {
+impl std::ops::Sub<&Vector3> for Vector3 {
     type Output = Vector3;
 
     fn sub(self, rhs: &Vector3) -> Self::Output {
@@ -71,7 +79,7 @@ impl std::ops::Sub<&Vector3> for &Vector3 {
     }
 }
 
-impl std::ops::Sub<f32> for &Vector3 {
+impl std::ops::Sub<f32> for Vector3 {
     type Output = Vector3;
 
     fn sub(self, rhs: f32) -> Self::Output {
@@ -79,7 +87,7 @@ impl std::ops::Sub<f32> for &Vector3 {
     }
 }
 
-impl std::ops::Mul<&Vector3> for &Vector3 {
+impl std::ops::Mul<&Vector3> for Vector3 {
     type Output = Vector3;
 
     fn mul(self, rhs: &Vector3) -> Self::Output {
@@ -87,7 +95,7 @@ impl std::ops::Mul<&Vector3> for &Vector3 {
     }
 }
 
-impl std::ops::Mul<f32> for &Vector3 {
+impl std::ops::Mul<f32> for Vector3 {
     type Output = Vector3;
 
     fn mul(self, rhs: f32) -> Self::Output {
@@ -95,7 +103,7 @@ impl std::ops::Mul<f32> for &Vector3 {
     }
 }
 
-impl std::ops::Div<&Vector3> for &Vector3 {
+impl std::ops::Div<&Vector3> for Vector3 {
     type Output = Vector3;
 
     fn div(self, rhs: &Vector3) -> Self::Output {
@@ -103,7 +111,7 @@ impl std::ops::Div<&Vector3> for &Vector3 {
     }
 }
 
-impl std::ops::Div<f32> for &Vector3 {
+impl std::ops::Div<f32> for Vector3 {
     type Output = Vector3;
 
     fn div(self, rhs: f32) -> Self::Output {

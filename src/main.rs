@@ -5,19 +5,24 @@ use std::{
     ops::{Add, Div, Mul, Sub},
 };
 
-fn hit_sphere(center: &Point3, radius: f32, ray: &Ray) -> bool {
-    // TODO: struct sphere
+fn hit_sphere(center: &Point3, radius: f32, ray: &Ray) -> f32 {
     let oc: Vector3 = &ray.origin - center;
-    let a = ray.direction.dot(&ray.direction);
-    let b = 2.0 * oc.dot(&ray.direction);
-    let c = oc.dot(&oc) - radius * radius;
-    let discriminant = b * b - 4. * a * c;
-    discriminant >= 0.
+    let a = ray.direction.length_squared();
+    let half_b = oc.dot(&ray.direction);
+    let c = oc.length_squared() - radius * radius;
+    let discriminant = half_b * half_b - a * c;
+    if discriminant < 0. {
+        -1.
+    } else {
+        (-half_b - f32::sqrt(discriminant)) / (a)
+    }
 }
 
 fn ray_color(ray: &Ray) -> Color3 {
-    if hit_sphere(&Point3::new(0., 0., -1.), 0.5, &ray) {
-        return Color3::new(1., 0., 0.);
+    let t = hit_sphere(&Point3::new(0., 0., -1.), 0.5, &ray);
+    if t > 0. {
+        let normal = ray.at(t).sub(&Vector3::new(0., 0., -1.)).normolize(); //
+        return Color3::new(normal.x + 1., normal.y + 1., normal.z + 1.).mul(0.5);
     }
 
     let unit_direction: Vector3 = ray.direction.normolize();
@@ -59,7 +64,7 @@ fn render() -> std::io::Result<()> {
 
     // Calculate the location of the upper left pixel.
     let viewport_top_left = camera_center
-        .sub(&Vector3::new(0., 0., -focal_length))
+        .sub(&Vector3::new(0., 0., focal_length))
         .sub(&viewport_u.div(2.))
         .sub(&viewport_v.div(2.));
     let first_pixel_location = viewport_top_left.add(&pixel_delta_u.add(&pixel_delta_v).mul(0.5));
