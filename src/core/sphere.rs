@@ -1,7 +1,8 @@
-use std::ops::Div;
+use std::ops::{Div, Sub};
 
 use super::{HitRecord, Hittable, Point3, Ray, Vector3};
 
+#[derive(Debug)]
 pub struct Sphere {
     pub center: Vector3,
     pub radius: f32,
@@ -14,8 +15,8 @@ impl Sphere {
 }
 
 impl Hittable for Sphere {
-    fn hit(self, ray: &Ray, min_t: f32, max_t: f32, record: &mut HitRecord) -> bool {
-        let oc: Vector3 = ray.origin - self.center;
+    fn hit(&self, ray: &Ray, min_t: f32, max_t: f32, record: &mut HitRecord) -> bool {
+        let oc: Vector3 = ray.origin - &self.center;
         let a = ray.direction.length_squared();
         let half_b = oc.dot(&ray.direction);
         let c = oc.length_squared() - f32::powf(self.radius, 2.);
@@ -35,8 +36,13 @@ impl Hittable for Sphere {
         }
 
         record.t = root;
-        record.point = ray.at(record.t);
-        record.normal = (&record.point - &self.center).div(self.radius);
+        record.point = Some(ray.at(record.t));
+        let outward_normal = record
+            .point
+            .expect("Ray should always have some value at t.")
+            .sub(&self.center)
+            .div(self.radius);
+        record.set_face_normal(&ray, &outward_normal);
 
         return true;
     }

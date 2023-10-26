@@ -1,33 +1,22 @@
-use rst_raytrace::core::{Color3, Point3, Ray, Vector3};
+use rst_raytrace::core::{Color3, HitRecord, Hittable, HittableList, Point3, Ray, Sphere, Vector3};
 use std::{
     fs::File,
     io::Write,
     ops::{Add, Div, Mul, Sub},
 };
 
-fn hit_sphere(center: &Point3, radius: f32, ray: &Ray) -> f32 {
-    let oc: Vector3 = &ray.origin - center;
-    let a = ray.direction.length_squared();
-    let half_b = oc.dot(&ray.direction);
-    let c = oc.length_squared() - radius * radius;
-    let discriminant = half_b * half_b - a * c;
-    if discriminant < 0. {
-        -1.
-    } else {
-        (-half_b - f32::sqrt(discriminant)) / (a)
-    }
-}
-
-fn ray_color(ray: &Ray) -> Color3 {
-    let t = hit_sphere(&Point3::new(0., 0., -1.), 0.5, &ray);
-    if t > 0. {
-        let normal = ray.at(t).sub(&Vector3::new(0., 0., -1.)).normolize(); //
-        return Color3::new(normal.x + 1., normal.y + 1., normal.z + 1.).mul(0.5);
+fn ray_color(ray: &Ray, world: &dyn Hittable) -> Color3 {
+    let mut record: HitRecord = HitRecord::new();
+    if world.hit(ray, 0., f32::INFINITY, &mut record) {
+        let normal = record.normal.expect("normal should not be None if hitted.");
+        return normal + &Color3::one() + 0.5;
     }
 
     let unit_direction: Vector3 = ray.direction.normolize();
     let a = 0.5 * (unit_direction.y + 1.);
-    &Color3::new(1.0, 1.0, 1.0).mul(1. - a) + &Color3::new(0.5, 0.7, 1.0).mul(a)
+    Color3::new(1.0, 1.0, 1.0)
+        .mul(1. - a)
+        .add(&Color3::new(0.5, 0.7, 1.0).mul(a))
 }
 
 fn write_color(file: &mut File, pixel_color: &Color3) {
@@ -48,6 +37,12 @@ fn render() -> std::io::Result<()> {
     // Calculate the image height, and ensure that it's at least 1.
     height = if height < 1 { 1 } else { height };
 
+    // World
+    let mut world = HittableList::new();
+    world.add(Box::new(Sphere::new(Point3::new(0., 0., -1.), 0.5)));
+    world.add(Box::new(Sphere::new(Point3::new(0., -100.5, -1.), 100.)));
+    let world_box = Box::from(world);
+
     // Camera
     let focal_length = 1.;
     let viewport_height = 2.;
@@ -59,8 +54,8 @@ fn render() -> std::io::Result<()> {
     let viewport_v = Vector3::new(0., -viewport_height, 0.);
 
     // Calculate the horizontal and vertical delta vectors from pixel to pixel.
-    let pixel_delta_u = &viewport_u / f32::from(width);
-    let pixel_delta_v = &viewport_v / f32::from(height);
+    let pixel_delta_u = viewport_u.div(f32::from(width));
+    let pixel_delta_v = viewport_v.div(f32::from(height));
 
     // Calculate the location of the upper left pixel.
     let viewport_top_left = camera_center
@@ -82,10 +77,10 @@ fn render() -> std::io::Result<()> {
             let pixel_center = first_pixel_location
                 .add(&pixel_delta_u.mul(f32::from(x)))
                 .add(&pixel_delta_v.mul(f32::from(y)));
-            let ray_direction = &pixel_center - &camera_center;
+            let ray_direction = pixel_center.sub(&camera_center);
             let ray = Ray::new(camera_center, ray_direction);
 
-            let color = ray_color(&ray);
+            let color = ray_color(&ray, &world);
 
             write_color(&mut ppm, &color);
         }

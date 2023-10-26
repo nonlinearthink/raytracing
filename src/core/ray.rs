@@ -1,5 +1,8 @@
+use std::ops::{Add, Mul};
+
 use super::{Point3, Vector3};
 
+#[derive(Debug)]
 pub struct Ray {
     pub origin: Point3,
     pub direction: Vector3,
@@ -11,6 +14,6 @@ impl Ray {
     }
 
     pub fn at(&self, t: f32) -> Point3 {
-        self.direction * t + &self.origin
+        self.direction.mul(t).add(&self.origin)
     }
 }

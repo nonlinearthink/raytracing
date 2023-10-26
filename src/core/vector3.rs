@@ -1,4 +1,6 @@
-#[derive(Copy, Clone)]
+use std::ops::Div;
+
+#[derive(Debug, Copy, Clone)]
 pub struct Vector3 {
     pub x: f32,
     pub y: f32,
@@ -10,7 +12,18 @@ impl Vector3 {
         Vector3 { x, y, z }
     }
     pub fn zero() -> Vector3 {
-        Vector3::new(0., 0., 0.)
+        Vector3 {
+            x: 0.,
+            y: 0.,
+            z: 0.,
+        }
+    }
+    pub fn one() -> Vector3 {
+        Vector3 {
+            x: 1.,
+            y: 1.,
+            z: 1.,
+        }
     }
 
     pub fn dot(&self, rhs: &Vector3) -> f32 {
@@ -30,7 +43,7 @@ impl Vector3 {
         self.length_squared().sqrt()
     }
     pub fn normolize(&self) -> Vector3 {
-        self / self.length()
+        self.div(self.length())
     }
 }
 
