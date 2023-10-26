@@ -1,7 +1,7 @@
-use super::{Point3, Ray, Vector3};
+use super::{Interval, Point3, Ray, Vector3};
 
 pub trait Hittable {
-    fn hit(&self, ray: &Ray, min_t: f32, max_t: f32, record: &mut HitRecord) -> bool;
+    fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool;
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -56,20 +56,21 @@ impl HittableList {
 }
 
 impl Hittable for HittableList {
-    fn hit(&self, ray: &Ray, min_t: f32, max_t: f32, record: &mut HitRecord) -> bool {
+    fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool {
+        record.t = ray_interval.max;
+
         let mut is_hitted = false;
-        let mut hit_record: Option<HitRecord> = None;
+        let mut hit_record = HitRecord::new();
 
         for object in self.objects.iter() {
-            if object.hit(ray, min_t, max_t, record) {
+            if object.hit(
+                ray,
+                &Interval::new(ray_interval.min, record.t),
+                &mut hit_record,
+            ) {
                 is_hitted = true;
-                hit_record = Some(record.clone());
-                break;
+                record.clone_from(&hit_record);
             }
-        }
-
-        if hit_record.is_some() {
-            println!("{:?}", hit_record);
         }
 
         is_hitted

@@ -1,6 +1,6 @@
 use std::ops::{Div, Sub};
 
-use super::{HitRecord, Hittable, Point3, Ray, Vector3};
+use super::{HitRecord, Hittable, Interval, Point3, Ray, Vector3};
 
 #[derive(Debug)]
 pub struct Sphere {
@@ -15,7 +15,7 @@ impl Sphere {
 }
 
 impl Hittable for Sphere {
-    fn hit(&self, ray: &Ray, min_t: f32, max_t: f32, record: &mut HitRecord) -> bool {
+    fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool {
         let oc: Vector3 = ray.origin - &self.center;
         let a = ray.direction.length_squared();
         let half_b = oc.dot(&ray.direction);
@@ -28,9 +28,9 @@ impl Hittable for Sphere {
         let sqrt_discriminant = f32::sqrt(discriminant);
 
         let mut root = (-half_b - sqrt_discriminant) / a;
-        if root <= min_t || max_t <= root {
+        if !ray_interval.contains(root) {
             root = (-half_b + sqrt_discriminant) / a;
-            if root <= min_t || max_t <= root {
+            if !ray_interval.contains(root) {
                 return false;
             }
         }

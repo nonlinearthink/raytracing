@@ -1,6 +1,6 @@
 use std::ops::Div;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Default)]
 pub struct Vector3 {
     pub x: f32,
     pub y: f32,
