@@ -1,3 +1,4 @@
+use rand::Rng;
 use std::ops::Div;
 
 #[derive(Debug, Copy, Clone, Default)]
@@ -11,6 +12,7 @@ impl Vector3 {
     pub fn new(x: f32, y: f32, z: f32) -> Vector3 {
         Vector3 { x, y, z }
     }
+
     pub fn zero() -> Vector3 {
         Vector3 {
             x: 0.,
@@ -18,6 +20,7 @@ impl Vector3 {
             z: 0.,
         }
     }
+
     pub fn one() -> Vector3 {
         Vector3 {
             x: 1.,
@@ -26,9 +29,47 @@ impl Vector3 {
         }
     }
 
+    pub fn random(min: f32, max: f32, rng_optional: Option<&mut rand::rngs::ThreadRng>) -> Vector3 {
+        let mut default_rng = rand::thread_rng();
+        let rng = rng_optional.unwrap_or(&mut default_rng);
+        let x = rng.gen_range(min..=max);
+        let y = rng.gen_range(min..=max);
+        let z = rng.gen_range(min..=max);
+
+        Vector3::new(x, y, z)
+    }
+
+    fn random_in_unit_sphere(rng_optional: Option<&mut rand::rngs::ThreadRng>) -> Vector3 {
+        let mut default_rng = rand::thread_rng();
+        let safe_rng = rng_optional.unwrap_or(&mut default_rng);
+        loop {
+            let point = Vector3::random(-1., 1., Some(safe_rng));
+            if point.length_squared() < 1. {
+                return point;
+            }
+        }
+    }
+
+    pub fn random_unit_vector(rng_optional: Option<&mut rand::rngs::ThreadRng>) -> Vector3 {
+        Vector3::random_in_unit_sphere(rng_optional).normolize()
+    }
+
+    pub fn random_on_hemisphere(
+        normal: &Vector3,
+        rng_optional: Option<&mut rand::rngs::ThreadRng>,
+    ) -> Vector3 {
+        let vector_in_unit_sphere = Vector3::random_unit_vector(rng_optional);
+        if vector_in_unit_sphere.dot(normal) > 0. {
+            vector_in_unit_sphere
+        } else {
+            -vector_in_unit_sphere
+        }
+    }
+
     pub fn dot(&self, rhs: &Vector3) -> f32 {
         self[0] * rhs[0] + self[1] * rhs[1] + self[2] * rhs[2]
     }
+
     pub fn cross(&self, rhs: &Vector3) -> Vector3 {
         Vector3::new(
             self[1] * rhs[2] - self[2] * rhs[1],
@@ -36,12 +77,15 @@ impl Vector3 {
             self[0] * rhs[1] - self[1] * rhs[0],
         )
     }
+
     pub fn length_squared(&self) -> f32 {
         self.dot(self)
     }
+
     pub fn length(&self) -> f32 {
         self.length_squared().sqrt()
     }
+
     pub fn normolize(&self) -> Vector3 {
         self.div(self.length())
     }

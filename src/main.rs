@@ -1,3 +1,5 @@
+use std::time;
+
 use rst_raytrace::core::{Camera, HittableList, Point3, Sphere};
 
 fn main() {
@@ -11,5 +13,8 @@ fn main() {
     camera.width = 400;
     camera.aspect_ratio = 16. / 9.;
 
+    let render_timer = time::Instant::now();
     camera.render(&world).err();
+    let render_cost = render_timer.elapsed();
+    println!("Render Cost: {:?}", render_cost);
 }

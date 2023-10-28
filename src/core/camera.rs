@@ -1,12 +1,17 @@
+use rand::Rng;
 use std::{fs, fs::File, io::Write};
 
 use super::{Color3, HitRecord, Hittable, Interval, Point3, Ray, Vector3};
+use crate::utils::linear_to_gramma;
 
 #[derive(Default)]
 pub struct Camera {
     pub width: u16,
     pub aspect_ratio: f32,
     height: u16,
+    samples_per_pixel: u8,
+    max_ray_depth: u8,
+    rng: rand::rngs::ThreadRng,
     center: Point3,
     pixel_delta_u: Vector3,
     pixel_delta_v: Vector3,
@@ -18,6 +23,9 @@ impl Camera {
         Camera {
             width: 100,
             aspect_ratio: 1.,
+            samples_per_pixel: 10,
+            max_ray_depth: 10,
+            rng: rand::thread_rng(),
             ..Default::default()
         }
     }
@@ -51,12 +59,42 @@ impl Camera {
         self.pixel_origin = viewport_top_left + &((self.pixel_delta_u + &self.pixel_delta_v) * 0.5);
     }
 
-    fn ray_color(&self, ray: &Ray, world: &dyn Hittable) -> Color3 {
+    fn pixel_sample_square(&mut self) -> Vector3 {
+        // Returns a random point in the square surrounding a pixel at the origin.
+        let px = -0.5 + self.rng.gen_range(0.0..1.0);
+        let py = -0.5 + self.rng.gen_range(0.0..1.0);
+        return (self.pixel_delta_u * px) + &(self.pixel_delta_v * py);
+    }
+
+    fn get_ray(&mut self, x: u16, y: u16) -> Ray {
+        // Get a randomly sampled camera ray for the pixel at location x,y.
+        let pixel_center = self.pixel_origin
+            + &(self.pixel_delta_u * f32::from(x))
+            + &(self.pixel_delta_v * f32::from(y));
+        let pixel_sample = pixel_center + &self.pixel_sample_square();
+        let ray_direction = pixel_sample - &self.center;
+
+        Ray::new(self.center, ray_direction)
+    }
+
+    fn ray_color(&mut self, ray: &Ray, world: &dyn Hittable, ray_depth: u8) -> Color3 {
         // Meshes
         let mut record: HitRecord = HitRecord::new();
-        if world.hit(ray, &Interval::new(0., f32::INFINITY), &mut record) {
+        // Fixing shadow acne by setting the nearest surface to 0.001
+        if world.hit(ray, &Interval::new(0.001, f32::INFINITY), &mut record) {
+            let point = record.point.expect("point should not be None if hitted.");
             let normal = record.normal.expect("normal should not be None if hitted.");
-            return (normal + &Color3::one()) * 0.5;
+            // Simple Diffuse Model
+            // // let direction = Vector3::random_on_hemisphere(&normal, Some(&mut self.rng));
+            // Lambertian Diffuse Model
+            let direction = normal + &Vector3::random_unit_vector(Some(&mut self.rng));
+
+            // If we've exceeded the ray bounce limit, no more light is gathered.
+            if ray_depth <= 0 {
+                return Color3::zero();
+            }
+
+            return self.ray_color(&Ray::new(point, direction), world, ray_depth - 1) * 0.5;
         }
 
         // Sky
@@ -66,12 +104,13 @@ impl Camera {
     }
 
     fn write_color(&self, file: &mut File, pixel_color: &Color3) {
+        let intensity = Interval::new(0.000, 0.999);
         // Write the translated [0,255] value of each color component.
-        let ir = (255.999 * pixel_color.x) as u8;
-        let ig = (255.999 * pixel_color.y) as u8;
-        let ib = (255.999 * pixel_color.z) as u8;
+        let r = (256. * intensity.clamp(pixel_color.x)) as u8;
+        let g = (256. * intensity.clamp(pixel_color.y)) as u8;
+        let b = (256. * intensity.clamp(pixel_color.z)) as u8;
 
-        write!(file, "{} {} {}\n", ir, ig, ib).unwrap();
+        write!(file, "{} {} {}\n", r, g, b).unwrap();
     }
 
     pub fn render(&mut self, world: &dyn Hittable) -> std::io::Result<()> {
@@ -85,19 +124,26 @@ impl Camera {
         write!(ppm, "P3\n{} {}\n255\n", self.width, self.height)?;
         for y in 0..self.height {
             for x in 0..self.width {
-                let pixel_center = self.pixel_origin
-                    + &(self.pixel_delta_u * f32::from(x))
-                    + &(self.pixel_delta_v * f32::from(y));
-                let ray_direction = pixel_center - &self.center;
-                let ray = Ray::new(self.center, ray_direction);
+                let mut color = Color3::zero();
+                for _ in 0..self.samples_per_pixel {
+                    let ray = self.get_ray(x, y);
+                    color += &self.ray_color(&ray, world, self.max_ray_depth);
+                }
 
-                let color = self.ray_color(&ray, world);
+                let scale = 1. / f32::from(self.samples_per_pixel);
+                color.x *= scale;
+                color.y *= scale;
+                color.z *= scale;
+
+                // Apply the linear to gamma transform.
+                color.x = linear_to_gramma(color.x);
+                color.y = linear_to_gramma(color.y);
+                color.z = linear_to_gramma(color.z);
 
                 self.write_color(&mut ppm, &color);
             }
         }
 
-        println!("Render Finished.");
         Ok(())
     }
 }

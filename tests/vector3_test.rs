@@ -14,6 +14,35 @@ fn vector_new_test() {
 }
 
 #[test]
+fn vector_random_test() {
+    let v1 = Vector3::random(0., 1., None);
+    let v2 = Vector3::random(5., 10., None);
+
+    assert!(v1.x >= 0. && v1.x < 1.);
+    assert!(v1.y >= 0. && v1.y < 1.);
+    assert!(v1.z >= 0. && v1.z < 1.);
+
+    assert!(v2.x >= 5. && v2.x < 10.);
+    assert!(v2.y >= 5. && v2.y < 10.);
+    assert!(v2.z >= 5. && v2.z < 10.);
+}
+
+#[test]
+fn vector_random_unit_vector_test() {
+    let v1 = Vector3::random_unit_vector(None);
+
+    assert_eq!(v1.x.powi(2) + v1.y.powi(2) + v1.z.powi(2), 1.);
+}
+
+#[test]
+fn vector_random_on_hemisphere_test() {
+    let v1 = Vector3::random_on_hemisphere(&Vector3::new(0., 1., 0.), None);
+
+    assert!(v1.y >= 0.);
+    assert_eq!(v1.x.powi(2) + v1.y.powi(2) + v1.z.powi(2), 1.);
+}
+
+#[test]
 fn vector_dot_test() {
     let v1 = Vector3::new(1., 2., 3.);
     let v2 = Vector3::new(4., 5., 6.);
