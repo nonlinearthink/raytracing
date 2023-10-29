@@ -1,16 +1,21 @@
 use std::ops::{Div, Sub};
 
-use super::{HitRecord, Hittable, Interval, Point3, Ray, Vector3};
+use super::{HitRecord, Hittable, Interval, Material, Point3, Ray, Vector3};
 
 #[derive(Debug)]
 pub struct Sphere {
     pub center: Vector3,
     pub radius: f32,
+    pub material: Box<dyn Material>,
 }
 
 impl Sphere {
-    pub fn new(center: Point3, radius: f32) -> Sphere {
-        Sphere { center, radius }
+    pub fn new(center: Point3, radius: f32, material: Box<dyn Material>) -> Sphere {
+        Sphere {
+            center,
+            radius,
+            material,
+        }
     }
 }
 
@@ -43,6 +48,7 @@ impl Hittable for Sphere {
             .sub(&self.center)
             .div(self.radius);
         record.set_face_normal(&ray, &outward_normal);
+        record.material = Some(Box::clone(&self.material));
 
         return true;
     }

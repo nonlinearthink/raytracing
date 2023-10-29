@@ -2,7 +2,7 @@ use std::ops::{Add, Mul};
 
 use super::{Point3, Vector3};
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Ray {
     pub origin: Point3,
     pub direction: Vector3,

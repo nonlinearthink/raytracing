@@ -1,11 +1,12 @@
-use super::{Interval, Point3, Ray, Vector3};
+use super::{material::Material, Interval, Point3, Ray, Vector3};
 
 pub trait Hittable {
     fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool;
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct HitRecord {
+    pub material: Option<Box<dyn Material>>,
     pub point: Option<Point3>,
     pub normal: Option<Vector3>,
     pub t: f32,
@@ -15,6 +16,7 @@ pub struct HitRecord {
 impl HitRecord {
     pub fn new() -> HitRecord {
         HitRecord {
+            material: None,
             point: None,
             normal: None,
             t: f32::INFINITY,

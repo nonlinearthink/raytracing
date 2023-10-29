@@ -11,6 +11,8 @@ pub use hit::HitRecord;
 pub use hit::Hittable;
 pub use hit::HittableList;
 pub use interval::Interval;
+pub use material::LambertianMaterial;
+pub use material::Material;
 pub use ray::Ray;
 pub use sphere::Sphere;
 pub use vector3::Vector3;

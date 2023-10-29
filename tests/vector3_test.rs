@@ -31,7 +31,7 @@ fn vector_random_test() {
 fn vector_random_unit_vector_test() {
     let v1 = Vector3::random_unit_vector(None);
 
-    assert_eq!(v1.x.powi(2) + v1.y.powi(2) + v1.z.powi(2), 1.);
+    assert!(f32::abs(v1.x.powi(2) + v1.y.powi(2) + v1.z.powi(2) - 1.) <= f32::EPSILON);
 }
 
 #[test]
@@ -39,7 +39,7 @@ fn vector_random_on_hemisphere_test() {
     let v1 = Vector3::random_on_hemisphere(&Vector3::new(0., 1., 0.), None);
 
     assert!(v1.y >= 0.);
-    assert_eq!(v1.x.powi(2) + v1.y.powi(2) + v1.z.powi(2), 1.);
+    assert!(f32::abs(v1.x.powi(2) + v1.y.powi(2) + v1.z.powi(2) - 1.) <= f32::EPSILON);
 }
 
 #[test]

@@ -1,12 +1,20 @@
 use std::time;
 
-use rst_raytrace::core::{Camera, HittableList, Point3, Sphere};
+use rst_raytrace::core::{Camera, HittableList, LambertianMaterial, Point3, Sphere};
 
 fn main() {
     // World
     let mut world = HittableList::new();
-    world.add(Box::new(Sphere::new(Point3::new(0., 0., -1.), 0.5)));
-    world.add(Box::new(Sphere::new(Point3::new(0., -100.5, -1.), 100.)));
+    world.add(Box::new(Sphere::new(
+        Point3::new(0., 0., -1.),
+        0.5,
+        Box::new(LambertianMaterial::new()),
+    )));
+    world.add(Box::new(Sphere::new(
+        Point3::new(0., -100.5, -1.),
+        100.,
+        Box::new(LambertianMaterial::new()),
+    )));
 
     let mut camera = Camera::new();
 

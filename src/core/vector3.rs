@@ -89,6 +89,19 @@ impl Vector3 {
     pub fn normolize(&self) -> Vector3 {
         self.div(self.length())
     }
+
+    pub fn equals(&self, rhs: &Self) -> bool {
+        let epsilon = 1e-8;
+        return f32::abs(self.x - rhs.x) < epsilon
+            && f32::abs(self.y - rhs.y) < epsilon
+            && f32::abs(self.z - rhs.z) < epsilon;
+    }
+
+    pub fn equals_zero(&self) -> bool {
+        // Return true if the vector is close to zero in all dimensions.
+        let epsilon = 1e-8;
+        return (self.x.abs() < epsilon) && (self.y.abs() < epsilon) && (self.z.abs() < epsilon);
+    }
 }
 
 impl std::ops::Index<usize> for Vector3 {
