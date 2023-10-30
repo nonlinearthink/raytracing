@@ -1,5 +1,4 @@
 use dyn_clone::{clone_trait_object, DynClone};
-use rand::Rng;
 use std::{fmt, ops::Neg};
 
 use super::{Color3, HitRecord, Ray, Vector3};
@@ -41,7 +40,7 @@ impl Material for LambertianMaterial {
     ) -> bool {
         if hit_record.normal.is_some() && hit_record.point.is_some() {
             let normal = hit_record.normal.unwrap();
-            let mut scatter_direction = normal + &Vector3::random_unit_vector(None);
+            let mut scatter_direction = normal + &Vector3::random_unit_vector();
             if scatter_direction.equals_zero() {
                 scatter_direction = normal;
             }
@@ -89,7 +88,7 @@ impl Material for MetalMaterial {
             let reflected = ray_in.direction.normolize().reflect(&normal);
 
             ray_scattered.origin = hit_record.point.unwrap();
-            let fuzz_vector = Vector3::random_unit_vector(None);
+            let fuzz_vector = Vector3::random_unit_vector();
             ray_scattered.direction = reflected + &(fuzz_vector * self.fuzz);
             attenuation.clone_from(&self.albedo);
 
@@ -140,7 +139,10 @@ impl Material for DielectricMaterial {
             let sin_theta = f32::sqrt(1. - cos_theta * cos_theta);
 
             let cannot_refract = refraction_ratio * sin_theta > 1.;
-            let direction = if cannot_refract {
+            let direction = if cannot_refract
+                || DielectricMaterial::reflectance(cos_theta, refraction_ratio)
+                    > rand::random::<f32>()
+            {
                 unit_direction.reflect(&normal)
             } else {
                 unit_direction.refract(&normal, refraction_ratio)

@@ -29,9 +29,7 @@ impl Vector3 {
         }
     }
 
-    pub fn random(min: f32, max: f32, rng_optional: Option<&mut rand::rngs::ThreadRng>) -> Vector3 {
-        let mut default_rng = rand::thread_rng();
-        let rng = rng_optional.unwrap_or(&mut default_rng);
+    pub fn random(min: f32, max: f32, rng: &mut rand::rngs::ThreadRng) -> Vector3 {
         let x = rng.gen_range(min..=max);
         let y = rng.gen_range(min..=max);
         let z = rng.gen_range(min..=max);
@@ -39,26 +37,22 @@ impl Vector3 {
         Vector3::new(x, y, z)
     }
 
-    fn random_in_unit_sphere(rng_optional: Option<&mut rand::rngs::ThreadRng>) -> Vector3 {
-        let mut default_rng = rand::thread_rng();
-        let safe_rng = rng_optional.unwrap_or(&mut default_rng);
+    fn random_in_unit_sphere() -> Vector3 {
+        let mut rng = rand::thread_rng();
         loop {
-            let point = Vector3::random(-1., 1., Some(safe_rng));
+            let point = Vector3::random(-1., 1., &mut rng);
             if point.length_squared() < 1. {
                 return point;
             }
         }
     }
 
-    pub fn random_unit_vector(rng_optional: Option<&mut rand::rngs::ThreadRng>) -> Vector3 {
-        Vector3::random_in_unit_sphere(rng_optional).normolize()
+    pub fn random_unit_vector() -> Vector3 {
+        Vector3::random_in_unit_sphere().normolize()
     }
 
-    pub fn random_on_hemisphere(
-        normal: &Vector3,
-        rng_optional: Option<&mut rand::rngs::ThreadRng>,
-    ) -> Vector3 {
-        let vector_in_unit_sphere = Vector3::random_unit_vector(rng_optional);
+    pub fn random_on_hemisphere(normal: &Vector3) -> Vector3 {
+        let vector_in_unit_sphere = Vector3::random_unit_vector();
         if vector_in_unit_sphere.dot(normal) > 0. {
             vector_in_unit_sphere
         } else {

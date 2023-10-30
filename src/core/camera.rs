@@ -2,27 +2,42 @@ use rand::Rng;
 use std::{fs, fs::File, io::Write};
 
 use super::{Color3, HitRecord, Hittable, Interval, Point3, Ray, Vector3};
-use crate::utils::linear_to_gramma;
+use crate::utils::{degree_to_radian, linear_to_gramma};
 
 #[derive(Default)]
 pub struct Camera {
-    pub width: u16,
-    pub aspect_ratio: f32,
-    height: u16,
-    pub samples_per_pixel: u8,
-    pub max_ray_depth: u8,
+    pub up: Vector3,        // Camera-relative "up" direction
+    pub look_from: Point3, // Point camera is looking from
+    pub look_at: Point3,   // Point camera is looking at
+    u: Vector3,             // Camera frame basis vectors
+    v: Vector3,             // Camera frame basis vectors
+    w: Vector3,             // Camera frame basis vectors
+    center: Point3,         // Camera center
+
+    pub width: u16,        // Rendered image width in pixel count
+    pub aspect_ratio: f32, // Ratio of image width over height
+    pub vertical_fov: f32, // Vertical view angle (field of view)
+    height: u16,           // Rendered image height
+
+    pixel_delta_u: Vector3, // Offset to pixel to the right
+    pixel_delta_v: Vector3, // Offset to pixel below
+    pixel_origin: Point3,   // Location of pixel 0, 0
+
+    pub samples_per_pixel: u8, // Count of random samples for each pixel
+    pub max_ray_depth: u8,     // Maximum number of ray bounces into scene
+
     rng: rand::rngs::ThreadRng,
-    center: Point3,
-    pixel_delta_u: Vector3,
-    pixel_delta_v: Vector3,
-    pixel_origin: Point3,
 }
 
 impl Camera {
     pub fn new() -> Camera {
         Camera {
+            up: Vector3::new(0., 1., 0.),
+            look_from: Point3::new(0., 0., -1.),
+            look_at: Point3::zero(),
             width: 100,
             aspect_ratio: 1.,
+            vertical_fov: 90.,
             samples_per_pixel: 10,
             max_ray_depth: 10,
             rng: rand::thread_rng(),
@@ -31,31 +46,31 @@ impl Camera {
     }
 
     fn initialize(&mut self) {
+        // Calculate the u,v,w unit basis vectors for the camera coordinate frame.
+        self.w = (self.look_from - &self.look_at).normolize();
+        self.u = self.up.cross(&self.w).normolize();
+        self.v = self.w.cross(&self.u);
+        self.center = self.look_from;
+
         self.height = (f32::from(self.width) / self.aspect_ratio) as u16;
-        // Calculate the image height, and ensure that it's at least 1.
         if self.height < 1 {
             self.height = 1;
         }
-
-        // Camera
-        let focal_length = 1.;
-        let viewport_height = 2.;
+        // Determine viewport dimensions.
+        let focal_length = (self.look_from - &self.look_at).length();
+        let vertical_theta = degree_to_radian(self.vertical_fov);
+        let viewport_height = 2. * f32::tan(vertical_theta / 2.) * focal_length;
         let viewport_width = viewport_height * (f32::from(self.width) / f32::from(self.height));
-        self.center = Point3::zero();
-
         // Calculate the vectors across the horizontal and down the vertical viewport edges.
-        let viewport_u = Vector3::new(viewport_width, 0., 0.);
-        let viewport_v = Vector3::new(0., -viewport_height, 0.);
+        let viewport_u = self.u * viewport_width; // Vector across viewport horizontal edge
+        let viewport_v = -self.v * viewport_height; // Vector down viewport vertical edge
 
         // Calculate the horizontal and vertical delta vectors from pixel to pixel.
         self.pixel_delta_u = viewport_u / f32::from(self.width);
         self.pixel_delta_v = viewport_v / f32::from(self.height);
-
         // Calculate the location of the upper left pixel.
-        let viewport_top_left = self.center
-            - &Vector3::new(0., 0., focal_length)
-            - &(viewport_u / 2.)
-            - &(viewport_v / 2.);
+        let viewport_top_left =
+            self.center - &(self.w * focal_length) - &(viewport_u / 2.) - &(viewport_v / 2.);
         self.pixel_origin = viewport_top_left + &((self.pixel_delta_u + &self.pixel_delta_v) * 0.5);
     }
 

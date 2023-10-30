@@ -15,8 +15,9 @@ fn vector_new_test() {
 
 #[test]
 fn vector_random_test() {
-    let v1 = Vector3::random(0., 1., None);
-    let v2 = Vector3::random(5., 10., None);
+    let mut rng = rand::thread_rng();
+    let v1 = Vector3::random(0., 1., &mut rng);
+    let v2 = Vector3::random(5., 10., &mut rng);
 
     assert!(v1.x >= 0. && v1.x < 1.);
     assert!(v1.y >= 0. && v1.y < 1.);
@@ -29,14 +30,14 @@ fn vector_random_test() {
 
 #[test]
 fn vector_random_unit_vector_test() {
-    let v1 = Vector3::random_unit_vector(None);
+    let v1 = Vector3::random_unit_vector();
 
     assert!(f32::abs(v1.x.powf(2.) + v1.y.powf(2.) + v1.z.powf(2.) - 1.) <= f32::EPSILON);
 }
 
 #[test]
 fn vector_random_on_hemisphere_test() {
-    let v1 = Vector3::random_on_hemisphere(&Vector3::new(0., 1., 0.), None);
+    let v1 = Vector3::random_on_hemisphere(&Vector3::new(0., 1., 0.));
 
     assert!(v1.y >= 0.);
     assert!(f32::abs(v1.x.powf(2.) + v1.y.powf(2.) + v1.z.powf(2.) - 1.) <= f32::EPSILON);
