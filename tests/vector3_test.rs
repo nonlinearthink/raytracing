@@ -31,7 +31,7 @@ fn vector_random_test() {
 fn vector_random_unit_vector_test() {
     let v1 = Vector3::random_unit_vector(None);
 
-    assert!(f32::abs(v1.x.powi(2) + v1.y.powi(2) + v1.z.powi(2) - 1.) <= f32::EPSILON);
+    assert!(f32::abs(v1.x.powf(2.) + v1.y.powf(2.) + v1.z.powf(2.) - 1.) <= f32::EPSILON);
 }
 
 #[test]
@@ -39,7 +39,7 @@ fn vector_random_on_hemisphere_test() {
     let v1 = Vector3::random_on_hemisphere(&Vector3::new(0., 1., 0.), None);
 
     assert!(v1.y >= 0.);
-    assert!(f32::abs(v1.x.powi(2) + v1.y.powi(2) + v1.z.powi(2) - 1.) <= f32::EPSILON);
+    assert!(f32::abs(v1.x.powf(2.) + v1.y.powf(2.) + v1.z.powf(2.) - 1.) <= f32::EPSILON);
 }
 
 #[test]
@@ -220,4 +220,41 @@ fn vector_div_assign_test() {
     // div assign by f32
     v2 /= 2.;
     assert_vector3_eq!(v2, 2., 2.5, 3.);
+}
+
+#[test]
+fn vector_reflect_test() {
+    let v1 = Vector3::new(-1., 2., -3.);
+    let normal = Vector3::new(0., 1., 0.);
+    let v2 = v1.reflect(&normal);
+
+    assert_vector3_eq!(v1, -1., 2., -3.);
+    assert_vector3_eq!(normal, 0., 1., 0.);
+    assert_vector3_eq!(v2, -1., -2., -3.);
+}
+
+#[test]
+fn vector_refract_test() {
+    let v1 = Vector3::new(-1., 2., -3.);
+    let normal = Vector3::new(0., 1., 0.);
+    let v2 = v1.refract(&normal, 1.);
+
+    assert_vector3_eq!(v1, -1., 2., -3.);
+    assert_vector3_eq!(normal, 0., 1., 0.);
+    assert_vector3_eq!(v2, -1., -3., -3.);
+}
+
+#[test]
+fn vector_equals_test() {
+    let v1 = Vector3::new(1., 2., 3.);
+    let v2 = Vector3::new(1.00000001, 2.00000001, 3.00000001);
+
+    assert!(v1.equals(&v2));
+}
+
+#[test]
+fn vector_equals_zero_test() {
+    let v1 = Vector3::new(0.00000001, -0.00000001, 0.00000001);
+
+    assert!(v1.equals_zero());
 }

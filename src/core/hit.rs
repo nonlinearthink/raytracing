@@ -10,7 +10,7 @@ pub struct HitRecord {
     pub point: Option<Point3>,
     pub normal: Option<Vector3>,
     pub t: f32,
-    front_face: bool,
+    pub front_face: bool,
 }
 
 impl HitRecord {

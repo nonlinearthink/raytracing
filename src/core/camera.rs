@@ -9,8 +9,8 @@ pub struct Camera {
     pub width: u16,
     pub aspect_ratio: f32,
     height: u16,
-    samples_per_pixel: u8,
-    max_ray_depth: u8,
+    pub samples_per_pixel: u8,
+    pub max_ray_depth: u8,
     rng: rand::rngs::ThreadRng,
     center: Point3,
     pixel_delta_u: Vector3,
@@ -78,23 +78,26 @@ impl Camera {
     }
 
     fn ray_color(&mut self, ray: &Ray, world: &dyn Hittable, ray_depth: u8) -> Color3 {
+        // If we've exceeded the ray bounce limit, no more light is gathered.
+        if ray_depth <= 0 {
+            return Color3::zero();
+        }
+
         // Meshes
         let mut record: HitRecord = HitRecord::new();
         // Fixing shadow acne by setting the nearest surface to 0.001
         if world.hit(ray, &Interval::new(0.001, f32::INFINITY), &mut record) {
-            let point = record.point.expect("point should not be None if hitted.");
-            let normal = record.normal.expect("normal should not be None if hitted.");
-            // Simple Diffuse Model
-            // // let direction = Vector3::random_on_hemisphere(&normal, Some(&mut self.rng));
-            // Lambertian Diffuse Model
-            let direction = normal + &Vector3::random_unit_vector(Some(&mut self.rng));
+            let material = record
+                .material
+                .as_ref()
+                .expect("material should not be None if hitted.");
 
-            // If we've exceeded the ray bounce limit, no more light is gathered.
-            if ray_depth <= 0 {
-                return Color3::zero();
+            let mut ray_scattered = Ray::new(Point3::zero(), Vector3::zero());
+            let mut attenuation = Color3::zero();
+            if material.scatter(ray, &record, &mut attenuation, &mut ray_scattered) {
+                return attenuation * &self.ray_color(&ray_scattered, world, ray_depth - 1);
             }
-
-            return self.ray_color(&Ray::new(point, direction), world, ray_depth - 1) * 0.5;
+            return Color3::zero();
         }
 
         // Sky

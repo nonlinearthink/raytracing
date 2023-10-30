@@ -1,5 +1,5 @@
 use rand::Rng;
-use std::ops::Div;
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 #[derive(Debug, Copy, Clone, Default)]
 pub struct Vector3 {
@@ -90,17 +90,30 @@ impl Vector3 {
         self.div(self.length())
     }
 
+    pub fn reflect(&self, normal: &Vector3) -> Vector3 {
+        self.sub(&normal.mul(self.dot(normal)).mul(2.))
+    }
+
+    pub fn refract(&self, normal: &Vector3, refraction_ratio: f32) -> Vector3 {
+        let cos_theta = f32::min(self.neg().dot(normal), 1.0);
+        let ray_out_perpendicular = self.add(&normal.mul(cos_theta)) * refraction_ratio;
+        let ray_out_parallel = normal.mul(-f32::sqrt(f32::abs(
+            1.0 - ray_out_perpendicular.length_squared(),
+        )));
+        return ray_out_perpendicular + &ray_out_parallel;
+    }
+
     pub fn equals(&self, rhs: &Self) -> bool {
-        let epsilon = 1e-8;
-        return f32::abs(self.x - rhs.x) < epsilon
-            && f32::abs(self.y - rhs.y) < epsilon
-            && f32::abs(self.z - rhs.z) < epsilon;
+        f32::abs(self.x - rhs.x) < f32::EPSILON
+            && f32::abs(self.y - rhs.y) < f32::EPSILON
+            && f32::abs(self.z - rhs.z) < f32::EPSILON
     }
 
     pub fn equals_zero(&self) -> bool {
         // Return true if the vector is close to zero in all dimensions.
-        let epsilon = 1e-8;
-        return (self.x.abs() < epsilon) && (self.y.abs() < epsilon) && (self.z.abs() < epsilon);
+        (self.x.abs() < f32::EPSILON)
+            && (self.y.abs() < f32::EPSILON)
+            && (self.z.abs() < f32::EPSILON)
     }
 }
 
