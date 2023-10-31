@@ -37,14 +37,24 @@ impl Vector3 {
         Vector3::new(x, y, z)
     }
 
-    fn random_in_unit_sphere() -> Vector3 {
+    pub fn random_in_unit_sphere() -> Vector3 {
         let mut rng = rand::thread_rng();
-        loop {
-            let point = Vector3::random(-1., 1., &mut rng);
-            if point.length_squared() < 1. {
-                return point;
-            }
-        }
+        let theta = rng.gen_range(0.0..(std::f32::consts::PI * 2.));
+        let phi = rng.gen_range(0.0..std::f32::consts::PI);
+        let radius = rng.gen_range(0.0..1.0);
+        let x = radius * theta.sin() * phi.cos();
+        let y = radius * theta.sin() * phi.sin();
+        let z = radius * theta.cos();
+        Vector3::new(x, y, z)
+    }
+
+    pub fn random_in_unit_disk() -> Vector3 {
+        let mut rng = rand::thread_rng();
+        let theta = rng.gen_range(0.0..(std::f32::consts::PI * 2.));
+        let radius = rng.gen_range(0.0..1.0);
+        let x = radius * theta.cos();
+        let y = radius * theta.sin();
+        Vector3::new(x, y, 0.)
     }
 
     pub fn random_unit_vector() -> Vector3 {

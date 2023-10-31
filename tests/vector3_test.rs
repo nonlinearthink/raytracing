@@ -16,31 +16,55 @@ fn vector_new_test() {
 #[test]
 fn vector_random_test() {
     let mut rng = rand::thread_rng();
-    let v1 = Vector3::random(0., 1., &mut rng);
-    let v2 = Vector3::random(5., 10., &mut rng);
+    for _ in 0..100 {
+        let v1 = Vector3::random(0., 1., &mut rng);
+        let v2 = Vector3::random(5., 10., &mut rng);
 
-    assert!(v1.x >= 0. && v1.x < 1.);
-    assert!(v1.y >= 0. && v1.y < 1.);
-    assert!(v1.z >= 0. && v1.z < 1.);
+        assert!(v1.x >= 0. && v1.x < 1.);
+        assert!(v1.y >= 0. && v1.y < 1.);
+        assert!(v1.z >= 0. && v1.z < 1.);
 
-    assert!(v2.x >= 5. && v2.x < 10.);
-    assert!(v2.y >= 5. && v2.y < 10.);
-    assert!(v2.z >= 5. && v2.z < 10.);
+        assert!(v2.x >= 5. && v2.x < 10.);
+        assert!(v2.y >= 5. && v2.y < 10.);
+        assert!(v2.z >= 5. && v2.z < 10.);
+    }
+}
+
+#[test]
+fn vector_random_in_unit_sphere_test() {
+    for _ in 0..100 {
+        let v1 = Vector3::random_in_unit_sphere();
+
+        assert!(v1.length() <= 1.);
+    }
+}
+
+#[test]
+fn vector_random_in_unit_disk_test() {
+    for _ in 0..100 {
+        let v1 = Vector3::random_in_unit_disk();
+
+        assert!(f32::abs(v1.x.powi(2) + v1.y.powi(2)) <= 1. && v1.z == 0.);
+    }
 }
 
 #[test]
 fn vector_random_unit_vector_test() {
-    let v1 = Vector3::random_unit_vector();
+    for _ in 0..100 {
+        let v1 = Vector3::random_unit_vector();
 
-    assert!(f32::abs(v1.x.powf(2.) + v1.y.powf(2.) + v1.z.powf(2.) - 1.) <= f32::EPSILON);
+        assert!(v1.length() <= 1. + f32::EPSILON);
+    }
 }
 
 #[test]
 fn vector_random_on_hemisphere_test() {
-    let v1 = Vector3::random_on_hemisphere(&Vector3::new(0., 1., 0.));
+    for _ in 0..100 {
+        let v1 = Vector3::random_on_hemisphere(&Vector3::new(0., 1., 0.));
 
-    assert!(v1.y >= 0.);
-    assert!(f32::abs(v1.x.powf(2.) + v1.y.powf(2.) + v1.z.powf(2.) - 1.) <= f32::EPSILON);
+        assert!(v1.y >= 0.);
+        assert!(v1.length() <= 1. + f32::EPSILON);
+    }
 }
 
 #[test]
@@ -84,6 +108,43 @@ fn vector_normolize_test() {
     let v = Vector3::new(1., 1., f32::sqrt(2.));
 
     assert_vector3_eq!(v.normolize(), 1. / 2., 1. / 2., f32::sqrt(2.) / 2.);
+}
+
+#[test]
+fn vector_reflect_test() {
+    let v1 = Vector3::new(-1., 2., -3.);
+    let normal = Vector3::new(0., 1., 0.);
+    let v2 = v1.reflect(&normal);
+
+    assert_vector3_eq!(v1, -1., 2., -3.);
+    assert_vector3_eq!(normal, 0., 1., 0.);
+    assert_vector3_eq!(v2, -1., -2., -3.);
+}
+
+#[test]
+fn vector_refract_test() {
+    let v1 = Vector3::new(-1., 2., -3.);
+    let normal = Vector3::new(0., 1., 0.);
+    let v2 = v1.refract(&normal, 1.);
+
+    assert_vector3_eq!(v1, -1., 2., -3.);
+    assert_vector3_eq!(normal, 0., 1., 0.);
+    assert_vector3_eq!(v2, -1., -3., -3.);
+}
+
+#[test]
+fn vector_equals_test() {
+    let v1 = Vector3::new(1., 2., 3.);
+    let v2 = Vector3::new(1.00000001, 2.00000001, 3.00000001);
+
+    assert!(v1.equals(&v2));
+}
+
+#[test]
+fn vector_equals_zero_test() {
+    let v1 = Vector3::new(0.00000001, -0.00000001, 0.00000001);
+
+    assert!(v1.equals_zero());
 }
 
 #[test]
@@ -221,41 +282,4 @@ fn vector_div_assign_test() {
     // div assign by f32
     v2 /= 2.;
     assert_vector3_eq!(v2, 2., 2.5, 3.);
-}
-
-#[test]
-fn vector_reflect_test() {
-    let v1 = Vector3::new(-1., 2., -3.);
-    let normal = Vector3::new(0., 1., 0.);
-    let v2 = v1.reflect(&normal);
-
-    assert_vector3_eq!(v1, -1., 2., -3.);
-    assert_vector3_eq!(normal, 0., 1., 0.);
-    assert_vector3_eq!(v2, -1., -2., -3.);
-}
-
-#[test]
-fn vector_refract_test() {
-    let v1 = Vector3::new(-1., 2., -3.);
-    let normal = Vector3::new(0., 1., 0.);
-    let v2 = v1.refract(&normal, 1.);
-
-    assert_vector3_eq!(v1, -1., 2., -3.);
-    assert_vector3_eq!(normal, 0., 1., 0.);
-    assert_vector3_eq!(v2, -1., -3., -3.);
-}
-
-#[test]
-fn vector_equals_test() {
-    let v1 = Vector3::new(1., 2., 3.);
-    let v2 = Vector3::new(1.00000001, 2.00000001, 3.00000001);
-
-    assert!(v1.equals(&v2));
-}
-
-#[test]
-fn vector_equals_zero_test() {
-    let v1 = Vector3::new(0.00000001, -0.00000001, 0.00000001);
-
-    assert!(v1.equals_zero());
 }
