@@ -7,14 +7,9 @@ mod sphere;
 mod vector3;
 
 pub use camera::Camera;
-pub use hit::HitRecord;
-pub use hit::Hittable;
-pub use hit::HittableList;
+pub use hit::*;
 pub use interval::Interval;
-pub use material::DielectricMaterial;
-pub use material::LambertianMaterial;
-pub use material::Material;
-pub use material::MetalMaterial;
+pub use material::*;
 pub use ray::Ray;
 pub use sphere::Sphere;
 pub use vector3::Vector3;

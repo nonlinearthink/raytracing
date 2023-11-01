@@ -1,10 +1,9 @@
-use image::{Rgb, RgbImage};
 use indicatif::ProgressBar;
 use rand::Rng;
-use std::{fs, time};
+use std::time;
 
 use super::{Color3, HitRecord, Hittable, Interval, Point3, Ray, Vector3};
-use crate::utils::{degree_to_radian, linear_to_gramma};
+use crate::utils::{degree_to_radian, linear_to_gramma, PPMImage};
 
 #[derive(Default)]
 pub struct Camera {
@@ -146,16 +145,6 @@ impl Camera {
         Color3::new(1.0, 1.0, 1.0) * (1. - a) + &(Color3::new(0.5, 0.7, 1.0) * a)
     }
 
-    fn write_color(&self, x: u32, y: u32, buffer: &mut RgbImage, pixel_color: &Color3) {
-        let intensity = Interval::new(0.000, 0.999);
-        // Write the translated [0,255] value of each color component.
-        let r = (256. * intensity.clamp(pixel_color.x)) as u8;
-        let g = (256. * intensity.clamp(pixel_color.y)) as u8;
-        let b = (256. * intensity.clamp(pixel_color.z)) as u8;
-
-        buffer.put_pixel(x, y, Rgb([r, g, b]));
-    }
-
     pub fn render(&mut self, world: &dyn Hittable, save_path: String) -> std::io::Result<()> {
         self.initialize();
 
@@ -163,11 +152,7 @@ impl Camera {
         let render_progress_bar = ProgressBar::new(u64::from(self.height));
         println!("Rendering:");
 
-        let path = std::path::Path::new(&save_path);
-        let prefix = path.parent().unwrap();
-        fs::create_dir_all(prefix)?;
-
-        let mut buffer = RgbImage::new(self.width.into(), self.height.into());
+        let mut image = PPMImage::new(self.width.into(), self.height.into());
         for y in 0..self.height {
             for x in 0..self.width {
                 let mut color = Color3::zero();
@@ -186,12 +171,18 @@ impl Camera {
                 color.y = linear_to_gramma(color.y);
                 color.z = linear_to_gramma(color.z);
 
-                self.write_color(x, y, &mut buffer, &color);
+                let intensity = Interval::new(0.000, 0.999);
+                // Write the translated [0,255] value of each color component.
+                let r = (256. * intensity.clamp(color.x)) as u8;
+                let g = (256. * intensity.clamp(color.y)) as u8;
+                let b = (256. * intensity.clamp(color.z)) as u8;
+
+                image.write_color(r, g, b).unwrap();
             }
             render_progress_bar.inc(1);
         }
 
-        buffer.save(path).unwrap();
+        image.save(save_path).unwrap();
 
         render_progress_bar.finish();
         let render_cost = render_timer.elapsed();

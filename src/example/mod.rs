@@ -123,7 +123,7 @@ pub fn example_1_13() {
     camera.defocus_angle = 10.;
     camera.focus_dist = 3.4;
 
-    camera.render(&world, "out/1-13.jpg".to_owned()).err();
+    camera.render(&world, "out/1-13.ppm".to_owned()).err();
 }
 
 // Book 1 Final Scene
@@ -148,5 +148,5 @@ pub fn example_1_14() {
     camera.samples_per_pixel = 50;
     camera.max_ray_depth = 10;
 
-    camera.render(&world, "out/1-14.jpg".to_owned()).err();
+    camera.render(&world, "out/1-14.ppm".to_owned()).err();
 }
