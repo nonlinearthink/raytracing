@@ -1,7 +1,7 @@
 use image::{Rgb, RgbImage};
 use indicatif::ProgressBar;
 use rand::Rng;
-use std::fs;
+use std::{fs, time};
 
 use super::{Color3, HitRecord, Hittable, Interval, Point3, Ray, Vector3};
 use crate::utils::{degree_to_radian, linear_to_gramma};
@@ -159,11 +159,14 @@ impl Camera {
     pub fn render(&mut self, world: &dyn Hittable, save_path: String) -> std::io::Result<()> {
         self.initialize();
 
+        let render_timer = time::Instant::now();
+        let render_progress_bar = ProgressBar::new(u64::from(self.height));
+        println!("Rendering:");
+
         let path = std::path::Path::new(&save_path);
         let prefix = path.parent().unwrap();
         fs::create_dir_all(prefix)?;
 
-        let bar = ProgressBar::new(u64::from(self.height));
         let mut buffer = RgbImage::new(self.width.into(), self.height.into());
         for y in 0..self.height {
             for x in 0..self.width {
@@ -185,11 +188,15 @@ impl Camera {
 
                 self.write_color(x, y, &mut buffer, &color);
             }
-            bar.inc(1);
+            render_progress_bar.inc(1);
         }
 
         buffer.save(path).unwrap();
-        bar.finish();
+
+        render_progress_bar.finish();
+        let render_cost = render_timer.elapsed();
+        println!("Render Cost: {:?}", render_cost);
+
         Ok(())
     }
 }
