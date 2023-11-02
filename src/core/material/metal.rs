@@ -36,6 +36,7 @@ impl Material for MetalMaterial {
             ray_scattered.origin = hit_record.point.unwrap();
             let fuzz_vector = Vector3::random_unit_vector();
             ray_scattered.direction = reflected + &(fuzz_vector * self.fuzz);
+            ray_scattered.time = ray_in.time;
             attenuation.clone_from(&self.albedo);
 
             ray_scattered.direction.dot(&normal) > 0.

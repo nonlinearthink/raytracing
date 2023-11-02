@@ -2,7 +2,7 @@ use rand::Rng;
 
 use rst_raytrace::core::{
     Camera, Color3, DielectricMaterial, HittableList, LambertianMaterial, Material, MetalMaterial,
-    Point3, Sphere,
+    Point3, Sphere, Vector3,
 };
 
 fn load_objects_1_13(world: &mut HittableList) {
@@ -38,7 +38,7 @@ fn load_objects_1_13(world: &mut HittableList) {
     )));
 }
 
-fn load_objects_1_14(world: &mut HittableList) {
+fn load_objects_1_14(world: &mut HittableList, motion_blur: bool) {
     let material_ground = LambertianMaterial::new(Some(Color3::new(0.5, 0.5, 0.5)));
     world.add(Box::new(Sphere::new(
         Point3::new(0., -1000., 0.),
@@ -64,7 +64,17 @@ fn load_objects_1_14(world: &mut HittableList) {
                     let albedo =
                         Color3::random(0., 1., &mut rng) * &Color3::random(0., 1., &mut rng);
                     sphere_material = Box::new(LambertianMaterial::new(Some(albedo)));
-                    world.add(Box::new(Sphere::new(center, 0.2, sphere_material)));
+                    world.add(Box::new(Sphere::new(center, 0.2, sphere_material.clone())));
+                    // Chapter 2-2
+                    if motion_blur {
+                        let target = center + &Vector3::new(0., rng.gen_range(0.0..0.5), 0.);
+                        world.add(Box::new(Sphere::new_moving_sphere(
+                            center,
+                            target,
+                            0.2,
+                            sphere_material.clone(),
+                        )));
+                    }
                 } else if choose_material < 0.95 {
                     // metal
                     let albedo = Color3::random(0.5, 1., &mut rng);
@@ -131,14 +141,14 @@ pub fn example_1_14() {
     // World
     let mut world = HittableList::new();
 
-    load_objects_1_14(&mut world);
+    load_objects_1_14(&mut world, false);
 
     let mut camera = Camera::new();
 
     camera.look_from = Point3::new(13., 2., 3.);
     camera.look_at = Point3::new(0., 0., 0.);
 
-    camera.width = 1200;
+    camera.width = 400;
     camera.aspect_ratio = 16. / 9.;
     camera.vertical_fov = 20.;
 
@@ -149,4 +159,28 @@ pub fn example_1_14() {
     camera.max_ray_depth = 10;
 
     camera.render(&world, "out/1-14.ppm".to_owned()).err();
+}
+
+pub fn example_2_2() {
+    // World
+    let mut world = HittableList::new();
+
+    load_objects_1_14(&mut world, true);
+
+    let mut camera = Camera::new();
+
+    camera.look_from = Point3::new(13., 2., 3.);
+    camera.look_at = Point3::new(0., 0., 0.);
+
+    camera.width = 400;
+    camera.aspect_ratio = 16. / 9.;
+    camera.vertical_fov = 20.;
+
+    camera.defocus_angle = 0.6;
+    camera.focus_dist = 10.;
+
+    camera.samples_per_pixel = 128;
+    camera.max_ray_depth = 10;
+
+    camera.render(&world, "out/2-2.ppm".to_owned()).err();
 }

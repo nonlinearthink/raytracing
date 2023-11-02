@@ -112,8 +112,9 @@ impl Camera {
             self.defocus_disk_sample()
         };
         let ray_direction = pixel_sample - &ray_origin;
+        let ray_time = self.rng.gen::<f32>();
 
-        Ray::new(ray_origin, ray_direction)
+        Ray::new_by_time(ray_origin, ray_direction, ray_time)
     }
 
     fn ray_color(&mut self, ray: &Ray, world: &dyn Hittable, ray_depth: u8) -> Color3 {

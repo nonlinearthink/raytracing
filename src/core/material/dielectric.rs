@@ -54,6 +54,7 @@ impl Material for DielectricMaterial {
 
             ray_scattered.origin = hit_record.point.unwrap();
             ray_scattered.direction = direction;
+            ray_scattered.time = ray_in.time;
 
             true
         } else {

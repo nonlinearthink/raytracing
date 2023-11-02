@@ -15,6 +15,8 @@ fn main() {
             example::example_1_13();
         } else if t == "1_14" {
             example::example_1_14();
+        } else if t == "2_2" {
+            example::example_2_2();
         } else {
             println!("No example matched");
         }

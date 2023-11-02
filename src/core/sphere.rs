@@ -7,6 +7,8 @@ pub struct Sphere {
     pub center: Vector3,
     pub radius: f32,
     pub material: Box<dyn Material>,
+    pub is_moving: bool,
+    motion_direction: Vector3,
 }
 
 impl Sphere {
@@ -15,13 +17,39 @@ impl Sphere {
             center,
             radius,
             material,
+            is_moving: false,
+            motion_direction: Vector3::zero(),
+        }
+    }
+
+    pub fn new_moving_sphere(
+        center: Point3,
+        target: Point3,
+        radius: f32,
+        material: Box<dyn Material>,
+    ) -> Sphere {
+        Sphere {
+            center,
+            radius,
+            material,
+            is_moving: true,
+            motion_direction: target - &center,
+        }
+    }
+
+    pub fn center_after_move(&self, time: f32) -> Vector3 {
+        if self.is_moving {
+            self.center + &(self.motion_direction * time)
+        } else {
+            self.center
         }
     }
 }
 
 impl Hittable for Sphere {
     fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool {
-        let oc: Vector3 = ray.origin - &self.center;
+        let center: Point3 = self.center_after_move(ray.time);
+        let oc: Vector3 = ray.origin - &center;
         let a = ray.direction.length_squared();
         let half_b = oc.dot(&ray.direction);
         let c = oc.length_squared() - f32::powf(self.radius, 2.);
@@ -45,7 +73,7 @@ impl Hittable for Sphere {
         let outward_normal = record
             .point
             .expect("Ray should always have some value at t.")
-            .sub(&self.center)
+            .sub(&center)
             .div(self.radius);
         record.set_face_normal(&ray, &outward_normal);
         record.material = Some(Box::clone(&self.material));

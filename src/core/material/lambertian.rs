@@ -20,7 +20,7 @@ impl LambertianMaterial {
 impl Material for LambertianMaterial {
     fn scatter(
         &self,
-        _ray_in: &Ray,
+        ray_in: &Ray,
         hit_record: &HitRecord,
         attenuation: &mut Color3,
         ray_scattered: &mut Ray,
@@ -35,6 +35,7 @@ impl Material for LambertianMaterial {
             attenuation.clone_from(&self.albedo);
             ray_scattered.origin = hit_record.point.unwrap();
             ray_scattered.direction = scatter_direction;
+            ray_scattered.time = ray_in.time;
 
             true
         } else {
