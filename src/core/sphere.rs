@@ -38,17 +38,17 @@ impl Sphere {
     }
 
     pub fn center_after_move(&self, time: f32) -> Vector3 {
-        if self.is_moving {
-            self.center + &(self.motion_direction * time)
-        } else {
-            self.center
-        }
+        self.center + &(self.motion_direction * time)
     }
 }
 
 impl Hittable for Sphere {
     fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool {
-        let center: Point3 = self.center_after_move(ray.time);
+        let center: Point3 = if self.is_moving {
+            self.center_after_move(ray.time)
+        } else {
+            self.center
+        };
         let oc: Vector3 = ray.origin - &center;
         let a = ray.direction.length_squared();
         let half_b = oc.dot(&ray.direction);

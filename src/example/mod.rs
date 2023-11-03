@@ -38,7 +38,7 @@ fn load_objects_1_13(world: &mut HittableList) {
     )));
 }
 
-fn load_objects_1_14(world: &mut HittableList, motion_blur: bool) {
+fn load_objects_1_14(world: &mut HittableList, motion_blur_test: bool) {
     let material_ground = LambertianMaterial::new(Some(Color3::new(0.5, 0.5, 0.5)));
     world.add(Box::new(Sphere::new(
         Point3::new(0., -1000., 0.),
@@ -66,8 +66,8 @@ fn load_objects_1_14(world: &mut HittableList, motion_blur: bool) {
                     sphere_material = Box::new(LambertianMaterial::new(Some(albedo)));
                     world.add(Box::new(Sphere::new(center, 0.2, sphere_material.clone())));
                     // Chapter 2-2
-                    if motion_blur {
-                        let target = center + &Vector3::new(0., rng.gen_range(0.0..0.5), 0.);
+                    if motion_blur_test {
+                        let target = center + &Vector3::new(0., rng.gen_range(0.0..0.3), 0.);
                         world.add(Box::new(Sphere::new_moving_sphere(
                             center,
                             target,
@@ -176,7 +176,7 @@ pub fn example_2_2() {
     camera.aspect_ratio = 16. / 9.;
     camera.vertical_fov = 20.;
 
-    camera.defocus_angle = 0.6;
+    camera.defocus_angle = 0.02;
     camera.focus_dist = 10.;
 
     camera.samples_per_pixel = 128;
