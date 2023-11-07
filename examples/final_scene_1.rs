@@ -1,44 +1,16 @@
 use rand::Rng;
-
 use rst_raytrace::core::{
     Camera, Color3, DielectricMaterial, HittableList, LambertianMaterial, Material, MetalMaterial,
     Point3, Sphere, Vector3,
 };
 
-fn load_objects_1_13(world: &mut HittableList) {
-    let material_ground = LambertianMaterial::new(Some(Color3::new(0.8, 0.8, 0.0)));
-    let material_center = LambertianMaterial::new(Some(Color3::new(0.1, 0.2, 0.5)));
-    let material_left = DielectricMaterial::new(1.5);
-    let material_right = MetalMaterial::new(Some(Color3::new(0.8, 0.6, 0.2)), 0.);
-
-    world.add(Box::new(Sphere::new(
-        Point3::new(0., -100.5, -1.),
-        100.,
-        Box::new(material_ground),
-    )));
-    world.add(Box::new(Sphere::new(
-        Point3::new(0., 0., -1.),
-        0.5,
-        Box::new(material_center),
-    )));
-    world.add(Box::new(Sphere::new(
-        Point3::new(-1., 0., -1.),
-        0.5,
-        Box::new(material_left),
-    )));
-    world.add(Box::new(Sphere::new(
-        Point3::new(-1., 0., -1.),
-        -0.4,
-        Box::new(material_left),
-    )));
-    world.add(Box::new(Sphere::new(
-        Point3::new(1., 0., -1.),
-        0.5,
-        Box::new(material_right),
-    )));
+struct SceneOptions {
+    high_quality: bool,
+    depth_of_field: bool,
+    motion_blur_test: bool,
 }
 
-fn load_objects_1_14(world: &mut HittableList, motion_blur_test: bool) {
+fn load_objects(world: &mut HittableList, motion_blur_test: bool) {
     let material_ground = LambertianMaterial::new(Some(Color3::new(0.5, 0.5, 0.5)));
     world.add(Box::new(Sphere::new(
         Point3::new(0., -1000., 0.),
@@ -65,7 +37,7 @@ fn load_objects_1_14(world: &mut HittableList, motion_blur_test: bool) {
                         Color3::random(0., 1., &mut rng) * &Color3::random(0., 1., &mut rng);
                     sphere_material = Box::new(LambertianMaterial::new(Some(albedo)));
                     world.add(Box::new(Sphere::new(center, 0.2, sphere_material.clone())));
-                    // Chapter 2-2
+
                     if motion_blur_test {
                         let target = center + &Vector3::new(0., rng.gen_range(0.0..0.3), 0.);
                         world.add(Box::new(Sphere::new_moving_sphere(
@@ -112,75 +84,34 @@ fn load_objects_1_14(world: &mut HittableList, motion_blur_test: bool) {
     )));
 }
 
-pub fn example_1_13() {
+fn main() {
+    let options = SceneOptions {
+        high_quality: false,
+        depth_of_field: true,
+        motion_blur_test: true,
+    };
+
     // World
     let mut world = HittableList::new();
 
-    load_objects_1_13(&mut world);
-
-    let mut camera = Camera::new();
-
-    camera.look_from = Point3::new(-2., 2., 1.);
-    camera.look_at = Point3::new(0., 0., -1.);
-
-    camera.width = 400;
-    camera.aspect_ratio = 16. / 9.;
-    camera.vertical_fov = 20.;
-
-    camera.samples_per_pixel = 30;
-    camera.max_ray_depth = 10;
-
-    camera.defocus_angle = 10.;
-    camera.focus_dist = 3.4;
-
-    camera.render(&world, "out/1-13.ppm".to_owned()).err();
-}
-
-// Book 1 Final Scene
-pub fn example_1_14() {
-    // World
-    let mut world = HittableList::new();
-
-    load_objects_1_14(&mut world, false);
+    load_objects(&mut world, options.motion_blur_test);
 
     let mut camera = Camera::new();
 
     camera.look_from = Point3::new(13., 2., 3.);
     camera.look_at = Point3::new(0., 0., 0.);
 
-    camera.width = 400;
+    camera.width = if options.high_quality { 1920 } else { 400 };
     camera.aspect_ratio = 16. / 9.;
     camera.vertical_fov = 20.;
 
-    camera.defocus_angle = 0.6;
+    camera.defocus_angle = if options.depth_of_field { 0.6 } else { 0.02 };
     camera.focus_dist = 10.;
 
-    camera.samples_per_pixel = 50;
+    camera.samples_per_pixel = if options.high_quality { 128 } else { 20 };
     camera.max_ray_depth = 10;
 
-    camera.render(&world, "out/1-14.ppm".to_owned()).err();
-}
-
-pub fn example_2_2() {
-    // World
-    let mut world = HittableList::new();
-
-    load_objects_1_14(&mut world, true);
-
-    let mut camera = Camera::new();
-
-    camera.look_from = Point3::new(13., 2., 3.);
-    camera.look_at = Point3::new(0., 0., 0.);
-
-    camera.width = 400;
-    camera.aspect_ratio = 16. / 9.;
-    camera.vertical_fov = 20.;
-
-    camera.defocus_angle = 0.02;
-    camera.focus_dist = 10.;
-
-    camera.samples_per_pixel = 128;
-    camera.max_ray_depth = 10;
-
-    camera.render(&world, "out/2-2.ppm".to_owned()).err();
+    camera
+        .render(&world, "out/final-scene-1.ppm".to_owned())
+        .err();
 }
