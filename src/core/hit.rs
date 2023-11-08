@@ -1,8 +1,16 @@
-use super::{material::Material, Interval, Point3, Ray, Vector3};
+use core::fmt;
 
-pub trait Hittable {
-    fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool;
+use dyn_clone::{DynClone, clone_trait_object};
+
+use super::{material::Material, AxisAlignedBoundingBox, Interval, Point3, Ray, Vector3};
+
+pub trait Hittable: fmt::Debug + DynClone {
+    fn hit(&self, ray: &Ray, ray_interval: &mut Interval, record: &mut HitRecord) -> bool;
+
+    fn bounding_box(&self) -> &AxisAlignedBoundingBox;
 }
+
+clone_trait_object!(Hittable);
 
 #[derive(Debug, Clone)]
 pub struct HitRecord {
@@ -37,18 +45,26 @@ impl HitRecord {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct HittableList {
     pub objects: Vec<Box<dyn Hittable>>,
+    aabb: AxisAlignedBoundingBox,
 }
 
 impl HittableList {
     pub fn new() -> HittableList {
         HittableList {
             objects: Vec::new(),
+            aabb: AxisAlignedBoundingBox {
+                x: Interval::empty(),
+                y: Interval::empty(),
+                z: Interval::empty(),
+            },
         }
     }
 
     pub fn add(&mut self, object: Box<dyn Hittable>) {
+        self.aabb = self.aabb.merge(&object.bounding_box());
         self.objects.push(object);
     }
 
@@ -58,7 +74,7 @@ impl HittableList {
 }
 
 impl Hittable for HittableList {
-    fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool {
+    fn hit(&self, ray: &Ray, ray_interval: &mut Interval, record: &mut HitRecord) -> bool {
         record.t = ray_interval.max;
 
         let mut is_hitted = false;
@@ -67,7 +83,7 @@ impl Hittable for HittableList {
         for object in self.objects.iter() {
             if object.hit(
                 ray,
-                &Interval::new(ray_interval.min, record.t),
+                &mut Interval::new(ray_interval.min, record.t),
                 &mut hit_record,
             ) {
                 is_hitted = true;
@@ -76,5 +92,9 @@ impl Hittable for HittableList {
         }
 
         is_hitted
+    }
+
+    fn bounding_box(&self) -> &AxisAlignedBoundingBox {
+        &self.aabb
     }
 }

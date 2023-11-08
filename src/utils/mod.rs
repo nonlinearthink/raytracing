@@ -1,6 +1,6 @@
 mod ppm;
 
-pub use ppm::PPMImage;
+pub use ppm::*;
 
 pub fn degree_to_radian(degree: f32) -> f32 {
     degree * std::f32::consts::PI / 180.0

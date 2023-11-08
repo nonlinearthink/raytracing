@@ -269,3 +269,6 @@ impl std::ops::DivAssign<f32> for Vector3 {
         self.z /= rhs;
     }
 }
+
+pub use Vector3 as Point3;
+pub use Vector3 as Color3;

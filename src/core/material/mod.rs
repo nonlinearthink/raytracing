@@ -7,9 +7,9 @@ mod dielectric;
 mod lambertian;
 mod metal;
 
-pub use dielectric::DielectricMaterial;
-pub use lambertian::LambertianMaterial;
-pub use metal::MetalMaterial;
+pub use dielectric::*;
+pub use lambertian::*;
+pub use metal::*;
 
 pub trait Material: fmt::Debug + DynClone {
     fn scatter(

@@ -1,24 +1,32 @@
 use std::ops::{Div, Sub};
 
-use super::{HitRecord, Hittable, Interval, Material, Point3, Ray, Vector3};
+use super::{
+    AxisAlignedBoundingBox, HitRecord, Hittable, Interval, Material, Point3, Ray, Vector3,
+};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Sphere {
     pub center: Vector3,
     pub radius: f32,
     pub material: Box<dyn Material>,
     pub is_moving: bool,
     motion_direction: Vector3,
+    aabb: AxisAlignedBoundingBox,
 }
 
 impl Sphere {
     pub fn new(center: Point3, radius: f32, material: Box<dyn Material>) -> Sphere {
+        let radius_vec = Vector3::new(radius, radius, radius);
         Sphere {
             center,
             radius,
             material,
             is_moving: false,
             motion_direction: Vector3::zero(),
+            aabb: AxisAlignedBoundingBox::from_vector(
+                &(center - &radius_vec),
+                &(center + &radius_vec),
+            ),
         }
     }
 
@@ -28,12 +36,20 @@ impl Sphere {
         radius: f32,
         material: Box<dyn Material>,
     ) -> Sphere {
+        let radius_vec = Vector3::new(radius, radius, radius);
+        let aabb1 =
+            AxisAlignedBoundingBox::from_vector(&(center - &radius_vec), &(center + &radius_vec));
+        let aabb2 =
+            AxisAlignedBoundingBox::from_vector(&(target - &radius_vec), &(target + &radius_vec));
+        let aabb = aabb1.merge(&aabb2);
+
         Sphere {
             center,
             radius,
             material,
             is_moving: true,
             motion_direction: target - &center,
+            aabb,
         }
     }
 
@@ -43,7 +59,7 @@ impl Sphere {
 }
 
 impl Hittable for Sphere {
-    fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool {
+    fn hit(&self, ray: &Ray, ray_interval: &mut Interval, record: &mut HitRecord) -> bool {
         let center: Point3 = if self.is_moving {
             self.center_after_move(ray.time)
         } else {
@@ -79,5 +95,9 @@ impl Hittable for Sphere {
         record.material = Some(Box::clone(&self.material));
 
         return true;
+    }
+
+    fn bounding_box(&self) -> &AxisAlignedBoundingBox {
+        &self.aabb
     }
 }

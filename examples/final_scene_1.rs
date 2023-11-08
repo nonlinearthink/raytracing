@@ -1,13 +1,14 @@
 use rand::Rng;
 use rst_raytrace::core::{
-    Camera, Color3, DielectricMaterial, HittableList, LambertianMaterial, Material, MetalMaterial,
-    Point3, Sphere, Vector3,
+    BoundingVolumesHierarchicalNode, Camera, Color3, DielectricMaterial, HittableList,
+    LambertianMaterial, Material, MetalMaterial, Point3, Sphere, Vector3,
 };
 
 struct SceneOptions {
     high_quality: bool,
     depth_of_field: bool,
     motion_blur_test: bool,
+    bounding_volume_hierarchical: bool,
 }
 
 fn load_objects(world: &mut HittableList, motion_blur_test: bool) {
@@ -39,7 +40,7 @@ fn load_objects(world: &mut HittableList, motion_blur_test: bool) {
                     world.add(Box::new(Sphere::new(center, 0.2, sphere_material.clone())));
 
                     if motion_blur_test {
-                        let target = center + &Vector3::new(0., rng.gen_range(0.0..0.3), 0.);
+                        let target = center + &Vector3::new(0., rng.gen_range(0.0..0.5), 0.);
                         world.add(Box::new(Sphere::new_moving_sphere(
                             center,
                             target,
@@ -89,12 +90,19 @@ fn main() {
         high_quality: false,
         depth_of_field: true,
         motion_blur_test: true,
+        bounding_volume_hierarchical: true,
     };
 
     // World
     let mut world = HittableList::new();
 
     load_objects(&mut world, options.motion_blur_test);
+
+    if options.bounding_volume_hierarchical {
+        let bvh = BoundingVolumesHierarchicalNode::new(&mut world);
+        world = HittableList::new();
+        world.add(Box::new(bvh));
+    }
 
     let mut camera = Camera::new();
 
