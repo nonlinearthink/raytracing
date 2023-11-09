@@ -22,7 +22,6 @@ pub struct BoundingVolumesHierarchicalNode {
 impl BoundingVolumesHierarchicalNode {
     pub fn new(list: &mut HittableList) -> Self {
         let length = list.objects.len();
-        println!("{}", length);
         Self::split(&mut list.objects, 0, length)
     }
 
@@ -70,8 +69,8 @@ impl BoundingVolumesHierarchicalNode {
 }
 
 impl Hittable for BoundingVolumesHierarchicalNode {
-    fn hit(&self, ray: &Ray, ray_interval: &mut Interval, record: &mut HitRecord) -> bool {
-        if !self.bbox.hit(ray, ray_interval) {
+    fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool {
+        if !self.bbox.hit(ray, &mut ray_interval.clone()) {
             return false;
         }
 

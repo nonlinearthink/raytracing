@@ -4,7 +4,7 @@ use dyn_clone::{clone_trait_object, DynClone};
 use super::{material::Material, AxisAlignedBoundingBox, Interval, Point3, Ray, Vector3};
 
 pub trait Hittable: fmt::Debug + DynClone {
-    fn hit(&self, ray: &Ray, ray_interval: &mut Interval, record: &mut HitRecord) -> bool;
+    fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool;
 
     fn bounding_box(&self) -> &AxisAlignedBoundingBox;
 }
@@ -73,7 +73,7 @@ impl HittableList {
 }
 
 impl Hittable for HittableList {
-    fn hit(&self, ray: &Ray, ray_interval: &mut Interval, record: &mut HitRecord) -> bool {
+    fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool {
         record.t = ray_interval.max;
 
         let mut is_hitted = false;

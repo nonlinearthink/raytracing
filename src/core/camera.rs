@@ -126,7 +126,7 @@ impl Camera {
         // Meshes
         let mut record: HitRecord = HitRecord::new();
         // Fixing shadow acne by setting the nearest surface to 0.001
-        if world.hit(ray, &mut Interval::new(0.001, f32::INFINITY), &mut record) {
+        if world.hit(ray, &Interval::new(0.001, f32::INFINITY), &mut record) {
             let material = record
                 .material
                 .as_ref()

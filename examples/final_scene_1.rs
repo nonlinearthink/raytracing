@@ -89,8 +89,8 @@ fn main() {
     let options = SceneOptions {
         high_quality: false,
         depth_of_field: true,
-        motion_blur_test: true,
-        bounding_volume_hierarchical: false,
+        motion_blur_test: false,
+        bounding_volume_hierarchical: true,
     };
 
     // World

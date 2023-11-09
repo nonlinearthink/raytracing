@@ -20,19 +20,19 @@ impl AxisAlignedBoundingBox {
         }
     }
 
-    pub fn merge(&self, aabb: &Self) -> Self {
-        Self {
-            x: self.x.merge(&aabb.x),
-            y: self.y.merge(&aabb.y),
-            z: self.z.merge(&aabb.z),
-        }
-    }
-
     pub fn axis(&self, n: usize) -> &Interval {
         match n {
             1 => &self.y,
             2 => &self.z,
             _ => &self.x,
+        }
+    }
+
+    pub fn merge(&self, aabb: &Self) -> Self {
+        Self {
+            x: self.x.merge(&aabb.x),
+            y: self.y.merge(&aabb.y),
+            z: self.z.merge(&aabb.z),
         }
     }
 

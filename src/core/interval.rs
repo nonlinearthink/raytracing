@@ -1,4 +1,6 @@
-#[derive(Debug, Copy, Clone)]
+use rand::Rng;
+
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Interval {
     pub min: f32,
     pub max: f32,
@@ -9,6 +11,8 @@ impl Default for Interval {
         Self::empty()
     }
 }
+
+impl Eq for Interval {}
 
 impl Interval {
     pub fn new(min: f32, max: f32) -> Interval {
@@ -29,11 +33,28 @@ impl Interval {
         }
     }
 
+    pub fn random(min: f32, max: f32) -> Interval {
+        let mut rng = rand::thread_rng();
+        let mut min = rng.gen_range(min..max);
+        let mut max = rng.gen_range(min..max);
+        if min > max {
+            std::mem::swap(&mut min, &mut max);
+        }
+        Interval { min, max }
+    }
+
     pub fn expand(&self, delta: f32) -> Interval {
         let padding = delta / 2.;
-        Interval {
-            min: self.min - padding,
-            max: self.max + padding,
+        if self.min == f32::INFINITY && self.max == f32::NEG_INFINITY {
+            Interval {
+                min: -padding,
+                max: padding,
+            }
+        } else {
+            Interval {
+                min: self.min - padding,
+                max: self.max + padding,
+            }
         }
     }
 
