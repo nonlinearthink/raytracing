@@ -36,7 +36,7 @@ impl AxisAlignedBoundingBox {
         }
     }
 
-    pub fn hit(&self, ray: &Ray, ray_interval: &mut Interval) -> bool {
+    pub fn hit(&self, ray: &Ray, ray_interval: &Interval) -> bool {
         for i in 0..3 {
             let t_per_unit_length = 1. / ray.direction[i];
             let origin = ray.origin[i];
@@ -47,14 +47,14 @@ impl AxisAlignedBoundingBox {
                 std::mem::swap(&mut t_min, &mut t_max)
             }
 
-            if t_min > ray_interval.min {
-                ray_interval.min = t_min;
+            if t_min < ray_interval.min {
+                t_min = ray_interval.min;
             }
-            if t_max < ray_interval.max {
-                ray_interval.max = t_max;
+            if t_max > ray_interval.max {
+                t_max = ray_interval.max;
             }
 
-            if ray_interval.max < ray_interval.min {
+            if t_max < t_min {
                 return false;
             }
         }

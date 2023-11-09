@@ -1,5 +1,6 @@
 use core::fmt;
 use dyn_clone::{clone_trait_object, DynClone};
+use std::cmp::Ordering;
 
 use super::{material::Material, AxisAlignedBoundingBox, Interval, Point3, Ray, Vector3};
 
@@ -10,6 +11,22 @@ pub trait Hittable: fmt::Debug + DynClone {
 }
 
 clone_trait_object!(Hittable);
+
+pub fn compare_hittable_objects(
+    hittable1: &dyn Hittable,
+    hittable2: &dyn Hittable,
+    axis_index: usize,
+) -> Ordering {
+    let min1 = hittable1.bounding_box().axis(axis_index).min;
+    let min2 = hittable2.bounding_box().axis(axis_index).min;
+    if min1 < min2 {
+        Ordering::Less
+    } else if min1 == min2 {
+        Ordering::Equal
+    } else {
+        Ordering::Greater
+    }
+}
 
 #[derive(Debug, Clone)]
 pub struct HitRecord {

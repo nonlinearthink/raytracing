@@ -1,7 +1,11 @@
 use rst_raytrace::core::{
-    Camera, Color3, DielectricMaterial, HittableList, LambertianMaterial, MetalMaterial, Point3,
-    Sphere,
+    BoundingVolumesHierarchicalNode, Camera, Color3, DielectricMaterial, HittableList,
+    LambertianMaterial, MetalMaterial, Point3, Sphere,
 };
+
+struct SceneOptions {
+    bounding_volume_hierarchical: bool,
+}
 
 fn load_objects(world: &mut HittableList) {
     let material_ground = LambertianMaterial::new(Some(Color3::new(0.8, 0.8, 0.0)));
@@ -37,10 +41,20 @@ fn load_objects(world: &mut HittableList) {
 }
 
 fn main() {
+    let options = SceneOptions {
+        bounding_volume_hierarchical: true,
+    };
+
     // World
     let mut world = HittableList::new();
 
     load_objects(&mut world);
+
+    if options.bounding_volume_hierarchical {
+        let bvh = BoundingVolumesHierarchicalNode::new(&mut world);
+        world = HittableList::new();
+        world.add(Box::new(bvh));
+    }
 
     let mut camera = Camera::new();
 
@@ -57,5 +71,7 @@ fn main() {
     camera.defocus_angle = 10.;
     camera.focus_dist = 3.4;
 
-    camera.render(&world, "out/dev-scene-1.ppm".to_owned()).err();
+    camera
+        .render(&world, "out/dev-scene-1.ppm".to_owned())
+        .err();
 }

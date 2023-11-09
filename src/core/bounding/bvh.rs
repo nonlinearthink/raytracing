@@ -1,16 +1,7 @@
 use rand::Rng;
-use std::cmp::Ordering;
 
 use super::AxisAlignedBoundingBox;
-use crate::core::{HitRecord, Hittable, HittableList, Interval, Ray};
-
-fn compare_axis(object1: &dyn Hittable, object2: &dyn Hittable, axis_index: usize) -> Ordering {
-    if object1.bounding_box().axis(axis_index).min < object2.bounding_box().axis(axis_index).min {
-        Ordering::Less
-    } else {
-        Ordering::Greater
-    }
-}
+use crate::core::{compare_hittable_objects, HitRecord, Hittable, HittableList, Interval, Ray};
 
 #[derive(Debug, Clone)]
 pub struct BoundingVolumesHierarchicalNode {
@@ -35,10 +26,10 @@ impl BoundingVolumesHierarchicalNode {
         let objects_span = end - start;
 
         if objects_span == 1 {
-            left = Some(Box::clone(&objects[0]));
-            right = Some(Box::clone(&objects[0]));
+            left = Some(Box::clone(&objects[start]));
+            right = Some(Box::clone(&objects[start]));
         } else if objects_span == 2 {
-            if compare_axis(&*objects[start], &*objects[start + 1], axis).is_le() {
+            if compare_hittable_objects(&*objects[start], &*objects[start + 1], axis).is_le() {
                 left = Some(Box::clone(&objects[start]));
                 right = Some(Box::clone(&objects[start + 1]));
             } else {
@@ -46,7 +37,7 @@ impl BoundingVolumesHierarchicalNode {
                 right = Some(Box::clone(&objects[start]));
             }
         } else {
-            objects.sort_by(|a, b| compare_axis(&**a, &**b, axis));
+            objects[start..end].sort_by(|a, b| compare_hittable_objects(&**a, &**b, axis));
 
             let mid = start + objects_span / 2;
             left = Some(Box::new(BoundingVolumesHierarchicalNode::split(
@@ -70,7 +61,7 @@ impl BoundingVolumesHierarchicalNode {
 
 impl Hittable for BoundingVolumesHierarchicalNode {
     fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool {
-        if !self.bbox.hit(ray, &mut ray_interval.clone()) {
+        if !self.bbox.hit(ray, ray_interval) {
             return false;
         }
 
@@ -79,7 +70,14 @@ impl Hittable for BoundingVolumesHierarchicalNode {
             None => false,
         };
         let hit_right = match &self.right {
-            Some(node) => node.hit(ray, ray_interval, record),
+            Some(node) => node.hit(
+                ray,
+                &Interval::new(
+                    ray_interval.min,
+                    if hit_left { record.t } else { ray_interval.max },
+                ),
+                record,
+            ),
             None => false,
         };
 
