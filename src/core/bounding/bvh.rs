@@ -1,8 +1,8 @@
+use rand::Rng;
 use std::cmp::Ordering;
 
-use rand::Rng;
-
-use super::{AxisAlignedBoundingBox, HitRecord, Hittable, HittableList, Interval, Ray};
+use super::AxisAlignedBoundingBox;
+use crate::core::{HitRecord, Hittable, HittableList, Interval, Ray};
 
 fn compare_axis(object1: &dyn Hittable, object2: &dyn Hittable, axis_index: usize) -> Ordering {
     if object1.bounding_box().axis(axis_index).min < object2.bounding_box().axis(axis_index).min {

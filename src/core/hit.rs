@@ -1,6 +1,5 @@
 use core::fmt;
-
-use dyn_clone::{DynClone, clone_trait_object};
+use dyn_clone::{clone_trait_object, DynClone};
 
 use super::{material::Material, AxisAlignedBoundingBox, Interval, Point3, Ray, Vector3};
 

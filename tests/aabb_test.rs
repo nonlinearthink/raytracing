@@ -1,0 +1,1 @@
+extern crate rst_raytrace;

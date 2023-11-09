@@ -1,6 +1,5 @@
-use crate::core::{Color3, HitRecord, Ray, Vector3};
-
 use super::Material;
+use crate::core::{Color3, HitRecord, Ray, Vector3};
 
 #[derive(Debug, Copy, Clone)]
 pub struct LambertianMaterial {

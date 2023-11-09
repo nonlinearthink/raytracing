@@ -23,7 +23,7 @@ impl Sphere {
             material,
             is_moving: false,
             motion_direction: Vector3::zero(),
-            aabb: AxisAlignedBoundingBox::from_vector(
+            aabb: AxisAlignedBoundingBox::from_bounding_vector(
                 &(center - &radius_vec),
                 &(center + &radius_vec),
             ),
@@ -38,9 +38,9 @@ impl Sphere {
     ) -> Sphere {
         let radius_vec = Vector3::new(radius, radius, radius);
         let aabb1 =
-            AxisAlignedBoundingBox::from_vector(&(center - &radius_vec), &(center + &radius_vec));
+            AxisAlignedBoundingBox::from_bounding_vector(&(center - &radius_vec), &(center + &radius_vec));
         let aabb2 =
-            AxisAlignedBoundingBox::from_vector(&(target - &radius_vec), &(target + &radius_vec));
+            AxisAlignedBoundingBox::from_bounding_vector(&(target - &radius_vec), &(target + &radius_vec));
         let aabb = aabb1.merge(&aabb2);
 
         Sphere {

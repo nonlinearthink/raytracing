@@ -90,7 +90,7 @@ fn main() {
         high_quality: false,
         depth_of_field: true,
         motion_blur_test: true,
-        bounding_volume_hierarchical: true,
+        bounding_volume_hierarchical: false,
     };
 
     // World

@@ -1,6 +1,6 @@
-use super::{Interval, Ray, Vector3};
+use crate::core::{Interval, Ray, Vector3};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct AxisAlignedBoundingBox {
     pub x: Interval,
     pub y: Interval,
@@ -8,20 +8,20 @@ pub struct AxisAlignedBoundingBox {
 }
 
 impl AxisAlignedBoundingBox {
-    pub fn new(x: Interval, y: Interval, z: Interval) -> AxisAlignedBoundingBox {
-        AxisAlignedBoundingBox { x, y, z }
+    pub fn new(x: Interval, y: Interval, z: Interval) -> Self {
+        Self { x, y, z }
     }
 
-    pub fn from_vector(min: &Vector3, max: &Vector3) -> AxisAlignedBoundingBox {
-        AxisAlignedBoundingBox {
+    pub fn from_bounding_vector(min: &Vector3, max: &Vector3) -> Self {
+        Self {
             x: Interval::new(min.x, max.x),
             y: Interval::new(min.y, max.y),
             z: Interval::new(min.z, max.z),
         }
     }
 
-    pub fn merge(&self, aabb: &Self) -> AxisAlignedBoundingBox {
-        AxisAlignedBoundingBox {
+    pub fn merge(&self, aabb: &Self) -> Self {
+        Self {
             x: self.x.merge(&aabb.x),
             y: self.y.merge(&aabb.y),
             z: self.z.merge(&aabb.z),

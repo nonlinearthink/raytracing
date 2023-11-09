@@ -1,5 +1,4 @@
 mod bounding;
-mod bvh;
 mod camera;
 mod hit;
 mod interval;
@@ -9,7 +8,6 @@ mod sphere;
 mod vector3;
 
 pub use bounding::*;
-pub use bvh::*;
 pub use camera::*;
 pub use hit::*;
 pub use interval::*;

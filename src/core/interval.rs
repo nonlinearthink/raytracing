@@ -4,6 +4,12 @@ pub struct Interval {
     pub max: f32,
 }
 
+impl Default for Interval {
+    fn default() -> Self {
+        Self::empty()
+    }
+}
+
 impl Interval {
     pub fn new(min: f32, max: f32) -> Interval {
         Interval { min, max }
