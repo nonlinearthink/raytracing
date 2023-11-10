@@ -1,6 +1,5 @@
-extern crate rst_raytrace;
-
 mod common;
+extern crate rst_raytrace;
 
 use rst_raytrace::core::{Point3, Ray, Vector3};
 
