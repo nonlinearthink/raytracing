@@ -8,35 +8,35 @@ struct SceneOptions {
 }
 
 fn load_objects(world: &mut HittableList) {
-    let material_ground = LambertianMaterial::new(Some(Color3::new(0.8, 0.8, 0.0)));
-    let material_center = LambertianMaterial::new(Some(Color3::new(0.1, 0.2, 0.5)));
-    let material_left = DielectricMaterial::new(1.5);
-    let material_right = MetalMaterial::new(Some(Color3::new(0.8, 0.6, 0.2)), 0.);
+    let material_ground = Box::new(LambertianMaterial::new(Some(Color3::new(0.8, 0.8, 0.0))));
+    let material_center = Box::new(LambertianMaterial::new(Some(Color3::new(0.1, 0.2, 0.5))));
+    let material_left = Box::new(DielectricMaterial::new(1.5));
+    let material_right = Box::new(MetalMaterial::new(Some(Color3::new(0.8, 0.6, 0.2)), 0.));
 
     world.add(Box::new(Sphere::new(
         Point3::new(0., -100.5, -1.),
         100.,
-        Box::new(material_ground),
+        material_ground.clone(),
     )));
     world.add(Box::new(Sphere::new(
         Point3::new(0., 0., -1.),
         0.5,
-        Box::new(material_center),
+        material_center.clone(),
     )));
     world.add(Box::new(Sphere::new(
         Point3::new(-1., 0., -1.),
         0.5,
-        Box::new(material_left),
+        material_left.clone(),
     )));
     world.add(Box::new(Sphere::new(
         Point3::new(-1., 0., -1.),
         -0.4,
-        Box::new(material_left),
+        material_left.clone(),
     )));
     world.add(Box::new(Sphere::new(
         Point3::new(1., 0., -1.),
         0.5,
-        Box::new(material_right),
+        material_right.clone(),
     )));
 }
 

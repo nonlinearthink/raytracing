@@ -12,11 +12,11 @@ struct SceneOptions {
 }
 
 fn load_objects(world: &mut HittableList, motion_blur_test: bool) {
-    let material_ground = LambertianMaterial::new(Some(Color3::new(0.5, 0.5, 0.5)));
+    let material_ground = Box::new(LambertianMaterial::new(Some(Color3::new(0.5, 0.5, 0.5))));
     world.add(Box::new(Sphere::new(
         Point3::new(0., -1000., 0.),
         1000.,
-        Box::new(material_ground),
+        material_ground.clone(),
     )));
 
     let mut rng = rand::thread_rng();
@@ -63,25 +63,22 @@ fn load_objects(world: &mut HittableList, motion_blur_test: bool) {
         }
     }
 
-    let material1 = DielectricMaterial::new(1.5);
     world.add(Box::new(Sphere::new(
         Point3::new(0., 1., 0.),
         1.,
-        Box::new(material1),
+        Box::new(DielectricMaterial::new(1.5)),
     )));
 
-    let material2 = LambertianMaterial::new(Some(Color3::new(0.4, 0.2, 0.1)));
     world.add(Box::new(Sphere::new(
         Point3::new(-4., 1., 0.),
         1.,
-        Box::new(material2),
+        Box::new(LambertianMaterial::new(Some(Color3::new(0.4, 0.2, 0.1)))),
     )));
 
-    let material3 = MetalMaterial::new(Some(Color3::new(0.7, 0.6, 0.5)), 0.);
     world.add(Box::new(Sphere::new(
         Point3::new(4., 1., 0.),
         1.,
-        Box::new(material3),
+        Box::new(MetalMaterial::new(Some(Color3::new(0.7, 0.6, 0.5)), 0.)),
     )));
 }
 
