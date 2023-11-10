@@ -8,8 +8,8 @@ pub struct PPMImage {
 }
 
 impl PPMImage {
-    pub fn new(width: u32, height: u32) -> PPMImage {
-        let mut image = PPMImage { buffer: Vec::new() };
+    pub fn new(width: u32, height: u32) -> Self {
+        let mut image = Self { buffer: Vec::new() };
         image.buffer.extend("P6\n".as_bytes());
         image
             .buffer

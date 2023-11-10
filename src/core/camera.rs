@@ -36,9 +36,9 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new() -> Camera {
-        Camera {
-            up: Vector3::new(0., 1., 0.),
+    pub fn new() -> Self {
+        Self {
+            up: Vector3::up(),
             look_from: Point3::new(0., 0., -1.),
             look_at: Point3::zero(),
             width: 100,
@@ -114,7 +114,7 @@ impl Camera {
         let ray_direction = pixel_sample - &ray_origin;
         let ray_time = self.rng.gen::<f32>();
 
-        Ray::new_by_time(ray_origin, ray_direction, ray_time)
+        Ray::new_with_time(ray_origin, ray_direction, ray_time)
     }
 
     fn ray_color(&mut self, ray: &Ray, world: &dyn Hittable, ray_depth: u8) -> Color3 {

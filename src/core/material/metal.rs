@@ -8,12 +8,12 @@ pub struct MetalMaterial {
 }
 
 impl MetalMaterial {
-    pub fn new(albedo_optional: Option<Color3>, fuzz: f32) -> MetalMaterial {
+    pub fn new(albedo_optional: Option<Color3>, fuzz: f32) -> Self {
         let albedo = match albedo_optional {
             Some(color) => color,
             None => Color3::zero(),
         };
-        MetalMaterial {
+        Self {
             albedo,
             fuzz: f32::max(0., f32::min(fuzz, 1.)),
         }

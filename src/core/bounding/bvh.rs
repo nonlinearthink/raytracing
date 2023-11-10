@@ -40,15 +40,11 @@ impl BoundingVolumesHierarchicalNode {
             objects[start..end].sort_by(|a, b| compare_hittable_objects(&**a, &**b, axis));
 
             let mid = start + objects_span / 2;
-            left = Some(Box::new(BoundingVolumesHierarchicalNode::split(
-                objects, start, mid,
-            )));
-            right = Some(Box::new(BoundingVolumesHierarchicalNode::split(
-                objects, mid, end,
-            )));
+            left = Some(Box::new(Self::split(objects, start, mid)));
+            right = Some(Box::new(Self::split(objects, mid, end)));
         }
 
-        BoundingVolumesHierarchicalNode {
+        Self {
             bbox: AxisAlignedBoundingBox::merge(
                 left.as_ref().unwrap().bounding_box(),
                 right.as_ref().unwrap().bounding_box(),

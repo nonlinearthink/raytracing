@@ -10,7 +10,7 @@ pub struct DielectricMaterial {
 
 impl DielectricMaterial {
     pub fn new(ior: f32) -> DielectricMaterial {
-        DielectricMaterial { ior }
+        Self { ior }
     }
 
     fn reflectance(cosine: f32, ref_idx: f32) -> f32 {

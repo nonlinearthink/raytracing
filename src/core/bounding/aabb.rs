@@ -28,11 +28,11 @@ impl AxisAlignedBoundingBox {
         }
     }
 
-    pub fn merge(&self, aabb: &Self) -> Self {
+    pub fn merge(&self, rhs: &Self) -> Self {
         Self {
-            x: self.x.merge(&aabb.x),
-            y: self.y.merge(&aabb.y),
-            z: self.z.merge(&aabb.z),
+            x: self.x.merge(&rhs.x),
+            y: self.y.merge(&rhs.y),
+            z: self.z.merge(&rhs.z),
         }
     }
 

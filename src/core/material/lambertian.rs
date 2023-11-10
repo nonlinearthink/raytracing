@@ -7,12 +7,12 @@ pub struct LambertianMaterial {
 }
 
 impl LambertianMaterial {
-    pub fn new(albedo_optional: Option<Color3>) -> LambertianMaterial {
+    pub fn new(albedo_optional: Option<Color3>) -> Self {
         let albedo = match albedo_optional {
             Some(color) => color,
             None => Color3::zero(),
         };
-        LambertianMaterial { albedo }
+        Self { albedo }
     }
 }
 

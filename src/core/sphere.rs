@@ -10,20 +10,20 @@ pub struct Sphere {
     pub radius: f32,
     pub material: Box<dyn Material>,
     pub is_moving: bool,
-    motion_direction: Vector3,
-    aabb: AxisAlignedBoundingBox,
+    move_direction: Vector3,
+    bbox: AxisAlignedBoundingBox,
 }
 
 impl Sphere {
-    pub fn new(center: Point3, radius: f32, material: Box<dyn Material>) -> Sphere {
+    pub fn new(center: Point3, radius: f32, material: Box<dyn Material>) -> Self {
         let radius_vec = Vector3::new(radius, radius, radius);
-        Sphere {
+        Self {
             center,
             radius,
             material,
             is_moving: false,
-            motion_direction: Vector3::zero(),
-            aabb: AxisAlignedBoundingBox::from_bounding_vector(
+            move_direction: Vector3::zero(),
+            bbox: AxisAlignedBoundingBox::from_bounding_vector(
                 &(center - &radius_vec),
                 &(center + &radius_vec),
             ),
@@ -35,26 +35,28 @@ impl Sphere {
         target: Point3,
         radius: f32,
         material: Box<dyn Material>,
-    ) -> Sphere {
+    ) -> Self {
         let radius_vec = Vector3::new(radius, radius, radius);
-        let aabb1 =
-            AxisAlignedBoundingBox::from_bounding_vector(&(center - &radius_vec), &(center + &radius_vec));
-        let aabb2 =
-            AxisAlignedBoundingBox::from_bounding_vector(&(target - &radius_vec), &(target + &radius_vec));
-        let aabb = aabb1.merge(&aabb2);
 
-        Sphere {
+        Self {
             center,
             radius,
             material,
             is_moving: true,
-            motion_direction: target - &center,
-            aabb,
+            move_direction: target - &center,
+            bbox: AxisAlignedBoundingBox::from_bounding_vector(
+                &(center - &radius_vec),
+                &(center + &radius_vec),
+            )
+            .merge(&AxisAlignedBoundingBox::from_bounding_vector(
+                &(target - &radius_vec),
+                &(target + &radius_vec),
+            )),
         }
     }
 
     pub fn center_after_move(&self, time: f32) -> Vector3 {
-        self.center + &(self.motion_direction * time)
+        self.center + &(self.move_direction * time)
     }
 }
 
@@ -98,6 +100,6 @@ impl Hittable for Sphere {
     }
 
     fn bounding_box(&self) -> &AxisAlignedBoundingBox {
-        &self.aabb
+        &self.bbox
     }
 }

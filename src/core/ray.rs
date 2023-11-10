@@ -10,16 +10,16 @@ pub struct Ray {
 }
 
 impl Ray {
-    pub fn new(origin: Point3, direction: Vector3) -> Ray {
-        Ray {
+    pub fn new(origin: Point3, direction: Vector3) -> Self {
+        Self {
             origin,
             direction,
             time: 0.,
         }
     }
 
-    pub fn new_by_time(origin: Point3, direction: Vector3, time: f32) -> Ray {
-        Ray {
+    pub fn new_with_time(origin: Point3, direction: Vector3, time: f32) -> Self {
+        Self {
             origin,
             direction,
             time,
