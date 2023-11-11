@@ -1,18 +1,29 @@
 use rand::Rng;
-use rst_raytrace::core::{
-    BoundingVolumesHierarchicalNode, Camera, Color3, DielectricMaterial, HittableList,
-    LambertianMaterial, Material, MetalMaterial, Point3, Sphere, Vector3,
+use tiny_raytracer::core::{
+    BoundingVolumesHierarchicalNode, Camera, CheckerTexture, Color3, DielectricMaterial,
+    HittableList, LambertianMaterial, Material, MetalMaterial, Point3, SolidColorTexture, Sphere,
+    Texture, Vector3,
 };
 
 struct SceneOptions {
-    high_quality: bool,
     depth_of_field: bool,
+    high_quality: bool,
     motion_blur_test: bool,
     bounding_volume_hierarchical: bool,
+    checker_texture_test: bool,
 }
 
-fn load_objects(world: &mut HittableList, motion_blur_test: bool) {
-    let material_ground = Box::new(LambertianMaterial::new(Some(Color3::new(0.5, 0.5, 0.5))));
+fn load_objects(world: &mut HittableList, motion_blur_test: bool, checker_texture_test: bool) {
+    let ground_texture: Box<dyn Texture> = if checker_texture_test {
+        Box::new(CheckerTexture::new_with_solid_color(
+            0.32,
+            Color3::new(0.2, 0.3, 0.1),
+            Color3::new(0.9, 0.9, 0.9),
+        ))
+    } else {
+        Box::new(SolidColorTexture::new_with_floats(0.5, 0.5, 0.5))
+    };
+    let material_ground = Box::new(LambertianMaterial::new(ground_texture));
     world.add(Box::new(Sphere::new(
         Point3::new(0., -1000., 0.),
         1000.,
@@ -34,9 +45,10 @@ fn load_objects(world: &mut HittableList, motion_blur_test: bool) {
 
                 if choose_material < 0.8 {
                     // diffuse
-                    let albedo =
-                        Color3::random(0., 1., &mut rng) * &Color3::random(0., 1., &mut rng);
-                    sphere_material = Box::new(LambertianMaterial::new(Some(albedo)));
+                    let albedo_texture = Box::new(SolidColorTexture::new(
+                        Color3::random(0., 1., &mut rng) * &Color3::random(0., 1., &mut rng),
+                    ));
+                    sphere_material = Box::new(LambertianMaterial::new(albedo_texture));
                     world.add(Box::new(Sphere::new(center, 0.2, sphere_material.clone())));
 
                     if motion_blur_test {
@@ -50,9 +62,10 @@ fn load_objects(world: &mut HittableList, motion_blur_test: bool) {
                     }
                 } else if choose_material < 0.95 {
                     // metal
-                    let albedo = Color3::random(0.5, 1., &mut rng);
+                    let albedo_texture =
+                        Box::new(SolidColorTexture::new(Color3::random(0.5, 1., &mut rng)));
                     let fuzz = rng.gen_range(0.0..0.5);
-                    sphere_material = Box::new(MetalMaterial::new(Some(albedo), fuzz));
+                    sphere_material = Box::new(MetalMaterial::new(albedo_texture, fuzz));
                     world.add(Box::new(Sphere::new(center, 0.2, sphere_material)));
                 } else {
                     // glass
@@ -72,28 +85,38 @@ fn load_objects(world: &mut HittableList, motion_blur_test: bool) {
     world.add(Box::new(Sphere::new(
         Point3::new(-4., 1., 0.),
         1.,
-        Box::new(LambertianMaterial::new(Some(Color3::new(0.4, 0.2, 0.1)))),
+        Box::new(LambertianMaterial::new(Box::new(
+            SolidColorTexture::new_with_floats(0.4, 0.2, 0.1),
+        ))),
     )));
 
     world.add(Box::new(Sphere::new(
         Point3::new(4., 1., 0.),
         1.,
-        Box::new(MetalMaterial::new(Some(Color3::new(0.7, 0.6, 0.5)), 0.)),
+        Box::new(MetalMaterial::new(
+            Box::new(SolidColorTexture::new_with_floats(0.7, 0.6, 0.5)),
+            0.,
+        )),
     )));
 }
 
 fn main() {
     let options = SceneOptions {
-        high_quality: false,
         depth_of_field: true,
+        high_quality: false,
         motion_blur_test: false,
         bounding_volume_hierarchical: true,
+        checker_texture_test: false,
     };
 
     // World
     let mut world = HittableList::new();
 
-    load_objects(&mut world, options.motion_blur_test);
+    load_objects(
+        &mut world,
+        options.motion_blur_test,
+        options.checker_texture_test,
+    );
 
     if options.bounding_volume_hierarchical {
         let bvh = BoundingVolumesHierarchicalNode::new(&mut world);
@@ -113,10 +136,10 @@ fn main() {
     camera.defocus_angle = if options.depth_of_field { 0.6 } else { 0.02 };
     camera.focus_dist = 10.;
 
-    camera.samples_per_pixel = if options.high_quality { 128 } else { 20 };
+    camera.samples_per_pixel = if options.high_quality { 128 } else { 30 };
     camera.max_ray_depth = 10;
 
     camera
-        .render(&world, "out/final-scene-1.ppm".to_owned())
+        .render(&world, "out/book1-final-demo.ppm".to_owned())
         .err();
 }

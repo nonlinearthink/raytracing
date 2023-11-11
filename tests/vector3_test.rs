@@ -1,15 +1,15 @@
 mod common;
-extern crate rst_raytrace;
+extern crate tiny_raytracer;
 
-use rst_raytrace::core::Vector3;
+use tiny_raytracer::core::Vector3;
 
 #[test]
 fn vector_new_test() {
     let v1 = Vector3::new(1., 2., 3.);
     let v2 = Vector3::zero();
 
-    assert_vector3_eq!(v1, 1., 2., 3.);
-    assert_vector3_eq!(v2, 0., 0., 0.);
+    assert_eq!(v1, Vector3::new(1., 2., 3.));
+    assert_eq!(v2, Vector3::new(0., 0., 0.));
 }
 
 #[test]
@@ -72,8 +72,8 @@ fn vector_dot_test() {
     let v2 = Vector3::new(4., 5., 6.);
 
     let result: f32 = v1.dot(&v2);
-    assert_vector3_eq!(v1, 1., 2., 3.);
-    assert_vector3_eq!(v2, 4., 5., 6.);
+    assert_eq!(v1, Vector3::new(1., 2., 3.));
+    assert_eq!(v2, Vector3::new(4., 5., 6.));
     assert_eq!(result, 32.);
 }
 
@@ -83,9 +83,9 @@ fn vector_cross_test() {
     let v2 = Vector3::new(4., 5., 6.);
 
     let result = v1.cross(&v2);
-    assert_vector3_eq!(v1, 1., 2., 3.);
-    assert_vector3_eq!(v2, 4., 5., 6.);
-    assert_vector3_eq!(result, -3., 6., -3.);
+    assert_eq!(v1, Vector3::new(1., 2., 3.));
+    assert_eq!(v2, Vector3::new(4., 5., 6.));
+    assert_eq!(result, Vector3::new(-3., 6., -3.));
 }
 
 #[test]
@@ -106,7 +106,10 @@ fn vector_length_test() {
 fn vector_normolize_test() {
     let v = Vector3::new(1., 1., f32::sqrt(2.));
 
-    assert_vector3_eq!(v.normolize(), 1. / 2., 1. / 2., f32::sqrt(2.) / 2.);
+    assert_eq!(
+        v.normolize(),
+        Vector3::new(1. / 2., 1. / 2., f32::sqrt(2.) / 2.)
+    );
 }
 
 #[test]
@@ -115,9 +118,9 @@ fn vector_reflect_test() {
     let normal = Vector3::new(0., 1., 0.);
     let v2 = v1.reflect(&normal);
 
-    assert_vector3_eq!(v1, -1., 2., -3.);
-    assert_vector3_eq!(normal, 0., 1., 0.);
-    assert_vector3_eq!(v2, -1., -2., -3.);
+    assert_eq!(v1, Vector3::new(-1., 2., -3.));
+    assert_eq!(normal, Vector3::new(0., 1., 0.));
+    assert_eq!(v2, Vector3::new(-1., -2., -3.));
 }
 
 #[test]
@@ -126,9 +129,9 @@ fn vector_refract_test() {
     let normal = Vector3::new(0., 1., 0.);
     let v2 = v1.refract(&normal, 1.);
 
-    assert_vector3_eq!(v1, -1., 2., -3.);
-    assert_vector3_eq!(normal, 0., 1., 0.);
-    assert_vector3_eq!(v2, -1., -3., -3.);
+    assert_eq!(v1, Vector3::new(-1., 2., -3.));
+    assert_eq!(normal, Vector3::new(0., 1., 0.));
+    assert_eq!(v2, Vector3::new(-1., -3., -3.));
 }
 
 #[test]
@@ -162,14 +165,14 @@ fn vector_add_test() {
 
     // add by vector3
     let result = v1 + &v2;
-    assert_vector3_eq!(v1, 1., 2., 3.);
-    assert_vector3_eq!(v2, 4., 5., 6.);
-    assert_vector3_eq!(result, 5., 7., 9.);
+    assert_eq!(v1, Vector3::new(1., 2., 3.));
+    assert_eq!(v2, Vector3::new(4., 5., 6.));
+    assert_eq!(result, Vector3::new(5., 7., 9.));
 
     // add by f32
     let result = v1 + 2.;
-    assert_vector3_eq!(v1, 1., 2., 3.);
-    assert_vector3_eq!(result, 3., 4., 5.);
+    assert_eq!(v1, Vector3::new(1., 2., 3.));
+    assert_eq!(result, Vector3::new(3., 4., 5.));
 }
 
 #[test]
@@ -179,14 +182,14 @@ fn vector_sub_test() {
 
     // sub by vector3
     let result = v1 - &v2;
-    assert_vector3_eq!(v1, 1., 2., 3.);
-    assert_vector3_eq!(v2, 4., 5., 6.);
-    assert_vector3_eq!(result, -3., -3., -3.);
+    assert_eq!(v1, Vector3::new(1., 2., 3.));
+    assert_eq!(v2, Vector3::new(4., 5., 6.));
+    assert_eq!(result, Vector3::new(-3., -3., -3.));
 
     // sub by f32
     let result = v1 - 2.;
-    assert_vector3_eq!(v1, 1., 2., 3.);
-    assert_vector3_eq!(result, -1., 0., 1.);
+    assert_eq!(v1, Vector3::new(1., 2., 3.));
+    assert_eq!(result, Vector3::new(-1., 0., 1.));
 }
 
 #[test]
@@ -196,14 +199,14 @@ fn vector_mul_test() {
 
     // mul by vector3
     let result = v1 * &v2;
-    assert_vector3_eq!(v1, 1., 2., 3.);
-    assert_vector3_eq!(v2, 4., 5., 6.);
-    assert_vector3_eq!(result, 4., 10., 18.);
+    assert_eq!(v1, Vector3::new(1., 2., 3.));
+    assert_eq!(v2, Vector3::new(4., 5., 6.));
+    assert_eq!(result, Vector3::new(4., 10., 18.));
 
     // mul by f32
     let result = v1 * 2.;
-    assert_vector3_eq!(v1, 1., 2., 3.);
-    assert_vector3_eq!(result, 2., 4., 6.);
+    assert_eq!(v1, Vector3::new(1., 2., 3.));
+    assert_eq!(result, Vector3::new(2., 4., 6.));
 }
 
 #[test]
@@ -213,14 +216,14 @@ fn vector_div_test() {
 
     // div by vector3
     let result = v1 / &v2;
-    assert_vector3_eq!(v1, 1., 2., 3.);
-    assert_vector3_eq!(v2, 4., 5., 6.);
-    assert_vector3_eq!(result, 0.25, 0.4, 0.5);
+    assert_eq!(v1, Vector3::new(1., 2., 3.));
+    assert_eq!(v2, Vector3::new(4., 5., 6.));
+    assert_eq!(result, Vector3::new(0.25, 0.4, 0.5));
 
     // div by f32
     let result = v1 / 2.;
-    assert_vector3_eq!(v1, 1., 2., 3.);
-    assert_vector3_eq!(result, 0.5, 1., 1.5);
+    assert_eq!(v1, Vector3::new(1., 2., 3.));
+    assert_eq!(result, Vector3::new(0.5, 1., 1.5));
 }
 
 #[test]
@@ -230,12 +233,12 @@ fn vector_add_assign_test() {
 
     // sub assign by vector3
     v1 += &v2;
-    assert_vector3_eq!(v1, 5., 7., 9.);
-    assert_vector3_eq!(v2, 4., 5., 6.);
+    assert_eq!(v1, Vector3::new(5., 7., 9.));
+    assert_eq!(v2, Vector3::new(4., 5., 6.));
 
     // mul assign by f32
     v2 += 2.;
-    assert_vector3_eq!(v2, 6., 7., 8.);
+    assert_eq!(v2, Vector3::new(6., 7., 8.));
 }
 
 #[test]
@@ -245,12 +248,12 @@ fn vector_sub_assign_test() {
 
     // sub assign by vector3
     v1 -= &v2;
-    assert_vector3_eq!(v1, -3., -3., -3.);
-    assert_vector3_eq!(v2, 4., 5., 6.);
+    assert_eq!(v1, Vector3::new(-3., -3., -3.));
+    assert_eq!(v2, Vector3::new(4., 5., 6.));
 
     // sub assign by f32
     v2 -= 2.;
-    assert_vector3_eq!(v2, 2., 3., 4.);
+    assert_eq!(v2, Vector3::new(2., 3., 4.));
 }
 
 #[test]
@@ -260,12 +263,12 @@ fn vector_mul_assign_test() {
 
     // mul assign by vector3
     v1 *= &v2;
-    assert_vector3_eq!(v1, 4., 10., 18.);
-    assert_vector3_eq!(v2, 4., 5., 6.);
+    assert_eq!(v1, Vector3::new(4., 10., 18.));
+    assert_eq!(v2, Vector3::new(4., 5., 6.));
 
     // mul assign by f32
     v2 *= 2.;
-    assert_vector3_eq!(v2, 8., 10., 12.);
+    assert_eq!(v2, Vector3::new(8., 10., 12.));
 }
 
 #[test]
@@ -275,10 +278,10 @@ fn vector_div_assign_test() {
 
     // div assign by vector3
     v1 /= &v2;
-    assert_vector3_eq!(v1, 0.25, 0.4, 0.5);
-    assert_vector3_eq!(v2, 4., 5., 6.);
+    assert_eq!(v1, Vector3::new(0.25, 0.4, 0.5));
+    assert_eq!(v2, Vector3::new(4., 5., 6.));
 
     // div assign by f32
     v2 /= 2.;
-    assert_vector3_eq!(v2, 2., 2.5, 3.);
+    assert_eq!(v2, Vector3::new(2., 2.5, 3.));
 }

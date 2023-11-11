@@ -1,7 +1,7 @@
 use rand::Rng;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
-#[derive(Debug, Copy, Clone, Default)]
+#[derive(Debug, Copy, Clone, Default, PartialEq)]
 pub struct Vector3 {
     pub x: f32,
     pub y: f32,
@@ -74,6 +74,39 @@ impl Vector3 {
         }
     }
 
+    pub fn r(&self) -> f32 {
+        self.x
+    }
+
+    pub fn g(&self) -> f32 {
+        self.x
+    }
+
+    pub fn b(&self) -> f32 {
+        self.x
+    }
+
+    pub fn length_squared(&self) -> f32 {
+        self.dot(self)
+    }
+
+    pub fn length(&self) -> f32 {
+        self.length_squared().sqrt()
+    }
+
+    pub fn equals(&self, rhs: &Self) -> bool {
+        f32::abs(self.x - rhs.x) < f32::EPSILON
+            && f32::abs(self.y - rhs.y) < f32::EPSILON
+            && f32::abs(self.z - rhs.z) < f32::EPSILON
+    }
+
+    pub fn equals_zero(&self) -> bool {
+        // Return true if the vector is close to zero in all dimensions.
+        (self.x.abs() < f32::EPSILON)
+            && (self.y.abs() < f32::EPSILON)
+            && (self.z.abs() < f32::EPSILON)
+    }
+
     pub fn dot(&self, rhs: &Self) -> f32 {
         self[0] * rhs[0] + self[1] * rhs[1] + self[2] * rhs[2]
     }
@@ -86,15 +119,7 @@ impl Vector3 {
         )
     }
 
-    pub fn length_squared(&self) -> f32 {
-        self.dot(self)
-    }
-
-    pub fn length(&self) -> f32 {
-        self.length_squared().sqrt()
-    }
-
-    pub fn normolize(&self) -> Vector3 {
+    pub fn normolize(&self) -> Self {
         self.div(self.length())
     }
 
@@ -109,19 +134,6 @@ impl Vector3 {
             1.0 - ray_out_perpendicular.length_squared(),
         )));
         return ray_out_perpendicular + &ray_out_parallel;
-    }
-
-    pub fn equals(&self, rhs: &Self) -> bool {
-        f32::abs(self.x - rhs.x) < f32::EPSILON
-            && f32::abs(self.y - rhs.y) < f32::EPSILON
-            && f32::abs(self.z - rhs.z) < f32::EPSILON
-    }
-
-    pub fn equals_zero(&self) -> bool {
-        // Return true if the vector is close to zero in all dimensions.
-        (self.x.abs() < f32::EPSILON)
-            && (self.y.abs() < f32::EPSILON)
-            && (self.z.abs() < f32::EPSILON)
     }
 }
 

@@ -1,20 +1,16 @@
 use super::Material;
-use crate::core::{Color3, HitRecord, Ray, Vector3};
+use crate::core::{Color3, HitRecord, Ray, Texture, Vector2, Vector3};
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct MetalMaterial {
-    pub albedo: Color3,
+    pub albedo_texture: Box<dyn Texture>,
     pub fuzz: f32,
 }
 
 impl MetalMaterial {
-    pub fn new(albedo_optional: Option<Color3>, fuzz: f32) -> Self {
-        let albedo = match albedo_optional {
-            Some(color) => color,
-            None => Color3::zero(),
-        };
+    pub fn new(albedo_texture: Box<dyn Texture>, fuzz: f32) -> Self {
         Self {
-            albedo,
+            albedo_texture,
             fuzz: f32::max(0., f32::min(fuzz, 1.)),
         }
     }
@@ -30,12 +26,13 @@ impl Material for MetalMaterial {
     ) -> bool {
         if hit_record.normal.is_some() && hit_record.point.is_some() {
             let normal = hit_record.normal.unwrap();
+            let point = hit_record.point.unwrap();
             let reflected = ray_in.direction.normolize().reflect(&normal);
 
-            ray_scattered.origin = hit_record.point.unwrap();
+            ray_scattered.origin = point;
             ray_scattered.direction = reflected + &(Vector3::random_unit_vector() * self.fuzz);
             ray_scattered.time = ray_in.time;
-            attenuation.clone_from(&self.albedo);
+            attenuation.clone_from(&self.albedo_texture.value(&Vector2::zero(), &point));
 
             ray_scattered.direction.dot(&normal) > 0.
         } else {

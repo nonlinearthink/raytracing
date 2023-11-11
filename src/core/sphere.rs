@@ -1,7 +1,7 @@
 use std::ops::{Div, Sub};
 
 use super::{
-    AxisAlignedBoundingBox, HitRecord, Hittable, Interval, Material, Point3, Ray, Vector3,
+    AxisAlignedBoundingBox, HitRecord, Hittable, Interval, Material, Point3, Ray, Vector2, Vector3,
 };
 
 #[derive(Debug, Clone)]
@@ -55,15 +55,25 @@ impl Sphere {
         }
     }
 
-    pub fn center_after_move(&self, time: f32) -> Vector3 {
+    pub fn get_moving_center(&self, time: f32) -> Vector3 {
         self.center + &(self.move_direction * time)
+    }
+
+    pub fn compute_uv(point: Point3) -> Vector2 {
+        let theta = f32::acos(-point.y);
+        let phi = f32::atan2(-point.z, point.x) + std::f32::consts::PI;
+
+        Vector2::new(
+            phi / (2. * std::f32::consts::PI),
+            theta / std::f32::consts::PI,
+        )
     }
 }
 
 impl Hittable for Sphere {
     fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool {
         let center: Point3 = if self.is_moving {
-            self.center_after_move(ray.time)
+            self.get_moving_center(ray.time)
         } else {
             self.center
         };
@@ -94,6 +104,7 @@ impl Hittable for Sphere {
             .sub(&center)
             .div(self.radius);
         record.set_face_normal(&ray, &outward_normal);
+        record.uv = Some(Sphere::compute_uv(outward_normal));
         record.material = Some(Box::clone(&self.material));
 
         return true;

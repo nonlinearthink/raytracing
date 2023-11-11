@@ -1,18 +1,20 @@
 use super::Material;
-use crate::core::{Color3, HitRecord, Ray, Vector3};
+use crate::core::{Color3, HitRecord, Ray, SolidColorTexture, Texture, Vector3};
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct LambertianMaterial {
-    pub albedo: Color3,
+    pub albedo_texture: Box<dyn Texture>,
 }
 
 impl LambertianMaterial {
-    pub fn new(albedo_optional: Option<Color3>) -> Self {
-        let albedo = match albedo_optional {
-            Some(color) => color,
-            None => Color3::zero(),
-        };
-        Self { albedo }
+    pub fn new(albedo_texture: Box<dyn Texture>) -> Self {
+        Self { albedo_texture }
+    }
+
+    pub fn new_with_color(color: Color3) -> Self {
+        Self {
+            albedo_texture: Box::new(SolidColorTexture::new(color)),
+        }
     }
 }
 
@@ -24,15 +26,17 @@ impl Material for LambertianMaterial {
         attenuation: &mut Color3,
         ray_scattered: &mut Ray,
     ) -> bool {
-        if hit_record.normal.is_some() && hit_record.point.is_some() {
+        if hit_record.normal.is_some() && hit_record.point.is_some() && hit_record.uv.is_some() {
             let normal = hit_record.normal.unwrap();
+            let point = hit_record.point.unwrap();
+            let uv = hit_record.uv.unwrap();
             let mut scatter_direction = normal + &Vector3::random_unit_vector();
             if scatter_direction.equals_zero() {
                 scatter_direction = normal;
             }
 
-            attenuation.clone_from(&self.albedo);
-            ray_scattered.origin = hit_record.point.unwrap();
+            attenuation.clone_from(&self.albedo_texture.value(&uv, &point));
+            ray_scattered.origin = point;
             ray_scattered.direction = scatter_direction;
             ray_scattered.time = ray_in.time;
 

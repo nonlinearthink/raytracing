@@ -1,8 +1,3 @@
-use dyn_clone::{clone_trait_object, DynClone};
-use std::fmt;
-
-use super::{Color3, HitRecord, Ray};
-
 mod dielectric;
 mod lambertian;
 mod metal;
@@ -10,6 +5,11 @@ mod metal;
 pub use dielectric::*;
 pub use lambertian::*;
 pub use metal::*;
+
+use dyn_clone::{clone_trait_object, DynClone};
+use std::fmt;
+
+use super::{Color3, HitRecord, Ray};
 
 pub trait Material: fmt::Debug + DynClone {
     fn scatter(

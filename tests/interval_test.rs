@@ -1,7 +1,7 @@
-extern crate rst_raytrace;
+extern crate tiny_raytracer;
 
 use rand::Rng;
-use rst_raytrace::core::Interval;
+use tiny_raytracer::core::Interval;
 
 #[test]
 fn interval_new_test() {

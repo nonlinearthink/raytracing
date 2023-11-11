@@ -1,6 +1,6 @@
-extern crate rst_raytrace;
+extern crate tiny_raytracer;
 
-use rst_raytrace::core::{AxisAlignedBoundingBox, Interval, Ray, Vector3};
+use tiny_raytracer::core::{AxisAlignedBoundingBox, Interval, Ray, Vector3};
 
 #[test]
 fn aabb_merge_test() {
@@ -17,7 +17,7 @@ fn aabb_merge_test() {
         let merge_empty_bbox = new_bbox.merge(&empty_bbox);
         assert_eq!(merge_empty_bbox.x, new_bbox.x);
         assert_eq!(merge_empty_bbox.y, new_bbox.y);
-        assert_eq!(merge_empty_bbox.y, new_bbox.y);
+        assert_eq!(merge_empty_bbox.z, new_bbox.z);
 
         let merge_grow_bbox = new_bbox.merge(&grow_bbox);
         for axis_index in 0..3 {

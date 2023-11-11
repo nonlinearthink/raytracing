@@ -1,7 +1,7 @@
 mod common;
-extern crate rst_raytrace;
+extern crate tiny_raytracer;
 
-use rst_raytrace::core::{Point3, Ray, Vector3};
+use tiny_raytracer::core::{Point3, Ray, Vector3};
 
 #[test]
 fn ray_compute() {
@@ -10,7 +10,7 @@ fn ray_compute() {
     let ray = Ray::new(origin, direction);
 
     let target = ray.at(2.);
-    assert_vector3_eq!(origin, 1., 2., 3.);
-    assert_vector3_eq!(direction, 4., 5., 6.);
-    assert_vector3_eq!(target, 9., 12., 15.);
+    assert_eq!(origin, Vector3::new(1., 2., 3.));
+    assert_eq!(direction, Vector3::new(4., 5., 6.));
+    assert_eq!(target, Vector3::new(9., 12., 15.));
 }

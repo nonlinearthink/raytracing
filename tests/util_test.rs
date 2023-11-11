@@ -1,6 +1,6 @@
-extern crate rst_raytrace;
+extern crate tiny_raytracer;
 
-use rst_raytrace::utils::{degree_to_radian, radian_to_degree};
+use tiny_raytracer::utils::{degree_to_radian, radian_to_degree};
 
 #[test]
 fn degree_to_radian_test() {

@@ -1,14 +1,17 @@
 mod common;
-extern crate rst_raytrace;
+extern crate tiny_raytracer;
 
 use rand::Rng;
-use rst_raytrace::core::{
-    Color3, HitRecord, Hittable, Interval, LambertianMaterial, Ray, Sphere, Vector3,
+use tiny_raytracer::core::{
+    HitRecord, Hittable, Interval, LambertianMaterial, Ray, SolidColorTexture, Sphere, Vector2,
+    Vector3,
 };
 
 #[test]
 fn sphere_hit_test() {
-    let material = Box::new(LambertianMaterial::new(Some(Color3::new(0.8, 0.8, 0.0))));
+    let material = Box::new(LambertianMaterial::new(Box::new(
+        SolidColorTexture::new_with_floats(0.8, 0.8, 0.0),
+    )));
     let sphere = Sphere::new(Vector3::zero(), 1., material);
     let ray_origin = Vector3::new(0., 2., 0.);
 
@@ -20,8 +23,8 @@ fn sphere_hit_test() {
 
     let ray_interval = Interval::new(0., 1.);
     assert!(sphere.hit(&ray, &ray_interval, &mut record));
-    assert_vector3_eq!(record.normal.unwrap(), 0., 1., 0.);
-    assert_vector3_eq!(record.point.unwrap(), 0., 1., 0.);
+    assert_eq!(record.normal.unwrap(), Vector3::new(0., 1., 0.));
+    assert_eq!(record.point.unwrap(), Vector3::new(0., 1., 0.));
 
     let ray_interval = Interval::new(0., f32::INFINITY);
 
@@ -39,21 +42,61 @@ fn sphere_hit_test() {
 }
 
 #[test]
+fn sphere_uv_test() {
+    assert_eq!(
+        Sphere::compute_uv(Vector3::new(1., 0., 0.)),
+        Vector2::new(0.5, 0.5)
+    );
+
+    assert_eq!(
+        Sphere::compute_uv(Vector3::new(-1., 0., 0.)),
+        Vector2::new(0., 0.5)
+    );
+
+    assert_eq!(
+        Sphere::compute_uv(Vector3::new(0., 1., 0.)),
+        Vector2::new(0.5, 1.)
+    );
+
+    assert_eq!(
+        Sphere::compute_uv(Vector3::new(0., -1., 0.)),
+        Vector2::new(0.5, 0.)
+    );
+
+    assert_eq!(
+        Sphere::compute_uv(Vector3::new(0., 0., 1.)),
+        Vector2::new(0.25, 0.5)
+    );
+
+    assert_eq!(
+        Sphere::compute_uv(Vector3::new(0., 0., -1.)),
+        Vector2::new(0.75, 0.5)
+    );
+}
+
+#[test]
 fn sphere_moving_test() {
-    let material = Box::new(LambertianMaterial::new(Some(Color3::new(0.8, 0.8, 0.0))));
+    let material = Box::new(LambertianMaterial::new(Box::new(
+        SolidColorTexture::new_with_floats(0.8, 0.8, 0.0),
+    )));
     let sphere = Sphere::new_moving_sphere(Vector3::zero(), Vector3::one(), 1., material);
 
     assert!(sphere.is_moving);
     for _ in 0..5 {
         let mut rng = rand::thread_rng();
         let random = rng.gen::<f32>();
-        assert_vector3_eq!(sphere.center_after_move(random), random, random, random);
+        assert_eq!(
+            sphere.get_moving_center(random),
+            Vector3::new(random, random, random)
+        );
     }
 }
 
 #[test]
 fn sphere_bounding_box_test() {
-    let material = Box::new(LambertianMaterial::new(Some(Color3::new(0.8, 0.8, 0.0))));
+    let material = Box::new(LambertianMaterial::new(Box::new(
+        SolidColorTexture::new_with_floats(0.8, 0.8, 0.0),
+    )));
     let sphere = Sphere::new(Vector3::new(2., 2., 2.), 1., material.clone());
     let moving_sphere =
         Sphere::new_moving_sphere(Vector3::zero(), Vector3::one(), 1., material.clone());

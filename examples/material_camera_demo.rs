@@ -1,17 +1,26 @@
-use rst_raytrace::core::{
-    BoundingVolumesHierarchicalNode, Camera, Color3, DielectricMaterial, HittableList,
-    LambertianMaterial, MetalMaterial, Point3, Sphere,
+use tiny_raytracer::core::{
+    BoundingVolumesHierarchicalNode, Camera, DielectricMaterial, HittableList, LambertianMaterial,
+    MetalMaterial, Point3, SolidColorTexture, Sphere,
 };
 
 struct SceneOptions {
     bounding_volume_hierarchical: bool,
+    larger_fov: bool,
+    depth_of_field: bool,
 }
 
 fn load_objects(world: &mut HittableList) {
-    let material_ground = Box::new(LambertianMaterial::new(Some(Color3::new(0.8, 0.8, 0.0))));
-    let material_center = Box::new(LambertianMaterial::new(Some(Color3::new(0.1, 0.2, 0.5))));
+    let material_ground = Box::new(LambertianMaterial::new(Box::new(
+        SolidColorTexture::new_with_floats(0.8, 0.8, 0.),
+    )));
+    let material_center = Box::new(LambertianMaterial::new(Box::new(
+        SolidColorTexture::new_with_floats(0.1, 0.2, 0.5),
+    )));
     let material_left = Box::new(DielectricMaterial::new(1.5));
-    let material_right = Box::new(MetalMaterial::new(Some(Color3::new(0.8, 0.6, 0.2)), 0.));
+    let material_right = Box::new(MetalMaterial::new(
+        Box::new(SolidColorTexture::new_with_floats(0.8, 0.6, 0.2)),
+        0.,
+    ));
 
     world.add(Box::new(Sphere::new(
         Point3::new(0., -100.5, -1.),
@@ -42,7 +51,9 @@ fn load_objects(world: &mut HittableList) {
 
 fn main() {
     let options = SceneOptions {
-        bounding_volume_hierarchical: true,
+        bounding_volume_hierarchical: false,
+        larger_fov: false,
+        depth_of_field: false,
     };
 
     // World
@@ -63,15 +74,17 @@ fn main() {
 
     camera.width = 400;
     camera.aspect_ratio = 16. / 9.;
-    camera.vertical_fov = 20.;
+    camera.vertical_fov = if options.larger_fov { 90. } else { 20. };
 
     camera.samples_per_pixel = 30;
     camera.max_ray_depth = 10;
 
-    camera.defocus_angle = 10.;
-    camera.focus_dist = 3.4;
+    if options.depth_of_field {
+        camera.defocus_angle = 10.;
+        camera.focus_dist = 3.4;
+    }
 
     camera
-        .render(&world, "out/dev-scene-1.ppm".to_owned())
+        .render(&world, "out/material-camera-demo.ppm".to_owned())
         .err();
 }

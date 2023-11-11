@@ -1,10 +1,11 @@
-use crate::core::{Material, Point3, Ray, Vector3};
+use crate::core::{Material, Point3, Ray, Vector2, Vector3};
 
 #[derive(Debug, Clone)]
 pub struct HitRecord {
     pub material: Option<Box<dyn Material>>,
     pub point: Option<Point3>,
     pub normal: Option<Vector3>,
+    pub uv: Option<Vector2>,
     pub t: f32,
     pub front_face: bool,
 }
@@ -15,6 +16,7 @@ impl HitRecord {
             material: None,
             point: None,
             normal: None,
+            uv: None,
             t: f32::INFINITY,
             front_face: false,
         }

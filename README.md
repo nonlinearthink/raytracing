@@ -1,6 +1,6 @@
-# rst_raytrace
+# tiny_raytracer
 
-A rust implement for [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html), online version `4.0.0-alpha.1`.
+A rust tiny raytracer implemented with reference to [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
 
 ## Run
 
@@ -18,14 +18,15 @@ cargo run --release --example
 # You will get a output like this:
 #
 # Available examples:
-#    dev_scene_1
-#    final_scene_1
+#    book1_final_demo
+#    checker_texture_demo
+#    material_camera_demo
 ```
 
 Pick and run a specify example:
 
 ```bash
-cargo run --release --example final_scene_1
+cargo run --release --example book1_final_demo
 ```
 
 >`--release` is recommended, because it really speeds up the render process.
