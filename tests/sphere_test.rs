@@ -44,32 +44,32 @@ fn sphere_hit_test() {
 #[test]
 fn sphere_uv_test() {
     assert_eq!(
-        Sphere::compute_uv(Vector3::new(1., 0., 0.)),
+        Sphere::compute_uv(&Vector3::new(1., 0., 0.)),
         Vector2::new(0.5, 0.5)
     );
 
     assert_eq!(
-        Sphere::compute_uv(Vector3::new(-1., 0., 0.)),
+        Sphere::compute_uv(&Vector3::new(-1., 0., 0.)),
         Vector2::new(0., 0.5)
     );
 
     assert_eq!(
-        Sphere::compute_uv(Vector3::new(0., 1., 0.)),
+        Sphere::compute_uv(&Vector3::new(0., 1., 0.)),
         Vector2::new(0.5, 1.)
     );
 
     assert_eq!(
-        Sphere::compute_uv(Vector3::new(0., -1., 0.)),
+        Sphere::compute_uv(&Vector3::new(0., -1., 0.)),
         Vector2::new(0.5, 0.)
     );
 
     assert_eq!(
-        Sphere::compute_uv(Vector3::new(0., 0., 1.)),
+        Sphere::compute_uv(&Vector3::new(0., 0., 1.)),
         Vector2::new(0.25, 0.5)
     );
 
     assert_eq!(
-        Sphere::compute_uv(Vector3::new(0., 0., -1.)),
+        Sphere::compute_uv(&Vector3::new(0., 0., -1.)),
         Vector2::new(0.75, 0.5)
     );
 }

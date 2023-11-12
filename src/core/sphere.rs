@@ -61,7 +61,7 @@ impl Sphere {
         self.center + &(self.move_direction * time)
     }
 
-    pub fn compute_uv(point: Point3) -> Vector2 {
+    pub fn compute_uv(point: &Point3) -> Vector2 {
         let theta = f32::acos(-point.y);
         let phi = f32::atan2(-point.z, point.x) + std::f32::consts::PI;
 
@@ -106,7 +106,7 @@ impl Hittable for Sphere {
             .sub(&center)
             .div(self.radius);
         record.set_face_normal(&ray, &outward_normal);
-        record.uv = Some(Sphere::compute_uv(outward_normal));
+        record.uv = Some(Sphere::compute_uv(&outward_normal));
         record.material = Some(Rc::clone(&self.material));
 
         return true;

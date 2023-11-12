@@ -20,9 +20,9 @@ fn main() {
 
     camera.width = 400;
     camera.aspect_ratio = 16. / 9.;
-    camera.vertical_fov = 30.;
+    camera.vertical_fov = 20.;
 
-    camera.samples_per_pixel = 20;
+    camera.samples_per_pixel = 30;
     camera.max_ray_depth = 10;
 
     camera.render(&world, "out/earth-demo.ppm".to_owned()).err();
