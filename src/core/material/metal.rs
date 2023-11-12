@@ -1,14 +1,15 @@
 use super::Material;
 use crate::core::{Color3, HitRecord, Ray, Texture, Vector2, Vector3};
+use std::rc::Rc;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct MetalMaterial {
-    pub albedo_texture: Box<dyn Texture>,
+    pub albedo_texture: Rc<dyn Texture>,
     pub fuzz: f32,
 }
 
 impl MetalMaterial {
-    pub fn new(albedo_texture: Box<dyn Texture>, fuzz: f32) -> Self {
+    pub fn new(albedo_texture: Rc<dyn Texture>, fuzz: f32) -> Self {
         Self {
             albedo_texture,
             fuzz: f32::max(0., f32::min(fuzz, 1.)),

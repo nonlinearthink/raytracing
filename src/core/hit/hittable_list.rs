@@ -1,10 +1,10 @@
-use crate::core::{AxisAlignedBoundingBox, Interval, Ray};
-
 use super::{HitRecord, Hittable};
+use crate::core::{AxisAlignedBoundingBox, Interval, Ray};
+use std::rc::Rc;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct HittableList {
-    pub objects: Vec<Box<dyn Hittable>>,
+    pub objects: Vec<Rc<dyn Hittable>>,
     bbox: AxisAlignedBoundingBox,
 }
 
@@ -20,7 +20,7 @@ impl HittableList {
         }
     }
 
-    pub fn add(&mut self, object: Box<dyn Hittable>) {
+    pub fn add(&mut self, object: Rc<dyn Hittable>) {
         self.bbox = self.bbox.merge(&object.bounding_box());
         self.objects.push(object);
     }

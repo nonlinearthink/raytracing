@@ -1,6 +1,5 @@
-use std::ops::{Add, Mul};
-
 use super::{Point3, Vector3};
+use std::ops::{Add, Mul};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Ray {

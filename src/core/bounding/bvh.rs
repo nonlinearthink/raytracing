@@ -1,13 +1,13 @@
-use rand::Rng;
-
 use super::AxisAlignedBoundingBox;
 use crate::core::{compare_hittable_objects, HitRecord, Hittable, HittableList, Interval, Ray};
+use rand::Rng;
+use std::rc::Rc;
 
 #[derive(Debug, Clone)]
 pub struct BoundingVolumesHierarchicalNode {
     pub bbox: AxisAlignedBoundingBox,
-    pub left: Option<Box<dyn Hittable>>,
-    pub right: Option<Box<dyn Hittable>>,
+    pub left: Option<Rc<dyn Hittable>>,
+    pub right: Option<Rc<dyn Hittable>>,
 }
 
 impl BoundingVolumesHierarchicalNode {
@@ -16,9 +16,9 @@ impl BoundingVolumesHierarchicalNode {
         Self::split(&mut list.objects, 0, length)
     }
 
-    fn split(objects: &mut Vec<Box<dyn Hittable>>, start: usize, end: usize) -> Self {
-        let left: Option<Box<dyn Hittable>>;
-        let right: Option<Box<dyn Hittable>>;
+    fn split(objects: &mut Vec<Rc<dyn Hittable>>, start: usize, end: usize) -> Self {
+        let left: Option<Rc<dyn Hittable>>;
+        let right: Option<Rc<dyn Hittable>>;
 
         let mut rng = rand::thread_rng();
         let axis: usize = rng.gen_range(0..3);
@@ -26,22 +26,22 @@ impl BoundingVolumesHierarchicalNode {
         let objects_span = end - start;
 
         if objects_span == 1 {
-            left = Some(Box::clone(&objects[start]));
-            right = Some(Box::clone(&objects[start]));
+            left = Some(Rc::clone(&objects[start]));
+            right = Some(Rc::clone(&objects[start]));
         } else if objects_span == 2 {
             if compare_hittable_objects(&*objects[start], &*objects[start + 1], axis).is_le() {
-                left = Some(Box::clone(&objects[start]));
-                right = Some(Box::clone(&objects[start + 1]));
+                left = Some(Rc::clone(&objects[start]));
+                right = Some(Rc::clone(&objects[start + 1]));
             } else {
-                left = Some(Box::clone(&objects[start + 1]));
-                right = Some(Box::clone(&objects[start]));
+                left = Some(Rc::clone(&objects[start + 1]));
+                right = Some(Rc::clone(&objects[start]));
             }
         } else {
             objects[start..end].sort_by(|a, b| compare_hittable_objects(&**a, &**b, axis));
 
             let mid = start + objects_span / 2;
-            left = Some(Box::new(Self::split(objects, start, mid)));
-            right = Some(Box::new(Self::split(objects, mid, end)));
+            left = Some(Rc::new(Self::split(objects, start, mid)));
+            right = Some(Rc::new(Self::split(objects, mid, end)));
         }
 
         Self {

@@ -1,4 +1,6 @@
 use rand::Rng;
+use std::rc::Rc;
+
 use tiny_raytracer::core::{
     BoundingVolumesHierarchicalNode, Camera, CheckerTexture, Color3, DielectricMaterial,
     HittableList, LambertianMaterial, Material, MetalMaterial, Point3, SolidColorTexture, Sphere,
@@ -14,17 +16,17 @@ struct SceneOptions {
 }
 
 fn load_objects(world: &mut HittableList, motion_blur_test: bool, checker_texture_test: bool) {
-    let ground_texture: Box<dyn Texture> = if checker_texture_test {
-        Box::new(CheckerTexture::new_with_solid_color(
+    let ground_texture: Rc<dyn Texture> = if checker_texture_test {
+        Rc::new(CheckerTexture::new_with_solid_color(
             0.32,
             Color3::new(0.2, 0.3, 0.1),
             Color3::new(0.9, 0.9, 0.9),
         ))
     } else {
-        Box::new(SolidColorTexture::new_with_floats(0.5, 0.5, 0.5))
+        Rc::new(SolidColorTexture::new_with_floats(0.5, 0.5, 0.5))
     };
-    let material_ground = Box::new(LambertianMaterial::new(ground_texture));
-    world.add(Box::new(Sphere::new(
+    let material_ground = Rc::new(LambertianMaterial::new(ground_texture));
+    world.add(Rc::new(Sphere::new(
         Point3::new(0., -1000., 0.),
         1000.,
         material_ground.clone(),
@@ -41,19 +43,19 @@ fn load_objects(world: &mut HittableList, motion_blur_test: bool, checker_textur
             );
 
             if (center - &Point3::new(4., 0.2, 0.)).length() > 0.9 {
-                let sphere_material: Box<dyn Material>;
+                let sphere_material: Rc<dyn Material>;
 
                 if choose_material < 0.8 {
                     // diffuse
-                    let albedo_texture = Box::new(SolidColorTexture::new(
+                    let albedo_texture = Rc::new(SolidColorTexture::new(
                         Color3::random(0., 1., &mut rng) * &Color3::random(0., 1., &mut rng),
                     ));
-                    sphere_material = Box::new(LambertianMaterial::new(albedo_texture));
-                    world.add(Box::new(Sphere::new(center, 0.2, sphere_material.clone())));
+                    sphere_material = Rc::new(LambertianMaterial::new(albedo_texture));
+                    world.add(Rc::new(Sphere::new(center, 0.2, sphere_material.clone())));
 
                     if motion_blur_test {
                         let target = center + &Vector3::new(0., rng.gen_range(0.0..0.5), 0.);
-                        world.add(Box::new(Sphere::new_moving_sphere(
+                        world.add(Rc::new(Sphere::new_moving_sphere(
                             center,
                             target,
                             0.2,
@@ -63,38 +65,38 @@ fn load_objects(world: &mut HittableList, motion_blur_test: bool, checker_textur
                 } else if choose_material < 0.95 {
                     // metal
                     let albedo_texture =
-                        Box::new(SolidColorTexture::new(Color3::random(0.5, 1., &mut rng)));
+                        Rc::new(SolidColorTexture::new(Color3::random(0.5, 1., &mut rng)));
                     let fuzz = rng.gen_range(0.0..0.5);
-                    sphere_material = Box::new(MetalMaterial::new(albedo_texture, fuzz));
-                    world.add(Box::new(Sphere::new(center, 0.2, sphere_material)));
+                    sphere_material = Rc::new(MetalMaterial::new(albedo_texture, fuzz));
+                    world.add(Rc::new(Sphere::new(center, 0.2, sphere_material)));
                 } else {
                     // glass
-                    sphere_material = Box::new(DielectricMaterial::new(1.5));
-                    world.add(Box::new(Sphere::new(center, 0.2, sphere_material)));
+                    sphere_material = Rc::new(DielectricMaterial::new(1.5));
+                    world.add(Rc::new(Sphere::new(center, 0.2, sphere_material)));
                 }
             }
         }
     }
 
-    world.add(Box::new(Sphere::new(
+    world.add(Rc::new(Sphere::new(
         Point3::new(0., 1., 0.),
         1.,
-        Box::new(DielectricMaterial::new(1.5)),
+        Rc::new(DielectricMaterial::new(1.5)),
     )));
 
-    world.add(Box::new(Sphere::new(
+    world.add(Rc::new(Sphere::new(
         Point3::new(-4., 1., 0.),
         1.,
-        Box::new(LambertianMaterial::new(Box::new(
+        Rc::new(LambertianMaterial::new(Rc::new(
             SolidColorTexture::new_with_floats(0.4, 0.2, 0.1),
         ))),
     )));
 
-    world.add(Box::new(Sphere::new(
+    world.add(Rc::new(Sphere::new(
         Point3::new(4., 1., 0.),
         1.,
-        Box::new(MetalMaterial::new(
-            Box::new(SolidColorTexture::new_with_floats(0.7, 0.6, 0.5)),
+        Rc::new(MetalMaterial::new(
+            Rc::new(SolidColorTexture::new_with_floats(0.7, 0.6, 0.5)),
             0.,
         )),
     )));
@@ -121,7 +123,7 @@ fn main() {
     if options.bounding_volume_hierarchical {
         let bvh = BoundingVolumesHierarchicalNode::new(&mut world);
         world = HittableList::new();
-        world.add(Box::new(bvh));
+        world.add(Rc::new(bvh));
     }
 
     let mut camera = Camera::new();

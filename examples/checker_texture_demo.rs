@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use tiny_raytracer::core::{
     BoundingVolumesHierarchicalNode, Camera, CheckerTexture, Color3, HittableList,
     LambertianMaterial, Point3, Sphere,
@@ -14,21 +16,21 @@ fn main() {
 
     let mut world = HittableList::new();
 
-    let checker_texture = Box::new(CheckerTexture::new_with_solid_color(
+    let checker_texture = Rc::new(CheckerTexture::new_with_solid_color(
         0.32,
         Color3::new(0.2, 0.3, 0.1),
         Color3::new(0.9, 0.9, 0.9),
     ));
 
-    let material = Box::new(LambertianMaterial::new(checker_texture));
+    let material = Rc::new(LambertianMaterial::new(checker_texture));
 
-    world.add(Box::new(Sphere::new(
+    world.add(Rc::new(Sphere::new(
         Point3::new(0., -10., 0.),
         10.,
         material.clone(),
     )));
 
-    world.add(Box::new(Sphere::new(
+    world.add(Rc::new(Sphere::new(
         Point3::new(0., 10., 0.),
         10.,
         material.clone(),
@@ -37,7 +39,7 @@ fn main() {
     if options.bounding_volume_hierarchical {
         let bvh = BoundingVolumesHierarchicalNode::new(&mut world);
         world = HittableList::new();
-        world.add(Box::new(bvh));
+        world.add(Rc::new(bvh));
     }
 
     let mut camera = Camera::new();

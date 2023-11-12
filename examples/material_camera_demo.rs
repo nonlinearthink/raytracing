@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use tiny_raytracer::core::{
     BoundingVolumesHierarchicalNode, Camera, DielectricMaterial, HittableList, LambertianMaterial,
     MetalMaterial, Point3, SolidColorTexture, Sphere,
@@ -10,39 +12,39 @@ struct SceneOptions {
 }
 
 fn load_objects(world: &mut HittableList) {
-    let material_ground = Box::new(LambertianMaterial::new(Box::new(
+    let material_ground = Rc::new(LambertianMaterial::new(Rc::new(
         SolidColorTexture::new_with_floats(0.8, 0.8, 0.),
     )));
-    let material_center = Box::new(LambertianMaterial::new(Box::new(
+    let material_center = Rc::new(LambertianMaterial::new(Rc::new(
         SolidColorTexture::new_with_floats(0.1, 0.2, 0.5),
     )));
-    let material_left = Box::new(DielectricMaterial::new(1.5));
-    let material_right = Box::new(MetalMaterial::new(
-        Box::new(SolidColorTexture::new_with_floats(0.8, 0.6, 0.2)),
+    let material_left = Rc::new(DielectricMaterial::new(1.5));
+    let material_right = Rc::new(MetalMaterial::new(
+        Rc::new(SolidColorTexture::new_with_floats(0.8, 0.6, 0.2)),
         0.,
     ));
 
-    world.add(Box::new(Sphere::new(
+    world.add(Rc::new(Sphere::new(
         Point3::new(0., -100.5, -1.),
         100.,
         material_ground.clone(),
     )));
-    world.add(Box::new(Sphere::new(
+    world.add(Rc::new(Sphere::new(
         Point3::new(0., 0., -1.),
         0.5,
         material_center.clone(),
     )));
-    world.add(Box::new(Sphere::new(
+    world.add(Rc::new(Sphere::new(
         Point3::new(-1., 0., -1.),
         0.5,
         material_left.clone(),
     )));
-    world.add(Box::new(Sphere::new(
+    world.add(Rc::new(Sphere::new(
         Point3::new(-1., 0., -1.),
         -0.4,
         material_left.clone(),
     )));
-    world.add(Box::new(Sphere::new(
+    world.add(Rc::new(Sphere::new(
         Point3::new(1., 0., -1.),
         0.5,
         material_right.clone(),
@@ -64,7 +66,7 @@ fn main() {
     if options.bounding_volume_hierarchical {
         let bvh = BoundingVolumesHierarchicalNode::new(&mut world);
         world = HittableList::new();
-        world.add(Box::new(bvh));
+        world.add(Rc::new(bvh));
     }
 
     let mut camera = Camera::new();

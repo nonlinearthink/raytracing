@@ -1,6 +1,7 @@
 extern crate tiny_raytracer;
 
 use rand::Rng;
+use std::rc::Rc;
 use tiny_raytracer::core::{
     HitRecord, Hittable, Interval, LambertianMaterial, Ray, SolidColorTexture, Sphere, Vector2,
     Vector3,
@@ -8,7 +9,7 @@ use tiny_raytracer::core::{
 
 #[test]
 fn sphere_hit_test() {
-    let material = Box::new(LambertianMaterial::new(Box::new(
+    let material = Rc::new(LambertianMaterial::new(Rc::new(
         SolidColorTexture::new_with_floats(0.8, 0.8, 0.0),
     )));
     let sphere = Sphere::new(Vector3::zero(), 1., material);
@@ -75,7 +76,7 @@ fn sphere_uv_test() {
 
 #[test]
 fn sphere_moving_test() {
-    let material = Box::new(LambertianMaterial::new(Box::new(
+    let material = Rc::new(LambertianMaterial::new(Rc::new(
         SolidColorTexture::new_with_floats(0.8, 0.8, 0.0),
     )));
     let sphere = Sphere::new_moving_sphere(Vector3::zero(), Vector3::one(), 1., material);
@@ -93,7 +94,7 @@ fn sphere_moving_test() {
 
 #[test]
 fn sphere_bounding_box_test() {
-    let material = Box::new(LambertianMaterial::new(Box::new(
+    let material = Rc::new(LambertianMaterial::new(Rc::new(
         SolidColorTexture::new_with_floats(0.8, 0.8, 0.0),
     )));
     let sphere = Sphere::new(Vector3::new(2., 2., 2.), 1., material.clone());

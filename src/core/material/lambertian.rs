@@ -1,19 +1,20 @@
 use super::Material;
 use crate::core::{Color3, HitRecord, Ray, SolidColorTexture, Texture, Vector3};
+use std::rc::Rc;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct LambertianMaterial {
-    pub albedo_texture: Box<dyn Texture>,
+    pub albedo_texture: Rc<dyn Texture>,
 }
 
 impl LambertianMaterial {
-    pub fn new(albedo_texture: Box<dyn Texture>) -> Self {
+    pub fn new(albedo_texture: Rc<dyn Texture>) -> Self {
         Self { albedo_texture }
     }
 
     pub fn new_with_color(color: Color3) -> Self {
         Self {
-            albedo_texture: Box::new(SolidColorTexture::new(color)),
+            albedo_texture: Rc::new(SolidColorTexture::new(color)),
         }
     }
 }

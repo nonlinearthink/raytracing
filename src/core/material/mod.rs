@@ -6,12 +6,10 @@ pub use dielectric::*;
 pub use lambertian::*;
 pub use metal::*;
 
-use dyn_clone::{clone_trait_object, DynClone};
+use super::{Color3, HitRecord, Ray};
 use std::fmt;
 
-use super::{Color3, HitRecord, Ray};
-
-pub trait Material: fmt::Debug + DynClone {
+pub trait Material: fmt::Debug {
     fn scatter(
         &self,
         ray_in: &Ray,
@@ -20,5 +18,3 @@ pub trait Material: fmt::Debug + DynClone {
         ray_scattered: &mut Ray,
     ) -> bool;
 }
-
-clone_trait_object!(Material);

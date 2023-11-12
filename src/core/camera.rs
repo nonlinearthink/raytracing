@@ -1,9 +1,8 @@
+use super::{Color3, HitRecord, Hittable, Interval, Point3, Ray, Vector3};
+use crate::utils::{degree_to_radian, linear_to_gramma, PPMImage};
 use indicatif::ProgressBar;
 use rand::Rng;
 use std::time;
-
-use super::{Color3, HitRecord, Hittable, Interval, Point3, Ray, Vector3};
-use crate::utils::{degree_to_radian, linear_to_gramma, PPMImage};
 
 #[derive(Default)]
 pub struct Camera {

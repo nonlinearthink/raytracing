@@ -1,9 +1,8 @@
-use std::ops::Neg;
-
 use super::Material;
 use crate::core::{Color3, HitRecord, Ray};
+use std::ops::Neg;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug)]
 pub struct DielectricMaterial {
     pub ior: f32, // Index of Refraction
 }

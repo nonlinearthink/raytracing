@@ -1,21 +1,23 @@
-use std::ops::{Div, Sub};
-
 use super::{
     AxisAlignedBoundingBox, HitRecord, Hittable, Interval, Material, Point3, Ray, Vector2, Vector3,
 };
+use std::{
+    ops::{Div, Sub},
+    rc::Rc,
+};
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Sphere {
     pub center: Vector3,
     pub radius: f32,
-    pub material: Box<dyn Material>,
+    pub material: Rc<dyn Material>,
     pub is_moving: bool,
     move_direction: Vector3,
     bbox: AxisAlignedBoundingBox,
 }
 
 impl Sphere {
-    pub fn new(center: Point3, radius: f32, material: Box<dyn Material>) -> Self {
+    pub fn new(center: Point3, radius: f32, material: Rc<dyn Material>) -> Self {
         let radius_vec = Vector3::new(radius, radius, radius);
         Self {
             center,
@@ -34,7 +36,7 @@ impl Sphere {
         center: Point3,
         target: Point3,
         radius: f32,
-        material: Box<dyn Material>,
+        material: Rc<dyn Material>,
     ) -> Self {
         let radius_vec = Vector3::new(radius, radius, radius);
 
@@ -105,7 +107,7 @@ impl Hittable for Sphere {
             .div(self.radius);
         record.set_face_normal(&ray, &outward_normal);
         record.uv = Some(Sphere::compute_uv(outward_normal));
-        record.material = Some(Box::clone(&self.material));
+        record.material = Some(Rc::clone(&self.material));
 
         return true;
     }

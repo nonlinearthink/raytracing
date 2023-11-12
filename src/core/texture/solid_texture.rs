@@ -1,8 +1,7 @@
+use super::Texture;
 use crate::core::{Color3, Point3, Vector2};
 
-use super::Texture;
-
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct SolidColorTexture {
     color: Color3,
 }

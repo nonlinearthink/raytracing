@@ -43,8 +43,19 @@ impl Vector3 {
 
     pub fn random_in_unit_sphere() -> Self {
         let mut rng = rand::thread_rng();
-        let theta = rng.gen_range(0.0..(std::f32::consts::PI * 2.));
-        let phi = rng.gen_range(0.0..std::f32::consts::PI);
+        loop {
+            let p = Self::random(-1., 1., &mut rng);
+            if p.length_squared() < 1. {
+                return p;
+            }
+        }
+    }
+
+    pub fn random_in_unit_sphere2() -> Self {
+        // I used to think it was better than the version above, but it's actually slower
+        let mut rng = rand::thread_rng();
+        let theta = rng.gen_range(0.0..1.0) * (std::f32::consts::PI * 2.);
+        let phi = rng.gen_range(0.0..1.0) * std::f32::consts::PI;
         let radius = rng.gen_range(0.0..1.0);
         let x = radius * theta.sin() * phi.cos();
         let y = radius * theta.sin() * phi.sin();

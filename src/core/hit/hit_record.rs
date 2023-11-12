@@ -1,8 +1,9 @@
 use crate::core::{Material, Point3, Ray, Vector2, Vector3};
+use std::rc::Rc;
 
 #[derive(Debug, Clone)]
 pub struct HitRecord {
-    pub material: Option<Box<dyn Material>>,
+    pub material: Option<Rc<dyn Material>>,
     pub point: Option<Point3>,
     pub normal: Option<Vector3>,
     pub uv: Option<Vector2>,
