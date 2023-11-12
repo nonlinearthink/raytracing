@@ -35,7 +35,7 @@ cargo run --release --example book1_final_demo
 
 ### Ray Tracing In One Weekend
 
-![Ray Tracing In One Weekend](images/first-book-final-scene.jpg)
+![Ray Tracing In One Weekend](resource/images/first-book-final-scene.jpg)
 
 ### Ray Tracing The Next Week
 

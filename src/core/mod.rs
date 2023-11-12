@@ -1,21 +1,17 @@
 mod bounding;
 mod camera;
 mod hit;
-mod interval;
 mod material;
 mod ray;
 mod sphere;
 mod texture;
-mod vector2;
-mod vector3;
+mod math;
 
 pub use bounding::*;
 pub use camera::*;
 pub use hit::*;
-pub use interval::*;
 pub use material::*;
 pub use ray::*;
 pub use sphere::*;
 pub use texture::*;
-pub use vector2::*;
-pub use vector3::*;
+pub use math::*;

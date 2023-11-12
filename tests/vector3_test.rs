@@ -1,4 +1,3 @@
-mod common;
 extern crate tiny_raytracer;
 
 use tiny_raytracer::core::Vector3;
