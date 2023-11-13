@@ -10,7 +10,7 @@ pub struct ImageTexture {
 impl ImageTexture {
     pub fn new(path: String) -> ImageResult<Self> {
         let image = image::io::Reader::open(path)?.decode()?.to_rgb8();
-        ImageResult::Ok(ImageTexture { image })
+        ImageResult::Ok(Self { image })
     }
 }
 

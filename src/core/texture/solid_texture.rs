@@ -7,12 +7,12 @@ pub struct SolidColorTexture {
 }
 
 impl SolidColorTexture {
-    pub fn new(color: Color3) -> SolidColorTexture {
-        SolidColorTexture { color }
+    pub fn new(color: Color3) -> Self {
+        Self { color }
     }
 
-    pub fn new_with_floats(r: f32, g: f32, b: f32) -> SolidColorTexture {
-        SolidColorTexture {
+    pub fn new_with_floats(r: f32, g: f32, b: f32) -> Self {
+        Self {
             color: Color3::new(r, g, b),
         }
     }

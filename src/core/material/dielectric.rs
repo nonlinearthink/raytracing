@@ -8,7 +8,7 @@ pub struct DielectricMaterial {
 }
 
 impl DielectricMaterial {
-    pub fn new(ior: f32) -> DielectricMaterial {
+    pub fn new(ior: f32) -> Self {
         Self { ior }
     }
 
