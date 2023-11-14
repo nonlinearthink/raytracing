@@ -1,5 +1,5 @@
-mod quadrilateral;
+mod quad;
 mod sphere;
 
-pub use quadrilateral::*;
+pub use quad::*;
 pub use sphere::*;

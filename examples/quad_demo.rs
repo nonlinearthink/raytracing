@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use tiny_raytracer::core::{
-    Camera, HittableList, LambertianMaterial, Point3, Quadrilateral, SolidColorTexture, Vector3,
+    Camera, HittableList, LambertianMaterial, Point3, Quad, SolidColorTexture, Vector3,
 };
 
 fn main() {
@@ -24,32 +24,31 @@ fn main() {
         SolidColorTexture::new_with_floats(0.2, 0.8, 0.8),
     )));
 
-    // Quads
-    world.add(Rc::new(Quadrilateral::new(
+    world.add(Rc::new(Quad::new(
         Point3::new(-3., -2., 5.),
         Vector3::new(0., 0., -4.),
         Vector3::new(0., 4., 0.),
         left_red,
     )));
-    world.add(Rc::new(Quadrilateral::new(
+    world.add(Rc::new(Quad::new(
         Point3::new(-2., -2., 0.),
         Vector3::new(4., 0., 0.),
         Vector3::new(0., 4., 0.),
         back_green,
     )));
-    world.add(Rc::new(Quadrilateral::new(
+    world.add(Rc::new(Quad::new(
         Point3::new(3., -2., 1.),
         Vector3::new(0., 0., 4.),
         Vector3::new(0., 4., 0.),
         right_blue,
     )));
-    world.add(Rc::new(Quadrilateral::new(
+    world.add(Rc::new(Quad::new(
         Point3::new(-2., 3., 1.),
         Vector3::new(4., 0., 0.),
         Vector3::new(0., 0., 4.),
         upper_orange,
     )));
-    world.add(Rc::new(Quadrilateral::new(
+    world.add(Rc::new(Quad::new(
         Point3::new(-2., -3., 5.),
         Vector3::new(4., 0., 0.),
         Vector3::new(0., 0., -4.),
