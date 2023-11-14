@@ -36,6 +36,31 @@ impl AxisAlignedBoundingBox {
         }
     }
 
+    pub fn pad(&self) -> Self {
+        let delta = 0.0001;
+        let x_interval = if self.x.size() < delta {
+            self.x.expand(delta)
+        } else {
+            self.x.clone()
+        };
+        let y_interval = if self.y.size() < delta {
+            self.y.expand(delta)
+        } else {
+            self.y.clone()
+        };
+        let z_interval = if self.z.size() < delta {
+            self.z.expand(delta)
+        } else {
+            self.z.clone()
+        };
+
+        Self {
+            x: x_interval,
+            y: y_interval,
+            z: z_interval,
+        }
+    }
+
     pub fn hit(&self, ray: &Ray, ray_interval: &Interval) -> bool {
         for i in 0..3 {
             let t_per_unit_length = 1. / ray.direction[i];

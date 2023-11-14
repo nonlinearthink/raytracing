@@ -20,7 +20,9 @@ cargo run --release --example
 # Available examples:
 #    book1_final_demo
 #    checker_texture_demo
+#    earth_demo
 #    material_camera_demo
+#    perlin_noise_demo
 ```
 
 Pick and run a specify example:

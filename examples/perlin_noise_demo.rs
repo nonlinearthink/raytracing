@@ -10,7 +10,7 @@ struct SceneOptions {
 
 fn main() {
     let options = SceneOptions {
-        marble_effect: true,
+        marble_effect: false,
     };
 
     let mut world = HittableList::new();

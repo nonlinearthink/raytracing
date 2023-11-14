@@ -1,4 +1,4 @@
-use super::{
+use crate::core::{
     AxisAlignedBoundingBox, HitRecord, Hittable, Interval, Material, Point3, Ray, Vector2, Vector3,
 };
 use std::{
@@ -8,7 +8,7 @@ use std::{
 
 #[derive(Debug)]
 pub struct Sphere {
-    pub center: Vector3,
+    pub center: Point3,
     pub radius: f32,
     pub material: Rc<dyn Material>,
     pub is_moving: bool,

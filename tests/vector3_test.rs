@@ -211,13 +211,6 @@ fn vector_mul_test() {
 #[test]
 fn vector_div_test() {
     let v1 = Vector3::new(1., 2., 3.);
-    let v2 = Vector3::new(4., 5., 6.);
-
-    // div by vector3
-    let result = v1 / &v2;
-    assert_eq!(v1, Vector3::new(1., 2., 3.));
-    assert_eq!(v2, Vector3::new(4., 5., 6.));
-    assert_eq!(result, Vector3::new(0.25, 0.4, 0.5));
 
     // div by f32
     let result = v1 / 2.;
