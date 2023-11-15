@@ -63,7 +63,7 @@ pub struct Camera {
     #[builder(default = "10")]
     pub max_ray_depth: u8, // Maximum number of ray bounces into scene
 
-    #[builder(default = "Color3::new(0.7, 0.8, 1.)")]
+    #[builder(default = "Color3::one()")]
     pub background: Color3, // Scene background color
 
     #[builder(setter(skip))]
@@ -160,27 +160,27 @@ impl Camera {
             return Color3::zero();
         }
 
-        // Meshes
         let mut record: HitRecord = HitRecord::new();
         // Fixing shadow acne by setting the nearest surface to 0.001
-        if world.hit(ray, &Interval::new(0.001, f32::INFINITY), &mut record) {
-            let material = record
-                .material
-                .as_ref()
-                .expect("material should not be None if hitted.");
-
-            let mut ray_scattered = Ray::new(Point3::zero(), Vector3::zero());
-            let mut attenuation = Color3::zero();
-            if material.scatter(ray, &record, &mut attenuation, &mut ray_scattered) {
-                return attenuation * &self.ray_color(&ray_scattered, world, ray_depth - 1);
-            }
-            return Color3::zero();
+        if !world.hit(ray, &Interval::new(0.001, f32::INFINITY), &mut record) {
+            return self.background;
         }
 
-        // Sky
-        let unit_direction: Vector3 = ray.direction.normolize();
-        let a = 0.5 * (unit_direction.y + 1.);
-        Color3::new(1.0, 1.0, 1.0) * (1. - a) + &(Color3::new(0.5, 0.7, 1.0) * a)
+        let material = record
+            .material
+            .as_ref()
+            .expect("material should not be None if hitted.");
+
+        let emission_color = material.emitted(&record.uv.unwrap(), &record.point.unwrap());
+
+        let mut ray_scattered = Ray::new(Point3::zero(), Vector3::zero());
+        let mut attenuation = Color3::zero();
+        if !material.scatter(ray, &record, &mut attenuation, &mut ray_scattered) {
+            return emission_color;
+        }
+        let scatter_color = attenuation * &self.ray_color(&ray_scattered, world, ray_depth - 1);
+
+        emission_color + &scatter_color
     }
 
     pub fn render(&mut self, world: &dyn Hittable, save_path: String) -> std::io::Result<()> {

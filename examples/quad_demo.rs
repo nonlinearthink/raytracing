@@ -1,7 +1,8 @@
 use std::rc::Rc;
 
 use tiny_raytracer::core::{
-    CameraBuilder, HittableList, LambertianMaterial, Point3, Quad, SolidColorTexture, Vector3,
+    CameraBuilder, Color3, HittableList, LambertianMaterial, Point3, Quad, SolidColorTexture,
+    Vector3,
 };
 
 fn main() {
@@ -24,6 +25,7 @@ fn main() {
         SolidColorTexture::new_with_floats(0.2, 0.8, 0.8),
     )));
 
+    // Primitives
     world.add(Rc::new(Quad::new(
         Point3::new(-3., -2., 5.),
         Vector3::new(0., 0., -4.),
@@ -55,16 +57,17 @@ fn main() {
         lower_teal,
     )));
 
+    // Camera
     let mut camera = CameraBuilder::default()
         .position(Point3::new(0., 0., 9.))
         .target(Point3::zero())
         .width(400)
         .aspect(1.0)
         .fov(80.)
-        .samples_per_pixel(100)
+        .background(Color3::new(0.7, 0.8, 1.))
+        .samples_per_pixel(30)
         .max_ray_depth(10)
         .build()
         .unwrap();
-
     camera.render(&world, "out/quad-demo.ppm".to_owned()).err();
 }

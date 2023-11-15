@@ -17,10 +17,6 @@ impl EmissiveMaterial {
             emit: Rc::new(SolidColorTexture::new(color)),
         }
     }
-
-    pub fn emitted(&self, uv: &Vector2, point: &Point3) -> Color3 {
-        self.emit.value(uv, point)
-    }
 }
 
 impl Material for EmissiveMaterial {
@@ -32,5 +28,9 @@ impl Material for EmissiveMaterial {
         _ray_scattered: &mut crate::core::Ray,
     ) -> bool {
         return false;
+    }
+
+    fn emitted(&self, uv: &Vector2, point: &Point3) -> Color3 {
+        self.emit.value(uv, point)
     }
 }

@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use tiny_raytracer::core::{
-    BoundingVolumesHierarchicalNode, CameraBuilder, DielectricMaterial, HittableList,
+    BoundingVolumesHierarchicalNode, CameraBuilder, Color3, DielectricMaterial, HittableList,
     LambertianMaterial, MetalMaterial, Point3, SolidColorTexture, Sphere,
 };
 
@@ -11,7 +11,17 @@ struct SceneOptions {
     depth_of_field: bool,
 }
 
-fn load_objects(world: &mut HittableList) {
+fn main() {
+    let options = SceneOptions {
+        // FIXME: BVH make DielectricMaterial the oppsite output.
+        bounding_volume_hierarchical: false,
+        larger_fov: false,
+        depth_of_field: false,
+    };
+
+    let mut world = HittableList::new();
+
+    // Materials
     let material_ground = Rc::new(LambertianMaterial::new(Rc::new(
         SolidColorTexture::new_with_floats(0.8, 0.8, 0.),
     )));
@@ -24,6 +34,7 @@ fn load_objects(world: &mut HittableList) {
         0.,
     ));
 
+    // Primitives
     world.add(Rc::new(Sphere::new(
         Point3::new(0., -100.5, -1.),
         100.,
@@ -49,26 +60,15 @@ fn load_objects(world: &mut HittableList) {
         0.5,
         material_right.clone(),
     )));
-}
 
-fn main() {
-    let options = SceneOptions {
-        bounding_volume_hierarchical: false,
-        larger_fov: false,
-        depth_of_field: false,
-    };
-
-    // World
-    let mut world = HittableList::new();
-
-    load_objects(&mut world);
-
+    // BVH
     if options.bounding_volume_hierarchical {
         let bvh = BoundingVolumesHierarchicalNode::new(&mut world);
         world = HittableList::new();
         world.add(Rc::new(bvh));
     }
 
+    // Camera
     let mut camera_builder = CameraBuilder::default();
     let mut camera_builder_mut_ref = camera_builder
         .position(Point3::new(-2., 2., 1.))
@@ -76,15 +76,13 @@ fn main() {
         .width(400)
         .aspect(16. / 9.)
         .fov(if options.larger_fov { 90. } else { 20. })
-        .samples_per_pixel(100)
+        .background(Color3::new(0.7, 0.8, 1.))
+        .samples_per_pixel(30)
         .max_ray_depth(10);
-
     if options.depth_of_field {
         camera_builder_mut_ref = camera_builder_mut_ref.defocus_angle(10.).focus_dist(3.4);
     }
-
     let mut camera = camera_builder_mut_ref.build().unwrap();
-
     camera
         .render(&world, "out/material-camera-demo.ppm".to_owned())
         .err();

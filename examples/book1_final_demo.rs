@@ -106,6 +106,7 @@ fn main() {
     let options = SceneOptions {
         depth_of_field: true,
         high_quality: false,
+        // FIXME: motion blur is weird.
         motion_blur_test: false,
         bounding_volume_hierarchical: true,
         checker_texture_test: false,
@@ -134,6 +135,7 @@ fn main() {
         .fov(20.)
         .defocus_angle(if options.depth_of_field { 0.6 } else { 0.02 })
         .focus_dist(10.)
+        .background(Color3::new(0.7, 0.8, 1.))
         .samples_per_pixel(if options.high_quality { 128 } else { 30 })
         .max_ray_depth(10)
         .build()
