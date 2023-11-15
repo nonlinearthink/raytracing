@@ -8,7 +8,7 @@ fn main() {
     let mut world = HittableList::new();
 
     let earth_texture =
-        Rc::new(ImageTexture::new("resource/images/earthmap.jpg".to_owned()).unwrap());
+        Rc::new(ImageTexture::new("assets/earthmap.jpg".to_owned()).unwrap());
     let earth_surface = Rc::new(LambertianMaterial::new(earth_texture));
     let globe = Rc::new(Sphere::new(Point3::new(0., 0., 0.), 2., earth_surface));
     world.add(globe);
