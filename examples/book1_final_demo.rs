@@ -2,7 +2,7 @@ use rand::Rng;
 use std::rc::Rc;
 
 use tiny_raytracer::core::{
-    BoundingVolumesHierarchicalNode, Camera, CheckerTexture, Color3, DielectricMaterial,
+    BoundingVolumesHierarchicalNode, CameraBuilder, CheckerTexture, Color3, DielectricMaterial,
     HittableList, LambertianMaterial, Material, MetalMaterial, Point3, SolidColorTexture, Sphere,
     Texture, Vector3,
 };
@@ -126,20 +126,18 @@ fn main() {
         world.add(Rc::new(bvh));
     }
 
-    let mut camera = Camera::new();
-
-    camera.position = Point3::new(13., 2., 3.);
-    camera.target = Point3::new(0., 0., 0.);
-
-    camera.width = if options.high_quality { 1920 } else { 400 };
-    camera.aspect_ratio = 16. / 9.;
-    camera.vertical_fov = 20.;
-
-    camera.defocus_angle = if options.depth_of_field { 0.6 } else { 0.02 };
-    camera.focus_dist = 10.;
-
-    camera.samples_per_pixel = if options.high_quality { 128 } else { 30 };
-    camera.max_ray_depth = 10;
+    let mut camera = CameraBuilder::default()
+        .position(Point3::new(13., 2., 3.))
+        .target(Point3::zero())
+        .width(if options.high_quality { 1920 } else { 400 })
+        .aspect(16. / 9.)
+        .fov(20.)
+        .defocus_angle(if options.depth_of_field { 0.6 } else { 0.02 })
+        .focus_dist(10.)
+        .samples_per_pixel(if options.high_quality { 128 } else { 30 })
+        .max_ray_depth(10)
+        .build()
+        .unwrap();
 
     camera
         .render(&world, "out/book1-final-demo.ppm".to_owned())

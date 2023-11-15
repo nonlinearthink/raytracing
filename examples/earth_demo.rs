@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use tiny_raytracer::core::{
-    Camera, HittableList, ImageTexture, LambertianMaterial, Point3, Sphere,
+    CameraBuilder, HittableList, ImageTexture, LambertianMaterial, Point3, Sphere,
 };
 
 fn main() {
@@ -13,17 +13,16 @@ fn main() {
     let globe = Rc::new(Sphere::new(Point3::new(0., 0., 0.), 2., earth_surface));
     world.add(globe);
 
-    let mut camera = Camera::new();
-
-    camera.position = Point3::new(0., 0., 12.);
-    camera.target = Point3::new(0., 0., 0.);
-
-    camera.width = 400;
-    camera.aspect_ratio = 16. / 9.;
-    camera.vertical_fov = 20.;
-
-    camera.samples_per_pixel = 30;
-    camera.max_ray_depth = 10;
+    let mut camera = CameraBuilder::default()
+        .position(Point3::new(0., 0., 12.))
+        .target(Point3::new(0., 0., 0.))
+        .width(400)
+        .aspect(16. / 9.)
+        .fov(20.)
+        .samples_per_pixel(100)
+        .max_ray_depth(10)
+        .build()
+        .unwrap();
 
     camera.render(&world, "out/earth-demo.ppm".to_owned()).err();
 }

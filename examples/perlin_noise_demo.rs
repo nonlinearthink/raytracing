@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use tiny_raytracer::core::{
-    Camera, HittableList, LambertianMaterial, NoiseTexture, Point3, Sphere,
+    CameraBuilder, HittableList, LambertianMaterial, NoiseTexture, Point3, Sphere,
 };
 
 struct SceneOptions {
@@ -33,17 +33,16 @@ fn main() {
         Rc::new(LambertianMaterial::new(noise_texture.clone())),
     )));
 
-    let mut camera = Camera::new();
-
-    camera.position = Point3::new(13., 2., 3.);
-    camera.target = Point3::new(0., 0., 0.);
-
-    camera.width = 400;
-    camera.aspect_ratio = 16. / 9.;
-    camera.vertical_fov = 20.;
-
-    camera.samples_per_pixel = 100;
-    camera.max_ray_depth = 50;
+    let mut camera = CameraBuilder::default()
+        .position(Point3::new(13., 2., 3.))
+        .target(Point3::zero())
+        .width(400)
+        .aspect(16. / 9.)
+        .fov(20.)
+        .samples_per_pixel(100)
+        .max_ray_depth(10)
+        .build()
+        .unwrap();
 
     camera
         .render(&world, "out/perlin-noise-demo.ppm".to_owned())

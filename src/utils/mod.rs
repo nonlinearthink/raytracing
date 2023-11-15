@@ -2,11 +2,11 @@ mod ppm;
 
 pub use ppm::*;
 
-pub fn degree_to_radian(degree: f32) -> f32 {
+pub fn deg_to_rad(degree: f32) -> f32 {
     degree * std::f32::consts::PI / 180.0
 }
 
-pub fn radian_to_degree(radian: f32) -> f32 {
+pub fn rad_to_deg(radian: f32) -> f32 {
     radian * 180. / std::f32::consts::PI
 }
 

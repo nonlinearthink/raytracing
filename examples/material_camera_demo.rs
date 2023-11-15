@@ -1,8 +1,8 @@
 use std::rc::Rc;
 
 use tiny_raytracer::core::{
-    BoundingVolumesHierarchicalNode, Camera, DielectricMaterial, HittableList, LambertianMaterial,
-    MetalMaterial, Point3, SolidColorTexture, Sphere,
+    BoundingVolumesHierarchicalNode, CameraBuilder, DielectricMaterial, HittableList,
+    LambertianMaterial, MetalMaterial, Point3, SolidColorTexture, Sphere,
 };
 
 struct SceneOptions {
@@ -69,22 +69,21 @@ fn main() {
         world.add(Rc::new(bvh));
     }
 
-    let mut camera = Camera::new();
-
-    camera.position = Point3::new(-2., 2., 1.);
-    camera.target = Point3::new(0., 0., -1.);
-
-    camera.width = 400;
-    camera.aspect_ratio = 16. / 9.;
-    camera.vertical_fov = if options.larger_fov { 90. } else { 20. };
-
-    camera.samples_per_pixel = 30;
-    camera.max_ray_depth = 10;
+    let mut camera_builder = CameraBuilder::default();
+    let mut camera_builder_mut_ref = camera_builder
+        .position(Point3::new(-2., 2., 1.))
+        .target(Point3::new(0., 0., -1.))
+        .width(400)
+        .aspect(16. / 9.)
+        .fov(if options.larger_fov { 90. } else { 20. })
+        .samples_per_pixel(100)
+        .max_ray_depth(10);
 
     if options.depth_of_field {
-        camera.defocus_angle = 10.;
-        camera.focus_dist = 3.4;
+        camera_builder_mut_ref = camera_builder_mut_ref.defocus_angle(10.).focus_dist(3.4);
     }
+
+    let mut camera = camera_builder_mut_ref.build().unwrap();
 
     camera
         .render(&world, "out/material-camera-demo.ppm".to_owned())

@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use tiny_raytracer::core::{
-    BoundingVolumesHierarchicalNode, Camera, CheckerTexture, Color3, HittableList,
+    BoundingVolumesHierarchicalNode, CameraBuilder, CheckerTexture, Color3, HittableList,
     LambertianMaterial, Point3, Sphere,
 };
 
@@ -42,19 +42,17 @@ fn main() {
         world.add(Rc::new(bvh));
     }
 
-    let mut camera = Camera::new();
-
-    camera.position = Point3::new(13., 2., 3.);
-    camera.target = Point3::new(0., 0., 0.);
-
-    camera.width = 400;
-    camera.aspect_ratio = 16. / 9.;
-    camera.vertical_fov = 20.;
-
-    camera.focus_dist = 10.;
-
-    camera.samples_per_pixel = 30;
-    camera.max_ray_depth = 10;
+    let mut camera = CameraBuilder::default()
+        .position(Point3::new(13., 2., 3.))
+        .target(Point3::zero())
+        .width(400)
+        .aspect(16. / 9.)
+        .fov(20.)
+        .focus_dist(10.)
+        .samples_per_pixel(100)
+        .max_ray_depth(10)
+        .build()
+        .unwrap();
 
     camera
         .render(&world, "out/checker-texture-demo.ppm".to_owned())

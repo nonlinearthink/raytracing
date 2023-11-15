@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use tiny_raytracer::core::{
-    Camera, HittableList, LambertianMaterial, Point3, Quad, SolidColorTexture, Vector3,
+    CameraBuilder, HittableList, LambertianMaterial, Point3, Quad, SolidColorTexture, Vector3,
 };
 
 fn main() {
@@ -55,17 +55,16 @@ fn main() {
         lower_teal,
     )));
 
-    let mut camera = Camera::new();
-
-    camera.position = Point3::new(0., 0., 9.);
-    camera.target = Point3::new(0., 0., 0.);
-
-    camera.width = 400;
-    camera.aspect_ratio = 1.0;
-    camera.vertical_fov = 80.;
-
-    camera.samples_per_pixel = 100;
-    camera.max_ray_depth = 50;
+    let mut camera = CameraBuilder::default()
+        .position(Point3::new(0., 0., 9.))
+        .target(Point3::zero())
+        .width(400)
+        .aspect(1.0)
+        .fov(80.)
+        .samples_per_pixel(100)
+        .max_ray_depth(10)
+        .build()
+        .unwrap();
 
     camera.render(&world, "out/quad-demo.ppm".to_owned()).err();
 }
