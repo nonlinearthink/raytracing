@@ -7,8 +7,8 @@ use std::time;
 #[derive(Default)]
 pub struct Camera {
     pub up: Vector3,       // Camera-relative "up" direction
-    pub look_from: Point3, // Point camera is looking from
-    pub look_at: Point3,   // Point camera is looking at
+    pub position: Point3, // Point camera is looking from
+    pub target: Point3,   // Point camera is looking at
     u: Vector3,            // Camera frame basis vectors
     v: Vector3,            // Camera frame basis vectors
     w: Vector3,            // Camera frame basis vectors
@@ -31,6 +31,8 @@ pub struct Camera {
     pub samples_per_pixel: u8, // Count of random samples for each pixel
     pub max_ray_depth: u8,     // Maximum number of ray bounces into scene
 
+    pub background: Color3, // Scene background color
+
     rng: rand::rngs::ThreadRng,
 }
 
@@ -38,8 +40,8 @@ impl Camera {
     pub fn new() -> Self {
         Self {
             up: Vector3::up(),
-            look_from: Point3::new(0., 0., -1.),
-            look_at: Point3::zero(),
+            position: Point3::new(0., 0., -1.),
+            target: Point3::zero(),
             width: 100,
             aspect_ratio: 1.,
             vertical_fov: 90.,
@@ -54,10 +56,10 @@ impl Camera {
 
     fn initialize(&mut self) {
         // Calculate the u,v,w unit basis vectors for the camera coordinate frame.
-        self.w = (self.look_from - &self.look_at).normolize();
+        self.w = (self.position - &self.target).normolize();
         self.u = self.up.cross(&self.w).normolize();
         self.v = self.w.cross(&self.u);
-        self.center = self.look_from;
+        self.center = self.position;
 
         // Calculate the camera defocus disk basis vectors.
         let defocus_radius = self.focus_dist * f32::tan(degree_to_radian(self.defocus_angle / 2.));

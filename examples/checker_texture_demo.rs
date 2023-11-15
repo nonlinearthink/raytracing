@@ -44,8 +44,8 @@ fn main() {
 
     let mut camera = Camera::new();
 
-    camera.look_from = Point3::new(13., 2., 3.);
-    camera.look_at = Point3::new(0., 0., 0.);
+    camera.position = Point3::new(13., 2., 3.);
+    camera.target = Point3::new(0., 0., 0.);
 
     camera.width = 400;
     camera.aspect_ratio = 16. / 9.;

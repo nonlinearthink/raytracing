@@ -23,6 +23,7 @@ cargo run --release --example
 #    earth_demo
 #    material_camera_demo
 #    perlin_noise_demo
+#    quad_demo
 ```
 
 Pick and run a specify example:
