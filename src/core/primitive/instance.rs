@@ -70,12 +70,10 @@ impl RotateYInstance {
 
                     let new_point = Point3::new(new_x, y, new_z);
 
-                    min.x = f32::min(min.x, new_point.x);
-                    min.y = f32::min(min.y, new_point.y);
-                    min.z = f32::min(min.z, new_point.z);
-                    max.x = f32::max(max.x, new_point.x);
-                    max.y = f32::max(max.y, new_point.y);
-                    max.z = f32::max(max.z, new_point.z);
+                    for l in 0..3 {
+                        min[l] = f32::min(min[l], new_point[l]);
+                        max[l] = f32::max(max[l], new_point[l]);
+                    }
                 }
             }
         }
@@ -86,5 +84,51 @@ impl RotateYInstance {
             cos_theta,
             bbox: AxisAlignedBoundingBox::from_bounding_points(&min, &max),
         };
+    }
+}
+
+impl Hittable for RotateYInstance {
+    fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool {
+        // Change the ray from world space to object space
+        let mut origin = ray.origin;
+        let mut direction = ray.direction;
+
+        origin[0] = self.cos_theta * ray.origin[0] - self.sin_theta * ray.origin[2];
+        origin[2] = self.sin_theta * ray.origin[0] + self.cos_theta * ray.origin[2];
+
+        direction[0] = self.cos_theta * ray.direction[0] - self.sin_theta * ray.direction[2];
+        direction[2] = self.sin_theta * ray.direction[0] + self.cos_theta * ray.direction[2];
+
+        let rotate_ray = Ray::new_with_time(origin, direction, ray.time);
+
+        // Determine where (if any) an intersection occurs in object space
+        if !self.object.hit(&rotate_ray, ray_interval, record) {
+            return false;
+        }
+
+        // Change the intersection point from object space to world space
+        let point = record.point.unwrap();
+        let new_point = Point3::new(
+            self.cos_theta * point[0] + self.sin_theta * point[2],
+            point[1],
+            -self.sin_theta * point[0] + self.cos_theta * point[2],
+        );
+
+        // Change the normal from object space to world space
+        let normal = record.normal.unwrap();
+        let new_normal = Vector3::new(
+            self.cos_theta * normal[0] + self.sin_theta * normal[2],
+            normal[1],
+            -self.sin_theta * normal[0] + self.cos_theta * normal[2],
+        );
+
+        record.point = Some(new_point);
+        record.normal = Some(new_normal);
+
+        true
+    }
+
+    fn bounding_box(&self) -> &AxisAlignedBoundingBox {
+        &self.bbox
     }
 }

@@ -150,11 +150,15 @@ fn vector_equals_zero_test() {
 
 #[test]
 fn vector_index_test() {
-    let v = Vector3::new(1., 2., 3.);
+    let mut v = Vector3::new(1., 2., 3.);
 
     assert_eq!(v[0], 1.);
     assert_eq!(v[1], 2.);
     assert_eq!(v[2], 3.);
+
+    v[0] = 2.;
+
+    assert_eq!(v[0], 2.);
 }
 
 #[test]

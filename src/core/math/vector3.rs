@@ -161,6 +161,17 @@ impl std::ops::Index<usize> for Vector3 {
     }
 }
 
+impl std::ops::IndexMut<usize> for Vector3 {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        match index {
+            0 => &mut self.x,
+            1 => &mut self.y,
+            2 => &mut self.z,
+            _ => panic!("Out of bounds access"),
+        }
+    }
+}
+
 impl std::ops::Neg for Vector3 {
     type Output = Self;
 

@@ -2,7 +2,8 @@ use std::rc::Rc;
 
 use tiny_raytracer::core::{
     get_cube_box, BoundingVolumesHierarchicalNode, CameraBuilder, Color3, EmissiveMaterial,
-    HittableList, LambertianMaterial, Point3, Quad, SolidColorTexture, Vector3,
+    HittableList, LambertianMaterial, Point3, Quad, RotateYInstance, SolidColorTexture,
+    TranslateInstance, Vector3,
 };
 
 struct SceneOptions {
@@ -11,7 +12,7 @@ struct SceneOptions {
 
 fn main() {
     let options = SceneOptions {
-        bounding_volume_hierarchical: false,
+        bounding_volume_hierarchical: true,
     };
 
     let mut world = HittableList::new();
@@ -67,16 +68,22 @@ fn main() {
         Vector3::new(0., 555., 0.),
         white.clone(),
     )));
-    world.add(get_cube_box(
-        Point3::new(130., 0., 65.),
-        Point3::new(295., 165., 230.),
+    let box1 = get_cube_box(
+        Point3::new(0., 0., 0.),
+        Point3::new(165., 330., 165.),
         white.clone(),
-    ));
-    world.add(get_cube_box(
-        Point3::new(265., 0., 295.),
-        Point3::new(430., 330., 460.),
+    );
+    let box1 = Rc::new(RotateYInstance::new(box1, 15.));
+    let box1 = Rc::new(TranslateInstance::new(box1, Vector3::new(265., 0., 295.)));
+    world.add(box1);
+    let box2 = get_cube_box(
+        Point3::new(0., 0., 0.),
+        Point3::new(165., 165., 165.),
         white.clone(),
-    ));
+    );
+    let box2 = Rc::new(RotateYInstance::new(box2, -18.));
+    let box2 = Rc::new(TranslateInstance::new(box2, Vector3::new(130., 0., 65.)));
+    world.add(box2);
 
     // BVH
     if options.bounding_volume_hierarchical {
@@ -93,7 +100,7 @@ fn main() {
         .aspect(1.)
         .fov(40.)
         .background(Color3::zero())
-        .samples_per_pixel(200)
+        .samples_per_pixel(128)
         .max_ray_depth(10)
         .build()
         .unwrap();
