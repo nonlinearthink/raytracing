@@ -167,13 +167,13 @@ fn vector_add_test() {
     let v2 = Vector3::new(4., 5., 6.);
 
     // add by vector3
-    let result = v1 + &v2;
+    let result = &v1 + &v2;
     assert_eq!(v1, Vector3::new(1., 2., 3.));
     assert_eq!(v2, Vector3::new(4., 5., 6.));
     assert_eq!(result, Vector3::new(5., 7., 9.));
 
     // add by f32
-    let result = v1 + 2.;
+    let result = &v1 + 2.;
     assert_eq!(v1, Vector3::new(1., 2., 3.));
     assert_eq!(result, Vector3::new(3., 4., 5.));
 }
@@ -184,13 +184,13 @@ fn vector_sub_test() {
     let v2 = Vector3::new(4., 5., 6.);
 
     // sub by vector3
-    let result = v1 - &v2;
+    let result = &v1 - &v2;
     assert_eq!(v1, Vector3::new(1., 2., 3.));
     assert_eq!(v2, Vector3::new(4., 5., 6.));
     assert_eq!(result, Vector3::new(-3., -3., -3.));
 
     // sub by f32
-    let result = v1 - 2.;
+    let result = &v1 - 2.;
     assert_eq!(v1, Vector3::new(1., 2., 3.));
     assert_eq!(result, Vector3::new(-1., 0., 1.));
 }
@@ -201,13 +201,13 @@ fn vector_mul_test() {
     let v2 = Vector3::new(4., 5., 6.);
 
     // mul by vector3
-    let result = v1 * &v2;
+    let result = &v1 * &v2;
     assert_eq!(v1, Vector3::new(1., 2., 3.));
     assert_eq!(v2, Vector3::new(4., 5., 6.));
     assert_eq!(result, Vector3::new(4., 10., 18.));
 
     // mul by f32
-    let result = v1 * 2.;
+    let result = &v1 * 2.;
     assert_eq!(v1, Vector3::new(1., 2., 3.));
     assert_eq!(result, Vector3::new(2., 4., 6.));
 }
@@ -217,7 +217,7 @@ fn vector_div_test() {
     let v1 = Vector3::new(1., 2., 3.);
 
     // div by f32
-    let result = v1 / 2.;
+    let result = &v1 / 2.;
     assert_eq!(v1, Vector3::new(1., 2., 3.));
     assert_eq!(result, Vector3::new(0.5, 1., 1.5));
 }

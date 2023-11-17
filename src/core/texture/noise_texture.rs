@@ -1,3 +1,5 @@
+use std::ops::Mul;
+
 use super::Texture;
 use crate::core::{Color3, Perlin, Point3, Vector2};
 
@@ -28,13 +30,13 @@ impl NoiseTexture {
 
 impl Texture for NoiseTexture {
     fn value(&self, _uv: &Vector2, point: &Point3) -> Color3 {
-        let scaled_point = *point * self.scale;
+        let scaled_point = point * self.scale;
         if self.marble_effect {
             Color3::new(1., 1., 1.)
-                * 0.5
-                * (1. + f32::sin(scaled_point.z + 10. * self.noise.turbulence(&scaled_point, 7)))
+                .mul(0.5)
+                .mul(1. + f32::sin(scaled_point.z + 10. * self.noise.turbulence(&scaled_point, 7)))
         } else {
-            Color3::new(1., 1., 1.) * self.noise.turbulence(&scaled_point, 7)
+            &Color3::new(1., 1., 1.) * self.noise.turbulence(&scaled_point, 7)
         }
     }
 }

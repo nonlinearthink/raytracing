@@ -2,7 +2,7 @@ use crate::core::{
     AxisAlignedBoundingBox, HitRecord, Hittable, Interval, Material, Point3, Ray, Vector2, Vector3,
 };
 use std::{
-    ops::{Div, Sub},
+    ops::{Add, Div, Mul, Sub},
     rc::Rc,
 };
 
@@ -26,8 +26,8 @@ impl Sphere {
             is_moving: false,
             move_direction: Vector3::zero(),
             bbox: AxisAlignedBoundingBox::from_bounding_points(
-                &(center - &radius_vec),
-                &(center + &radius_vec),
+                &center - &radius_vec,
+                &center + &radius_vec,
             ),
         }
     }
@@ -45,20 +45,20 @@ impl Sphere {
             radius,
             material,
             is_moving: true,
-            move_direction: target - &center,
+            move_direction: &target - &center,
             bbox: AxisAlignedBoundingBox::from_bounding_points(
-                &(center - &radius_vec),
-                &(center + &radius_vec),
+                &center - &radius_vec,
+                &center + &radius_vec,
             )
             .merge(&AxisAlignedBoundingBox::from_bounding_points(
-                &(target - &radius_vec),
-                &(target + &radius_vec),
+                &target - &radius_vec,
+                &target + &radius_vec,
             )),
         }
     }
 
     pub fn get_moving_center(&self, time: f32) -> Vector3 {
-        self.center + &(self.move_direction * time)
+        self.center.add(&self.move_direction.mul(time))
     }
 
     pub fn compute_uv(point: &Point3) -> Vector2 {
@@ -79,7 +79,7 @@ impl Hittable for Sphere {
         } else {
             self.center
         };
-        let oc: Vector3 = ray.origin - &center;
+        let oc: Vector3 = &ray.origin - &center;
         let a = ray.direction.length_squared();
         let half_b = oc.dot(&ray.direction);
         let c = oc.length_squared() - f32::powf(self.radius, 2.);

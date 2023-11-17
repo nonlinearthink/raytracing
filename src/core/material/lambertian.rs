@@ -31,7 +31,7 @@ impl Material for LambertianMaterial {
             let normal = hit_record.normal.unwrap();
             let point = hit_record.point.unwrap();
             let uv = hit_record.uv.unwrap();
-            let mut scatter_direction = normal + &Vector3::random_unit_vector();
+            let mut scatter_direction = &normal + &Vector3::random_unit_vector();
             if scatter_direction.equals_zero() {
                 scatter_direction = normal;
             }

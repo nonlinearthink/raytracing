@@ -81,7 +81,7 @@ impl Vector3 {
         if vector_in_unit_sphere.dot(normal) > 0. {
             vector_in_unit_sphere
         } else {
-            -vector_in_unit_sphere
+            vector_in_unit_sphere.neg()
         }
     }
 
@@ -140,11 +140,11 @@ impl Vector3 {
 
     pub fn refract(&self, normal: &Self, refraction_ratio: f32) -> Self {
         let cos_theta = f32::min(self.neg().dot(normal), 1.0);
-        let ray_out_perpendicular = self.add(&normal.mul(cos_theta)) * refraction_ratio;
+        let ray_out_perpendicular = self.add(&normal.mul(cos_theta)).mul(refraction_ratio);
         let ray_out_parallel = normal.mul(-f32::sqrt(f32::abs(
             1.0 - ray_out_perpendicular.length_squared(),
         )));
-        return ray_out_perpendicular + &ray_out_parallel;
+        ray_out_perpendicular.add(&ray_out_parallel)
     }
 }
 
@@ -172,67 +172,67 @@ impl std::ops::IndexMut<usize> for Vector3 {
     }
 }
 
-impl std::ops::Neg for Vector3 {
-    type Output = Self;
+impl std::ops::Neg for &Vector3 {
+    type Output = Vector3;
 
     fn neg(self) -> Self::Output {
-        Self::new(-self.x, -self.y, -self.z)
+        Vector3::new(-self.x, -self.y, -self.z)
     }
 }
 
-impl std::ops::Add<&Vector3> for Vector3 {
-    type Output = Self;
+impl std::ops::Add<&Vector3> for &Vector3 {
+    type Output = Vector3;
 
-    fn add(self, rhs: &Self) -> Self::Output {
-        Self::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
+    fn add(self, rhs: &Vector3) -> Self::Output {
+        Vector3::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
     }
 }
 
-impl std::ops::Add<f32> for Vector3 {
-    type Output = Self;
+impl std::ops::Add<f32> for &Vector3 {
+    type Output = Vector3;
 
     fn add(self, rhs: f32) -> Self::Output {
-        Self::new(self.x + rhs, self.y + rhs, self.z + rhs)
+        Vector3::new(self.x + rhs, self.y + rhs, self.z + rhs)
     }
 }
 
-impl std::ops::Sub<&Vector3> for Vector3 {
-    type Output = Self;
+impl std::ops::Sub<&Vector3> for &Vector3 {
+    type Output = Vector3;
 
-    fn sub(self, rhs: &Self) -> Self::Output {
-        Self::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
+    fn sub(self, rhs: &Vector3) -> Self::Output {
+        Vector3::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
     }
 }
 
-impl std::ops::Sub<f32> for Vector3 {
-    type Output = Self;
+impl std::ops::Sub<f32> for &Vector3 {
+    type Output = Vector3;
 
     fn sub(self, rhs: f32) -> Self::Output {
-        Self::new(self.x - rhs, self.y - rhs, self.z - rhs)
+        Vector3::new(self.x - rhs, self.y - rhs, self.z - rhs)
     }
 }
 
-impl std::ops::Mul<&Vector3> for Vector3 {
-    type Output = Self;
+impl std::ops::Mul<&Vector3> for &Vector3 {
+    type Output = Vector3;
 
-    fn mul(self, rhs: &Self) -> Self::Output {
-        Self::new(self.x * rhs.x, self.y * rhs.y, self.z * rhs.z)
+    fn mul(self, rhs: &Vector3) -> Self::Output {
+        Vector3::new(self.x * rhs.x, self.y * rhs.y, self.z * rhs.z)
     }
 }
 
-impl std::ops::Mul<f32> for Vector3 {
-    type Output = Self;
+impl std::ops::Mul<f32> for &Vector3 {
+    type Output = Vector3;
 
     fn mul(self, rhs: f32) -> Self::Output {
-        Self::new(self.x * rhs, self.y * rhs, self.z * rhs)
+        Vector3::new(self.x * rhs, self.y * rhs, self.z * rhs)
     }
 }
 
-impl std::ops::Div<f32> for Vector3 {
-    type Output = Self;
+impl std::ops::Div<f32> for &Vector3 {
+    type Output = Vector3;
 
-    fn div(self, rhs: f32) -> Self::Output {
-        Self::new(self.x / rhs, self.y / rhs, self.z / rhs)
+    fn div(self, rhs: f32) -> Vector3 {
+        Vector3::new(self.x / rhs, self.y / rhs, self.z / rhs)
     }
 }
 

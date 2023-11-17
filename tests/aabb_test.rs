@@ -44,8 +44,8 @@ fn aabb_hit_test() {
     let ray = Ray::new(Vector3::zero(), Vector3::one());
 
     let bbox = AxisAlignedBoundingBox::from_bounding_points(
-        &Vector3::new(2., 2., 2.),
-        &Vector3::new(3., 3., 3.),
+        Vector3::new(2., 2., 2.),
+        Vector3::new(3., 3., 3.),
     );
 
     assert!(!bbox.hit(&ray, &mut Interval::new(0., 1.999)));

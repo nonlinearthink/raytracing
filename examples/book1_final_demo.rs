@@ -42,19 +42,19 @@ fn load_objects(world: &mut HittableList, motion_blur_test: bool, checker_textur
                 (j as f32) + 0.9 * rng.gen::<f32>(),
             );
 
-            if (center - &Point3::new(4., 0.2, 0.)).length() > 0.9 {
+            if (&center - &Point3::new(4., 0.2, 0.)).length() > 0.9 {
                 let sphere_material: Rc<dyn Material>;
 
                 if choose_material < 0.8 {
                     // diffuse
                     let albedo_texture = Rc::new(SolidColorTexture::new(
-                        Color3::random(0., 1., &mut rng) * &Color3::random(0., 1., &mut rng),
+                        &Color3::random(0., 1., &mut rng) * &Color3::random(0., 1., &mut rng),
                     ));
                     sphere_material = Rc::new(LambertianMaterial::new(albedo_texture));
                     world.add(Rc::new(Sphere::new(center, 0.2, sphere_material.clone())));
 
                     if motion_blur_test {
-                        let target = center + &Vector3::new(0., rng.gen_range(0.0..0.5), 0.);
+                        let target = &center + &Vector3::new(0., rng.gen_range(0.0..0.5), 0.);
                         world.add(Rc::new(Sphere::new_moving_sphere(
                             center,
                             target,

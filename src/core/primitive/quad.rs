@@ -1,5 +1,5 @@
 use crate::core::{AxisAlignedBoundingBox, Hittable, Material, Point3, Vector2, Vector3};
-use std::rc::Rc;
+use std::{ops::Add, rc::Rc};
 
 #[derive(Debug)]
 pub struct Quad {
@@ -18,13 +18,13 @@ impl Quad {
         let n = u.cross(&v);
         let normal = n.normolize();
         let d = normal.dot(&p);
-        let w = n / n.dot(&n);
+        let w = &n / n.dot(&n);
         Self {
             p,
             u,
             v,
             material,
-            bbox: AxisAlignedBoundingBox::from_bounding_points(&p, &(p + &u + &v)).pad(),
+            bbox: AxisAlignedBoundingBox::from_bounding_points(p, p.add(&u).add(&v)).pad(),
             normal,
             d,
             w,
@@ -52,7 +52,7 @@ impl Hittable for Quad {
         }
 
         let intersection = ray.at(t);
-        let planar_intersection_vector = intersection - &self.p;
+        let planar_intersection_vector = &intersection - &self.p;
         let planar_u = self.w.dot(&planar_intersection_vector.cross(&self.v));
         let planar_v = self.w.dot(&self.u.cross(&planar_intersection_vector));
         if planar_u < 0. || planar_u > 1. || planar_v < 0. || planar_v > 1. {

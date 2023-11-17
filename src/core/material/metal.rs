@@ -1,6 +1,9 @@
 use super::Material;
 use crate::core::{Color3, HitRecord, Ray, Texture, Vector2, Vector3};
-use std::rc::Rc;
+use std::{
+    ops::{Add, Mul},
+    rc::Rc,
+};
 
 #[derive(Debug)]
 pub struct MetalMaterial {
@@ -31,7 +34,8 @@ impl Material for MetalMaterial {
             let reflected = ray_in.direction.normolize().reflect(&normal);
 
             ray_scattered.origin = point;
-            ray_scattered.direction = reflected + &(Vector3::random_unit_vector() * self.fuzz);
+            ray_scattered.direction =
+                reflected.add(&(Vector3::random_unit_vector().mul(self.fuzz)));
             ray_scattered.time = ray_in.time;
             attenuation.clone_from(&self.albedo_texture.value(&Vector2::zero(), &point));
 

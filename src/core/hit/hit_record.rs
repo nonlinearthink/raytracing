@@ -1,5 +1,5 @@
 use crate::core::{Material, Point3, Ray, Vector2, Vector3};
-use std::rc::Rc;
+use std::{rc::Rc, ops::Neg};
 
 #[derive(Debug, Clone)]
 pub struct HitRecord {
@@ -31,7 +31,7 @@ impl HitRecord {
         self.normal = if self.front_face {
             Some(unit_outward_normal)
         } else {
-            Some(-unit_outward_normal)
+            Some(unit_outward_normal.neg())
         };
     }
 }

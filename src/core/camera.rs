@@ -2,7 +2,10 @@ use super::{Color3, HitRecord, Hittable, Interval, Point3, Ray, Vector3};
 use crate::utils::{deg_to_rad, linear_to_gramma, PPMImage};
 use indicatif::ProgressBar;
 use rand::Rng;
-use std::time;
+use std::{
+    ops::{Add, Mul, Neg, Sub},
+    time,
+};
 
 #[derive(Default, Builder)]
 pub struct Camera {
@@ -91,14 +94,14 @@ impl Camera {
 
     fn initialize(&mut self) {
         // Calculate the u,v,w unit basis vectors for the camera coordinate frame.
-        self.w = (self.position - &self.target).normolize();
+        self.w = (&self.position - &self.target).normolize();
         self.u = self.up.cross(&self.w).normolize();
         self.v = self.w.cross(&self.u);
 
         // Calculate the camera defocus disk basis vectors.
         let defocus_radius = self.focus_dist * f32::tan(deg_to_rad(self.defocus_angle / 2.));
-        self.defocus_disk_u = self.u * defocus_radius;
-        self.defocus_disk_v = self.v * defocus_radius;
+        self.defocus_disk_u = &self.u * defocus_radius;
+        self.defocus_disk_v = &self.v * defocus_radius;
 
         self.height = ((self.width as f32) / self.aspect) as u32;
         if self.height < 1 {
@@ -109,46 +112,52 @@ impl Camera {
         let viewport_height = 2. * f32::tan(vertical_theta / 2.) * self.focus_dist;
         let viewport_width = viewport_height * ((self.width as f32) / (self.height as f32));
         // Calculate the vectors across the horizontal and down the vertical viewport edges.
-        let viewport_u = self.u * viewport_width; // Vector across viewport horizontal edge
-        let viewport_v = -self.v * viewport_height; // Vector down viewport vertical edge
+        let viewport_u = &self.u * viewport_width; // Vector across viewport horizontal edge
+        let viewport_v = &self.v.neg() * viewport_height; // Vector down viewport vertical edge
 
         // Calculate the horizontal and vertical delta vectors from pixel to pixel.
-        self.pixel_delta_u = viewport_u / (self.width as f32);
-        self.pixel_delta_v = viewport_v / (self.height as f32);
+        self.pixel_delta_u = &viewport_u / (self.width as f32);
+        self.pixel_delta_v = &viewport_v / (self.height as f32);
         // Calculate the location of the upper left pixel.
-        let viewport_top_left =
-            self.position - &(self.w * self.focus_dist) - &(viewport_u / 2.) - &(viewport_v / 2.);
-        self.pixel_origin = viewport_top_left + &((self.pixel_delta_u + &self.pixel_delta_v) * 0.5);
+        let viewport_top_left = &self
+            .position
+            .sub(&self.w.mul(self.focus_dist))
+            .sub(&(&viewport_u / 2.))
+            .sub(&(&viewport_v / 2.));
+        self.pixel_origin =
+            viewport_top_left.add(&self.pixel_delta_u.add(&self.pixel_delta_v).mul(0.5));
     }
 
     fn pixel_sample_square(&mut self) -> Vector3 {
         // Returns a random point in the square surrounding a pixel at the origin.
         let px = -0.5 + self.rng.gen_range(0.0..1.0);
         let py = -0.5 + self.rng.gen_range(0.0..1.0);
-        return (self.pixel_delta_u * px) + &(self.pixel_delta_v * py);
+        return &self.pixel_delta_u.mul(px) + &self.pixel_delta_v.mul(py);
     }
 
     fn defocus_disk_sample(&self) -> Vector3 {
         // Returns a random point in the camera defocus disk.
         let point = Vector3::random_in_unit_disk();
-        return self.position
-            + &(self.defocus_disk_u * point[0])
-            + &(self.defocus_disk_v * point[1]);
+        return self
+            .position
+            .add(&self.defocus_disk_u.mul(point[0]))
+            .add(&self.defocus_disk_v.mul(point[1]));
     }
 
     fn get_ray(&mut self, x: u32, y: u32) -> Ray {
         // Get a randomly-sampled camera ray for the pixel at location i,j, originating from
         // the camera defocus disk.
-        let pixel_center = self.pixel_origin
-            + &(self.pixel_delta_u * (x as f32))
-            + &(self.pixel_delta_v * (y as f32));
-        let pixel_sample = pixel_center + &self.pixel_sample_square();
+        let pixel_center = self
+            .pixel_origin
+            .add(&self.pixel_delta_u.mul(x as f32))
+            .add(&self.pixel_delta_v.mul(y as f32));
+        let pixel_sample = &pixel_center + &self.pixel_sample_square();
         let ray_origin = if self.defocus_angle <= 0. {
             self.position
         } else {
             self.defocus_disk_sample()
         };
-        let ray_direction = pixel_sample - &ray_origin;
+        let ray_direction = &pixel_sample - &ray_origin;
         let ray_time = self.rng.gen::<f32>();
 
         Ray::new_with_time(ray_origin, ray_direction, ray_time)
@@ -178,9 +187,9 @@ impl Camera {
         if !material.scatter(ray, &record, &mut attenuation, &mut ray_scattered) {
             return emission_color;
         }
-        let scatter_color = attenuation * &self.ray_color(&ray_scattered, world, ray_depth - 1);
+        let scatter_color = &attenuation * &self.ray_color(&ray_scattered, world, ray_depth - 1);
 
-        emission_color + &scatter_color
+        &emission_color + &scatter_color
     }
 
     pub fn render(&mut self, world: &dyn Hittable, save_path: String) -> std::io::Result<()> {

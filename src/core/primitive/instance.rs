@@ -2,7 +2,7 @@ use crate::{
     core::{AxisAlignedBoundingBox, HitRecord, Hittable, Interval, Point3, Ray, Vector3},
     utils::deg_to_rad,
 };
-use std::{ops::Add, rc::Rc};
+use std::{ops::{Add, Sub}, rc::Rc};
 
 #[derive(Debug)]
 pub struct TranslateInstance {
@@ -23,13 +23,13 @@ impl TranslateInstance {
 
 impl Hittable for TranslateInstance {
     fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool {
-        let offset_ray = Ray::new_with_time(ray.origin - &self.offset, ray.direction, ray.time);
+        let offset_ray = Ray::new_with_time(ray.origin.sub(&self.offset), ray.direction, ray.time);
 
         if !self.object.hit(&offset_ray, ray_interval, record) {
             return false;
         }
 
-        record.point = Some(record.point.unwrap() + &self.offset);
+        record.point = Some(&record.point.unwrap() + &self.offset);
 
         true
     }
@@ -82,7 +82,7 @@ impl RotateYInstance {
             object: object.clone(),
             sin_theta,
             cos_theta,
-            bbox: AxisAlignedBoundingBox::from_bounding_points(&min, &max),
+            bbox: AxisAlignedBoundingBox::from_bounding_points(min, max),
         };
     }
 }
