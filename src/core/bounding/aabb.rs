@@ -12,7 +12,7 @@ impl AxisAlignedBoundingBox {
         Self { x, y, z }
     }
 
-    pub fn from_bounding_points(min: Point3, max: Point3) -> Self {
+    pub fn from_bounding_points(min: &Point3, max: &Point3) -> Self {
         Self {
             x: Interval::new(f32::min(min.x, max.x), f32::max(min.x, max.x)),
             y: Interval::new(f32::min(min.y, max.y), f32::max(min.y, max.y)),

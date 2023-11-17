@@ -82,7 +82,7 @@ impl RotateYInstance {
             object: object.clone(),
             sin_theta,
             cos_theta,
-            bbox: AxisAlignedBoundingBox::from_bounding_points(min, max),
+            bbox: AxisAlignedBoundingBox::from_bounding_points(&min, &max),
         };
     }
 }
