@@ -20,7 +20,9 @@ cargo run --release --example
 # Available examples:
 #    book1_final_demo
 #    checker_texture_demo
+#    cornell_box_demo
 #    earth_demo
+#    lights_demo
 #    material_camera_demo
 #    perlin_noise_demo
 #    quad_demo
@@ -29,7 +31,7 @@ cargo run --release --example
 Pick and run a specify example:
 
 ```bash
-cargo run --release --example book1_final_demo
+cargo run --release --example cornell_box_demo
 ```
 
 >`--release` is recommended, because it really speeds up the render process.

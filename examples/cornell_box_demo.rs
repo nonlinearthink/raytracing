@@ -1,8 +1,8 @@
 use std::rc::Rc;
 
 use tiny_raytracer::core::{
-    CameraBuilder, Color3, EmissiveMaterial, HittableList, LambertianMaterial, Point3, Quad,
-    SolidColorTexture, Vector3, BoundingVolumesHierarchicalNode,
+    get_cube_box, BoundingVolumesHierarchicalNode, CameraBuilder, Color3, EmissiveMaterial,
+    HittableList, LambertianMaterial, Point3, Quad, SolidColorTexture, Vector3,
 };
 
 struct SceneOptions {
@@ -11,7 +11,6 @@ struct SceneOptions {
 
 fn main() {
     let options = SceneOptions {
-        // FIXME: BVH make a all black image.
         bounding_volume_hierarchical: false,
     };
 
@@ -68,6 +67,16 @@ fn main() {
         Vector3::new(0., 555., 0.),
         white.clone(),
     )));
+    world.add(get_cube_box(
+        Point3::new(130., 0., 65.),
+        Point3::new(295., 165., 230.),
+        white.clone(),
+    ));
+    world.add(get_cube_box(
+        Point3::new(265., 0., 295.),
+        Point3::new(430., 330., 460.),
+        white.clone(),
+    ));
 
     // BVH
     if options.bounding_volume_hierarchical {

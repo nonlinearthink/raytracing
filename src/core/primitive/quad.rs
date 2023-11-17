@@ -24,7 +24,7 @@ impl Quad {
             u,
             v,
             material,
-            bbox: AxisAlignedBoundingBox::from_bounding_vector(&p, &(p + &u + &v)).pad(),
+            bbox: AxisAlignedBoundingBox::from_bounding_points(&p, &(p + &u + &v)).pad(),
             normal,
             d,
             w,

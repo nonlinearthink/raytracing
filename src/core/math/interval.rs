@@ -87,3 +87,11 @@ impl Interval {
         }
     }
 }
+
+impl std::ops::Add<f32> for &Interval {
+    type Output = Interval;
+
+    fn add(self, displacement: f32) -> Self::Output {
+        Interval::new(self.min + displacement, self.max + displacement)
+    }
+}

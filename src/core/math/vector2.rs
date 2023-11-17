@@ -22,34 +22,26 @@ impl Vector2 {
     }
 }
 
-impl std::ops::Add<&Vector2> for Vector2 {
-    type Output = Self;
+impl std::ops::Add<&Vector2> for &Vector2 {
+    type Output = Vector2;
 
-    fn add(self, rhs: &Self) -> Self::Output {
-        Self::new(self.x + rhs.x, self.y + rhs.y)
+    fn add(self, rhs: &Vector2) -> Self::Output {
+        Vector2::new(self.x + rhs.x, self.y + rhs.y)
     }
 }
 
-impl std::ops::Sub<&Vector2> for Vector2 {
-    type Output = Self;
+impl std::ops::Sub<&Vector2> for &Vector2 {
+    type Output = Vector2;
 
-    fn sub(self, rhs: &Self) -> Self::Output {
-        Self::new(self.x - rhs.x, self.y - rhs.y)
+    fn sub(self, rhs: &Vector2) -> Self::Output {
+        Vector2::new(self.x - rhs.x, self.y - rhs.y)
     }
 }
 
-impl std::ops::Mul<&Vector2> for Vector2 {
-    type Output = Self;
+impl std::ops::Mul<&Vector2> for &Vector2 {
+    type Output = Vector2;
 
-    fn mul(self, rhs: &Self) -> Self::Output {
-        Self::new(self.x * rhs.x, self.y * rhs.y)
-    }
-}
-
-impl std::ops::Div<&Vector2> for Vector2 {
-    type Output = Self;
-
-    fn div(self, rhs: &Self) -> Self::Output {
-        Self::new(self.x / rhs.x, self.y / rhs.y)
+    fn mul(self, rhs: &Vector2) -> Self::Output {
+        Vector2::new(self.x * rhs.x, self.y * rhs.y)
     }
 }

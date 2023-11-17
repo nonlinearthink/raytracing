@@ -1,4 +1,4 @@
-use crate::core::{Interval, Ray, Vector3};
+use crate::core::{Interval, Point3, Ray, Vector3};
 
 #[derive(Debug, Clone, Default)]
 pub struct AxisAlignedBoundingBox {
@@ -12,11 +12,11 @@ impl AxisAlignedBoundingBox {
         Self { x, y, z }
     }
 
-    pub fn from_bounding_vector(min: &Vector3, max: &Vector3) -> Self {
+    pub fn from_bounding_points(min: &Point3, max: &Point3) -> Self {
         Self {
-            x: Interval::new(min.x, max.x),
-            y: Interval::new(min.y, max.y),
-            z: Interval::new(min.z, max.z),
+            x: Interval::new(f32::min(min.x, max.x), f32::max(min.x, max.x)),
+            y: Interval::new(f32::min(min.y, max.y), f32::max(min.y, max.y)),
+            z: Interval::new(f32::min(min.z, max.z), f32::max(min.z, max.z)),
         }
     }
 
@@ -84,5 +84,13 @@ impl AxisAlignedBoundingBox {
             }
         }
         return true;
+    }
+}
+
+impl std::ops::Add<&Vector3> for &AxisAlignedBoundingBox {
+    type Output = AxisAlignedBoundingBox;
+
+    fn add(self, offset: &Vector3) -> Self::Output {
+        AxisAlignedBoundingBox::new(&self.x + offset.x, &self.y + offset.y, &self.z + offset.z)
     }
 }

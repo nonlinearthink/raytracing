@@ -25,7 +25,7 @@ impl Sphere {
             material,
             is_moving: false,
             move_direction: Vector3::zero(),
-            bbox: AxisAlignedBoundingBox::from_bounding_vector(
+            bbox: AxisAlignedBoundingBox::from_bounding_points(
                 &(center - &radius_vec),
                 &(center + &radius_vec),
             ),
@@ -46,11 +46,11 @@ impl Sphere {
             material,
             is_moving: true,
             move_direction: target - &center,
-            bbox: AxisAlignedBoundingBox::from_bounding_vector(
+            bbox: AxisAlignedBoundingBox::from_bounding_points(
                 &(center - &radius_vec),
                 &(center + &radius_vec),
             )
-            .merge(&AxisAlignedBoundingBox::from_bounding_vector(
+            .merge(&AxisAlignedBoundingBox::from_bounding_points(
                 &(target - &radius_vec),
                 &(target + &radius_vec),
             )),
