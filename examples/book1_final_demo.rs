@@ -130,7 +130,7 @@ fn main() {
     let mut camera = CameraBuilder::default()
         .position(Point3::new(13., 2., 3.))
         .target(Point3::zero())
-        .width(if options.high_quality { 1920 } else { 400 })
+        .width(if options.high_quality { 1200 } else { 400 })
         .aspect(16. / 9.)
         .fov(20.)
         .defocus_angle(if options.depth_of_field { 0.6 } else { 0.02 })

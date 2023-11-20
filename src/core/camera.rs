@@ -61,7 +61,7 @@ pub struct Camera {
     pixel_origin: Point3, // Location of pixel 0, 0
 
     #[builder(default = "20")]
-    pub samples_per_pixel: u8, // Count of random samples for each pixel
+    pub samples_per_pixel: u16, // Count of random samples for each pixel
 
     #[builder(default = "10")]
     pub max_ray_depth: u8, // Maximum number of ray bounces into scene

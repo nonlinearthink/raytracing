@@ -1,8 +1,7 @@
-use std::rc::Rc;
-
 use crate::core::{
-    Color3, HitRecord, Hittable, Interval, IsotropicMaterial, Material, Texture, Vector3,
+    Color3, HitRecord, Hittable, Interval, IsotropicMaterial, Material, Texture, Vector3, Vector2,
 };
+use std::rc::Rc;
 
 #[derive(Debug)]
 pub struct ConstantMedium {
@@ -92,6 +91,7 @@ impl Hittable for ConstantMedium {
         record.normal = Some(Vector3::new(1., 0., 0.)); // arbitrary
         record.front_face = true;
         record.material = Some(Rc::clone(&self.phase_function));
+        record.uv = Some(Vector2::zero());
 
         true
     }
