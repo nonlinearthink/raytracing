@@ -4,17 +4,17 @@ use std::rc::Rc;
 
 #[derive(Debug)]
 pub struct LambertianMaterial {
-    pub albedo_texture: Rc<dyn Texture>,
+    albedo: Rc<dyn Texture>,
 }
 
 impl LambertianMaterial {
-    pub fn new(albedo_texture: Rc<dyn Texture>) -> Self {
-        Self { albedo_texture }
+    pub fn new(albedo: Rc<dyn Texture>) -> Self {
+        Self { albedo }
     }
 
     pub fn new_with_color(color: Color3) -> Self {
         Self {
-            albedo_texture: Rc::new(SolidColorTexture::new(color)),
+            albedo: Rc::new(SolidColorTexture::new(color)),
         }
     }
 }
@@ -36,7 +36,7 @@ impl Material for LambertianMaterial {
                 scatter_direction = normal;
             }
 
-            attenuation.clone_from(&self.albedo_texture.value(&uv, &point));
+            attenuation.clone_from(&self.albedo.value(&uv, &point));
             ray_scattered.origin = point;
             ray_scattered.direction = scatter_direction;
             ray_scattered.time = ray_in.time;

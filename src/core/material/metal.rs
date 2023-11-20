@@ -7,14 +7,14 @@ use std::{
 
 #[derive(Debug)]
 pub struct MetalMaterial {
-    pub albedo_texture: Rc<dyn Texture>,
-    pub fuzz: f32,
+    albedo: Rc<dyn Texture>,
+    fuzz: f32,
 }
 
 impl MetalMaterial {
-    pub fn new(albedo_texture: Rc<dyn Texture>, fuzz: f32) -> Self {
+    pub fn new(albedo: Rc<dyn Texture>, fuzz: f32) -> Self {
         Self {
-            albedo_texture,
+            albedo,
             fuzz: f32::max(0., f32::min(fuzz, 1.)),
         }
     }
@@ -37,7 +37,7 @@ impl Material for MetalMaterial {
             ray_scattered.direction =
                 reflected.add(&(Vector3::random_unit_vector().mul(self.fuzz)));
             ray_scattered.time = ray_in.time;
-            attenuation.clone_from(&self.albedo_texture.value(&Vector2::zero(), &point));
+            attenuation.clone_from(&self.albedo.value(&Vector2::zero(), &point));
 
             ray_scattered.direction.dot(&normal) > 0.
         } else {
