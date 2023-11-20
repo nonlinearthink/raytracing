@@ -1,5 +1,6 @@
 use crate::core::{
-    Color3, HitRecord, Hittable, Interval, IsotropicMaterial, Material, Texture, Vector3, Vector2,
+    Color3, HitRecord, Hittable, Interval, IsotropicMaterial, Material, Ray, Texture, Vector2,
+    Vector3,
 };
 use std::rc::Rc;
 
@@ -29,12 +30,7 @@ impl ConstantMedium {
 }
 
 impl Hittable for ConstantMedium {
-    fn hit(
-        &self,
-        ray: &crate::core::Ray,
-        ray_interval: &crate::core::Interval,
-        record: &mut crate::core::HitRecord,
-    ) -> bool {
+    fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool {
         let enable_debug = false;
         let debugging = enable_debug && rand::random::<f32>() < 0.00001;
 
@@ -72,7 +68,7 @@ impl Hittable for ConstantMedium {
 
         let ray_length = ray.direction.length();
         let distance_inside_boundary = (rec2.t - rec1.t) * ray_length;
-        let hit_distance = self.neg_inv_density * f32::log2(rand::random::<f32>());
+        let hit_distance = self.neg_inv_density * f32::ln(rand::random::<f32>());
 
         if hit_distance > distance_inside_boundary {
             return false;

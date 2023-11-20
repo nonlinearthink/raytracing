@@ -19,6 +19,7 @@ cargo run --release --example
 #
 # Available examples:
 #    book1_final_demo
+#    book2_final_demo
 #    checker_texture_demo
 #    cornell_box_demo
 #    earth_demo

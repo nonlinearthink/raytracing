@@ -13,6 +13,7 @@ struct SceneOptions {
 fn main() {
     let options = SceneOptions {
         bounding_volume_hierarchical: false,
+        // FIXME: right side of box is gone
         smoke_test: false,
     };
 
@@ -133,8 +134,8 @@ fn main() {
         .aspect(1.)
         .fov(40.)
         .background(Color3::zero())
-        .samples_per_pixel(200)
-        .max_ray_depth(50)
+        .samples_per_pixel(128)
+        .max_ray_depth(20)
         .build()
         .unwrap();
     camera
