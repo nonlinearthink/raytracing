@@ -45,7 +45,7 @@ cargo run --release --example cornell_box_demo
 
 ### Ray Tracing The Next Week
 
-todo...
+![Ray Tracing The Next Week](screenshots/second-book-final-scene.jpg)
 
 ### Ray Tracing The Rest of Your Life
 
