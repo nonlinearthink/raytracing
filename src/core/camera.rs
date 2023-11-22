@@ -61,7 +61,16 @@ pub struct Camera {
     pixel_origin: Point3, // Location of pixel 0, 0
 
     #[builder(default = "20")]
-    pub samples_per_pixel: u16, // Count of random samples for each pixel
+    pub samples_per_pixel: u32, // Count of random samples for each pixel
+
+    #[builder(setter(skip))]
+    sqrt_spp: u32, // Sqrt of self.samples_per_pixel
+
+    #[builder(setter(skip))]
+    square_sqrt_spp: f32, // Square of self.sqrt_spp
+
+    #[builder(setter(skip))]
+    reciprocal_sqrt_spp: f32, // Reciprocal of self.sqrt_spp
 
     #[builder(default = "10")]
     pub max_ray_depth: u8, // Maximum number of ray bounces into scene
@@ -126,12 +135,16 @@ impl Camera {
             .sub(&(&viewport_v / 2.));
         self.pixel_origin =
             viewport_top_left.add(&self.pixel_delta_u.add(&self.pixel_delta_v).mul(0.5));
+
+        self.sqrt_spp = f32::sqrt(self.samples_per_pixel as f32) as u32;
+        self.square_sqrt_spp = (self.sqrt_spp * self.sqrt_spp) as f32;
+        self.reciprocal_sqrt_spp = 1. / self.sqrt_spp as f32;
     }
 
-    fn pixel_sample_square(&mut self) -> Vector3 {
+    fn pixel_sample_square(&mut self, sub_x: u32, sub_y: u32) -> Vector3 {
         // Returns a random point in the square surrounding a pixel at the origin.
-        let px = -0.5 + self.rng.gen_range(0.0..1.0);
-        let py = -0.5 + self.rng.gen_range(0.0..1.0);
+        let px = -0.5 + (sub_x as f32 + self.rng.gen::<f32>()) * self.reciprocal_sqrt_spp;
+        let py = -0.5 + (sub_y as f32 + self.rng.gen::<f32>()) * self.reciprocal_sqrt_spp;
         return &self.pixel_delta_u.mul(px) + &self.pixel_delta_v.mul(py);
     }
 
@@ -144,14 +157,14 @@ impl Camera {
             .add(&self.defocus_disk_v.mul(point[1]));
     }
 
-    fn get_ray(&mut self, x: u32, y: u32) -> Ray {
+    fn get_ray(&mut self, x: u32, y: u32, sub_x: u32, sub_y: u32) -> Ray {
         // Get a randomly-sampled camera ray for the pixel at location i,j, originating from
         // the camera defocus disk.
         let pixel_center = self
             .pixel_origin
             .add(&self.pixel_delta_u.mul(x as f32))
             .add(&self.pixel_delta_v.mul(y as f32));
-        let pixel_sample = &pixel_center + &self.pixel_sample_square();
+        let pixel_sample = &pixel_center + &self.pixel_sample_square(sub_x, sub_y);
         let ray_origin = if self.defocus_angle <= 0. {
             self.position
         } else {
@@ -203,12 +216,14 @@ impl Camera {
         for y in 0..self.height {
             for x in 0..self.width {
                 let mut color = Color3::zero();
-                for _ in 0..self.samples_per_pixel {
-                    let ray = self.get_ray(x, y);
-                    color += &self.ray_color(&ray, world, self.max_ray_depth);
+                for sub_y in 0..self.sqrt_spp {
+                    for sub_x in 0..self.sqrt_spp {
+                        let ray = self.get_ray(x, y, sub_x, sub_y);
+                        color += &self.ray_color(&ray, world, self.max_ray_depth);
+                    }
                 }
 
-                let scale = 1. / f32::from(self.samples_per_pixel);
+                let scale = 1. / self.square_sqrt_spp;
                 color.x *= scale;
                 color.y *= scale;
                 color.z *= scale;
