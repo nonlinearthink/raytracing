@@ -1,10 +1,10 @@
 use rand::Rng;
 use std::rc::Rc;
 
-use tiny_raytracer::core::{
-    BoundingVolumesHierarchicalNode, CameraBuilder, CheckerTexture, Color3, DielectricMaterial,
-    HittableList, LambertianMaterial, Material, MetalMaterial, Point3, SolidColorTexture, Sphere,
-    Texture, Vector3,
+use raytracing::core::{
+    BVHNode, CameraBuilder, CheckerTexture, Color3, DielectricMaterial, HittableList,
+    LambertianMaterial, Material, MetalMaterial, Point3, SolidColorTexture, Sphere, Texture,
+    Vector3,
 };
 
 struct SceneOptions {
@@ -122,7 +122,7 @@ fn main() {
     );
 
     if options.bounding_volume_hierarchical {
-        let bvh = BoundingVolumesHierarchicalNode::new(&mut world);
+        let bvh = BVHNode::new(&mut world);
         world = HittableList::new();
         world.add(Rc::new(bvh));
     }

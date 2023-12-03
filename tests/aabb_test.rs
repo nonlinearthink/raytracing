@@ -1,6 +1,6 @@
-extern crate tiny_raytracer;
+extern crate raytracing;
 
-use tiny_raytracer::core::{AxisAlignedBoundingBox, Interval, Ray, Vector3};
+use raytracing::core::{AxisAlignedBoundingBox, Interval, Ray, Vector3};
 
 #[test]
 fn aabb_merge_test() {

@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use tiny_raytracer::core::{
+use raytracing::core::{
     CameraBuilder, Color3, HittableList, LambertianMaterial, Point3, Quad, SolidColorTexture,
     Vector3,
 };

@@ -1,6 +1,6 @@
-extern crate tiny_raytracer;
+extern crate raytracing;
 
-use tiny_raytracer::core::Vector3;
+use raytracing::core::Vector3;
 
 #[test]
 fn vector_new_test() {

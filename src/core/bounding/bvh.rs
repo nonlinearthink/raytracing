@@ -4,13 +4,13 @@ use rand::Rng;
 use std::rc::Rc;
 
 #[derive(Debug, Clone)]
-pub struct BoundingVolumesHierarchicalNode {
+pub struct BVHNode {
     pub bbox: AxisAlignedBoundingBox,
     pub left: Option<Rc<dyn Hittable>>,
     pub right: Option<Rc<dyn Hittable>>,
 }
 
-impl BoundingVolumesHierarchicalNode {
+impl BVHNode {
     pub fn new(list: &mut HittableList) -> Self {
         let length = list.objects.len();
         Self::split(&mut list.objects, 0, length)
@@ -55,7 +55,7 @@ impl BoundingVolumesHierarchicalNode {
     }
 }
 
-impl Hittable for BoundingVolumesHierarchicalNode {
+impl Hittable for BVHNode {
     fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool {
         if !self.bbox.hit(ray, ray_interval) {
             return false;

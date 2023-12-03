@@ -1,6 +1,6 @@
-extern crate tiny_raytracer;
+extern crate raytracing;
 
-use tiny_raytracer::core::{Point3, Ray, Vector3};
+use raytracing::core::{Point3, Ray, Vector3};
 
 #[test]
 fn ray_compute() {

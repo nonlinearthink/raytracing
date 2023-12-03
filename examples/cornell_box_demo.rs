@@ -1,9 +1,9 @@
-use std::rc::Rc;
-use tiny_raytracer::core::{
-    get_cube_box, BoundingVolumesHierarchicalNode, CameraBuilder, Color3, ConstantMedium,
-    EmissiveMaterial, HittableList, LambertianMaterial, Point3, Quad, RotateYInstance,
-    SolidColorTexture, TranslateInstance, Vector3,
+use raytracing::core::{
+    get_cube_box, BVHNode, CameraBuilder, Color3, ConstantMedium, EmissiveMaterial, HittableList,
+    LambertianMaterial, Point3, Quad, RotateYInstance, SolidColorTexture, TranslateInstance,
+    Vector3,
 };
+use std::rc::Rc;
 
 struct SceneOptions {
     bounding_volume_hierarchical: bool,
@@ -121,7 +121,7 @@ fn main() {
 
     // BVH
     if options.bounding_volume_hierarchical {
-        let bvh = BoundingVolumesHierarchicalNode::new(&mut world);
+        let bvh = BVHNode::new(&mut world);
         world = HittableList::new();
         world.add(Rc::new(bvh));
     }

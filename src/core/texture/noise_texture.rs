@@ -1,11 +1,11 @@
 use std::ops::Mul;
 
 use super::Texture;
-use crate::core::{Color3, Perlin, Point3, Vector2};
+use crate::core::{Color3, PerlinNoise, Point3, Vector2};
 
 #[derive(Debug)]
 pub struct NoiseTexture {
-    noise: Perlin,
+    noise: PerlinNoise,
     scale: f32,
     marble_effect: bool,
 }
@@ -13,7 +13,7 @@ pub struct NoiseTexture {
 impl NoiseTexture {
     pub fn new(scale: f32) -> Self {
         NoiseTexture {
-            noise: Perlin::new(),
+            noise: PerlinNoise::new(),
             scale,
             marble_effect: false,
         }
@@ -21,7 +21,7 @@ impl NoiseTexture {
 
     pub fn new_with_marble_effect(scale: f32) -> Self {
         NoiseTexture {
-            noise: Perlin::new(),
+            noise: PerlinNoise::new(),
             scale,
             marble_effect: true,
         }

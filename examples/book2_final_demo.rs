@@ -1,11 +1,10 @@
 use rand::{rngs::ThreadRng, Rng};
-use std::rc::Rc;
-use tiny_raytracer::core::{
-    get_cube_box, BoundingVolumesHierarchicalNode, CameraBuilder, Color3, ConstantMedium,
-    DielectricMaterial, EmissiveMaterial, HittableList, ImageTexture, LambertianMaterial,
-    MetalMaterial, NoiseTexture, Point3, Quad, RotateYInstance, SolidColorTexture, Sphere,
-    TranslateInstance, Vector3,
+use raytracing::core::{
+    get_cube_box, BVHNode, CameraBuilder, Color3, ConstantMedium, DielectricMaterial,
+    EmissiveMaterial, HittableList, ImageTexture, LambertianMaterial, MetalMaterial, NoiseTexture,
+    Point3, Quad, RotateYInstance, SolidColorTexture, Sphere, TranslateInstance, Vector3,
 };
+use std::rc::Rc;
 
 const BOXES_PER_SIDE: u32 = 20;
 
@@ -35,9 +34,7 @@ fn load_ground(world: &mut HittableList, rng: &mut ThreadRng) {
             ));
         }
     }
-    world.add(Rc::new(BoundingVolumesHierarchicalNode::new(
-        &mut box_list1,
-    )));
+    world.add(Rc::new(BVHNode::new(&mut box_list1)));
 }
 
 fn load_light(world: &mut HittableList) {
@@ -142,7 +139,7 @@ fn load_box_cluster(world: &mut HittableList, rng: &mut ThreadRng) {
     }
     world.add(Rc::new(TranslateInstance::new(
         Rc::new(RotateYInstance::new(
-            Rc::new(BoundingVolumesHierarchicalNode::new(&mut box_list2)),
+            Rc::new(BVHNode::new(&mut box_list2)),
             15.,
         )),
         Vector3::new(-100., 270., 395.),
@@ -170,7 +167,9 @@ fn load_primitives(world: &mut HittableList) {
 }
 
 fn main() {
-    let options = SceneOptions { high_quality: false };
+    let options = SceneOptions {
+        high_quality: false,
+    };
 
     // World
     let mut world = HittableList::new();

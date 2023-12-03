@@ -1,6 +1,6 @@
-extern crate tiny_raytracer;
+extern crate raytracing;
 
-use tiny_raytracer::utils::{deg_to_rad, rad_to_deg};
+use raytracing::utils::{deg_to_rad, rad_to_deg};
 
 #[test]
 fn deg_to_rad_test() {

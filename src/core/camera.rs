@@ -1,5 +1,6 @@
 use super::{Color3, HitRecord, Hittable, Interval, Point3, Ray, Vector3};
 use crate::utils::{deg_to_rad, linear_to_gramma, PPMImage};
+use derive_builder::Builder;
 use indicatif::ProgressBar;
 use rand::Rng;
 use std::{

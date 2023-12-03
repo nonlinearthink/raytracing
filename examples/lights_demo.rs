@@ -1,8 +1,8 @@
-use std::rc::Rc;
-use tiny_raytracer::core::{
+use raytracing::core::{
     CameraBuilder, Color3, EmissiveMaterial, HittableList, LambertianMaterial, NoiseTexture,
     Point3, Quad, SolidColorTexture, Sphere, Vector3,
 };
+use std::rc::Rc;
 
 fn main() {
     let mut world = HittableList::new();

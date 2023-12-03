@@ -1,11 +1,11 @@
-extern crate tiny_raytracer;
+extern crate raytracing;
 
 use rand::Rng;
-use std::rc::Rc;
-use tiny_raytracer::core::{
+use raytracing::core::{
     HitRecord, Hittable, Interval, LambertianMaterial, Ray, SolidColorTexture, Sphere, Vector2,
     Vector3,
 };
+use std::rc::Rc;
 
 #[test]
 fn sphere_hit_test() {

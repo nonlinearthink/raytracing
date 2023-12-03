@@ -4,14 +4,14 @@ use rand::Rng;
 const PERLIN_LUT_LENGTH: usize = 256;
 
 #[derive(Debug)]
-pub struct Perlin {
+pub struct PerlinNoise {
     values: Vec<Vector3>,
     x_permutation: [usize; PERLIN_LUT_LENGTH],
     y_permutation: [usize; PERLIN_LUT_LENGTH],
     z_permutation: [usize; PERLIN_LUT_LENGTH],
 }
 
-impl Perlin {
+impl PerlinNoise {
     pub fn new() -> Self {
         let mut rng = rand::thread_rng();
         let mut values: Vec<Vector3> = vec![];
@@ -50,7 +50,7 @@ impl Perlin {
             }
         }
 
-        Perlin::trilinear_interpolation(&regular_grid, u, v, w)
+        PerlinNoise::trilinear_interpolation(&regular_grid, u, v, w)
     }
 
     fn do_permute(permutation: &mut [usize; PERLIN_LUT_LENGTH]) {
@@ -67,7 +67,7 @@ impl Perlin {
             permutation[i] = i;
         }
 
-        Perlin::do_permute(&mut permutation);
+        PerlinNoise::do_permute(&mut permutation);
 
         permutation
     }

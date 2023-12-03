@@ -1,17 +1,10 @@
-# tiny_raytracer
+# Ray Tracing in One Weekend
 
-A rust tiny raytracer implemented with reference to [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
+A rust implemented with reference to [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
 
 ## Run
 
-This project don't provide a bin target, so you can't just run:
-
-```bash
-cargo run
-cargo run --release
-```
-
-But there are some example targets, to get a list of available examples, run a command that doesn't specify any examples.
+To get a list of available examples, run a command that doesn't specify any examples.
 
 ```bash
 cargo run --release --example
@@ -29,7 +22,7 @@ cargo run --release --example
 #    quad_demo
 ```
 
-Pick and run a specify example:
+Pick a specify example and run:
 
 ```bash
 cargo run --release --example cornell_box_demo
@@ -41,11 +34,11 @@ cargo run --release --example cornell_box_demo
 
 ### Ray Tracing In One Weekend
 
-![Ray Tracing In One Weekend](screenshots/first-book-final-scene.jpg)
+<img height="400" src="screenshots/first-book-final-scene.jpg"></img>
 
 ### Ray Tracing The Next Week
 
-![Ray Tracing The Next Week](screenshots/second-book-final-scene.jpg)
+<img height="400" src="screenshots/second-book-final-scene.jpg"></img>
 
 ### Ray Tracing The Rest of Your Life
 
