@@ -34,7 +34,7 @@ cargo run --release --example cornell_box_demo
 
 ### Ray Tracing In One Weekend
 
-<img height="400" src="screenshots/first-book-final-scene.jpg"></img>
+<img width="600" src="screenshots/first-book-final-scene.jpg"></img>
 
 ### Ray Tracing The Next Week
 
