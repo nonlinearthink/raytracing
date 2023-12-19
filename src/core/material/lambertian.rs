@@ -31,7 +31,7 @@ impl Material for LambertianMaterial {
             let normal = hit_record.normal.unwrap();
             let point = hit_record.point.unwrap();
             let uv = hit_record.uv.unwrap();
-            let mut scatter_direction = &normal + &Vector3::random_unit_vector();
+            let mut scatter_direction = Vector3::random_on_hemisphere(&normal);
             if scatter_direction.equals_zero() {
                 scatter_direction = normal;
             }
@@ -45,5 +45,14 @@ impl Material for LambertianMaterial {
         } else {
             false
         }
+    }
+
+    fn scattering_pdf(
+        &self,
+        _ray_in: &Ray,
+        _hit_record: &HitRecord,
+        _ray_scattered: &mut Ray,
+    ) -> f32 {
+        1. / (2. * std::f32::consts::PI)
     }
 }

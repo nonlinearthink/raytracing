@@ -4,86 +4,88 @@ use derive_builder::Builder;
 use indicatif::ProgressBar;
 use rand::Rng;
 use std::{
-    ops::{Add, Mul, Neg, Sub},
+    ops::{Add, Div, Mul, Neg, Sub},
     time,
 };
 
 #[derive(Default, Builder)]
 pub struct Camera {
+    /// Point camera is looking from
     #[builder(default = "Point3::new(0., 0., -1.)")]
-    pub position: Point3, // Point camera is looking from
-
+    pub position: Point3,
+    /// Point camera is looking at
     #[builder(default = "Point3::zero()")]
-    pub target: Point3, // Point camera is looking at
-
+    pub target: Point3,
+    /// Camera-relative "up" direction
     #[builder(default = "Vector3::up()")]
-    pub up: Vector3, // Camera-relative "up" direction
-
+    pub up: Vector3,
+    /// Camera frame basis vectors
     #[builder(setter(skip))]
-    u: Vector3, // Camera frame basis vectors
-
+    u: Vector3,
+    /// Camera frame basis vectors
     #[builder(setter(skip))]
-    v: Vector3, // Camera frame basis vectors
-
+    v: Vector3,
+    /// Camera frame basis vectors
     #[builder(setter(skip))]
-    w: Vector3, // Camera frame basis vectors
-
+    w: Vector3,
+    /// Variation angle of rays through each pixel
     #[builder(default = "0.")]
-    pub defocus_angle: f32, // Variation angle of rays through each pixel
-
+    pub defocus_angle: f32,
+    /// Distance from camera lookfrom point to plane of perfect focus
     #[builder(default = "10.")]
-    pub focus_dist: f32, // Distance from camera lookfrom point to plane of perfect focus
-
+    pub focus_dist: f32,
+    /// Defocus disk horizontal radius
     #[builder(setter(skip))]
-    defocus_disk_u: Vector3, // Defocus disk horizontal radius
-
+    defocus_disk_u: Vector3,
+    /// Defocus disk vertical radius
     #[builder(setter(skip))]
-    defocus_disk_v: Vector3, // Defocus disk vertical radius
-
+    defocus_disk_v: Vector3,
+    /// Rendered image width in pixel count
     #[builder(default = "400")]
-    pub width: u32, // Rendered image width in pixel count
-
+    pub width: u32,
+    /// Rendered image height
     #[builder(setter(skip))]
-    height: u32, // Rendered image height
-
+    height: u32,
+    /// Ratio of image width over height
     #[builder(default = "1.")]
-    pub aspect: f32, // Ratio of image width over height
-
+    pub aspect: f32,
+    /// Vertical view angle (field of view)
     #[builder(default = "20.")]
-    pub fov: f32, // Vertical view angle (field of view)
-
+    pub fov: f32,
+    /// Offset to pixel to the right
     #[builder(setter(skip))]
-    pixel_delta_u: Vector3, // Offset to pixel to the right
-
+    pixel_delta_u: Vector3,
+    /// Offset to pixel below
     #[builder(setter(skip))]
-    pixel_delta_v: Vector3, // Offset to pixel below
-
+    pixel_delta_v: Vector3,
+    // Location of pixel 0, 0
     #[builder(setter(skip))]
-    pixel_origin: Point3, // Location of pixel 0, 0
-
+    pixel_origin: Point3,
+    /// Count of random samples for each pixel
     #[builder(default = "20")]
-    pub samples_per_pixel: u32, // Count of random samples for each pixel
-
+    pub samples_per_pixel: u32,
+    /// Sqrt of self.samples_per_pixel
     #[builder(setter(skip))]
-    sqrt_spp: u32, // Sqrt of self.samples_per_pixel
-
+    sqrt_spp: u32,
+    /// Square of self.sqrt_spp
     #[builder(setter(skip))]
-    square_sqrt_spp: f32, // Square of self.sqrt_spp
-
+    square_sqrt_spp: f32,
+    /// Reciprocal of self.sqrt_spp
     #[builder(setter(skip))]
-    reciprocal_sqrt_spp: f32, // Reciprocal of self.sqrt_spp
-
+    reciprocal_sqrt_spp: f32,
+    /// Maximum number of ray bounces into scene
     #[builder(default = "10")]
-    pub max_ray_depth: u8, // Maximum number of ray bounces into scene
-
+    pub max_ray_depth: u8,
+    /// Scene background color
     #[builder(default = "Color3::one()")]
-    pub background: Color3, // Scene background color
-
+    pub background: Color3,
+    /// Rand generator
     #[builder(setter(skip))]
     rng: rand::rngs::ThreadRng,
 }
 
 impl Camera {
+    /// Create a default camera
     pub fn new() -> Self {
         Self {
             position: Point3::new(0., 0., -1.),
@@ -201,7 +203,13 @@ impl Camera {
         if !material.scatter(ray, &record, &mut attenuation, &mut ray_scattered) {
             return emission_color;
         }
-        let scatter_color = &attenuation * &self.ray_color(&ray_scattered, world, ray_depth - 1);
+
+        let scattering_pdf = material.scattering_pdf(ray, &record, &mut ray_scattered);
+        let pdf = scattering_pdf;
+        let scatter_color = attenuation
+            .mul(scattering_pdf)
+            .mul(&self.ray_color(&ray_scattered, world, ray_depth - 1))
+            .div(pdf);
 
         &emission_color + &scatter_color
     }
@@ -224,18 +232,25 @@ impl Camera {
                     }
                 }
 
+                // Replace NaN components with zero.
+                if color.x != color.x {
+                    color.x = 0.;
+                }
+                if color.y != color.y {
+                    color.y = 0.;
+                }
+                if color.z != color.z {
+                    color.z = 0.;
+                }
+
+                // Divide the color by the number of samples and gamma-correct for gamma=2.0.
                 let scale = 1. / self.square_sqrt_spp;
-                color.x *= scale;
-                color.y *= scale;
-                color.z *= scale;
+                color.x = linear_to_gramma(color.x * scale);
+                color.y = linear_to_gramma(color.y * scale);
+                color.z = linear_to_gramma(color.z * scale);
 
-                // Apply the linear to gamma transform.
-                color.x = linear_to_gramma(color.x);
-                color.y = linear_to_gramma(color.y);
-                color.z = linear_to_gramma(color.z);
-
-                let intensity = Interval::new(0.000, 0.999);
                 // Write the translated [0,255] value of each color component.
+                let intensity = Interval::new(0.000, 0.999);
                 let r = (256. * intensity.clamp(color.x)) as u8;
                 let g = (256. * intensity.clamp(color.y)) as u8;
                 let b = (256. * intensity.clamp(color.z)) as u8;

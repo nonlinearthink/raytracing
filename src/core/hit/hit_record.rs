@@ -1,5 +1,5 @@
 use crate::core::{Material, Point3, Ray, Vector2, Vector3};
-use std::{rc::Rc, ops::Neg};
+use std::{ops::Neg, rc::Rc};
 
 #[derive(Debug, Clone)]
 pub struct HitRecord {

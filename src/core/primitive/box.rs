@@ -1,6 +1,6 @@
 use super::Quad;
 use crate::core::{Hittable, HittableList, Material, Point3, Vector3};
-use std::{rc::Rc, ops::Neg};
+use std::{ops::Neg, rc::Rc};
 
 pub fn get_cube_box(start: Point3, end: Point3, material: Rc<dyn Material>) -> Rc<dyn Hittable> {
     let mut cube_box = Rc::new(HittableList::new());

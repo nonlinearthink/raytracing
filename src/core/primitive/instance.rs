@@ -2,7 +2,10 @@ use crate::{
     core::{AxisAlignedBoundingBox, HitRecord, Hittable, Interval, Point3, Ray, Vector3},
     utils::deg_to_rad,
 };
-use std::{ops::{Add, Sub}, rc::Rc};
+use std::{
+    ops::{Add, Sub},
+    rc::Rc,
+};
 
 #[derive(Debug)]
 pub struct TranslateInstance {

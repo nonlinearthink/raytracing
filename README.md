@@ -1,6 +1,6 @@
 # Ray Tracing in One Weekend
 
-A rust implemented with reference to [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
+A rust code implementation of [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
 
 ## Run
 
