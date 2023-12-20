@@ -8,12 +8,14 @@ use super::{AxisAlignedBoundingBox, Interval, Ray};
 use core::fmt;
 use std::cmp::Ordering;
 
+/// Definition of a hittable object.
 pub trait Hittable: fmt::Debug {
     fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool;
 
     fn bounding_box(&self) -> &AxisAlignedBoundingBox;
 }
 
+/// Compare two hittable objects based on their one axis of the bounding box.
 pub fn compare_hittable_objects(
     hittable1: &dyn Hittable,
     hittable2: &dyn Hittable,

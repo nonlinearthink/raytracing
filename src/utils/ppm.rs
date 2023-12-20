@@ -17,7 +17,7 @@ impl PPMImage {
     Create a new `PPMImage` with image height and width.
 
     It will also init an image buffer defined by **Binary Portable PixMap**, which starts with a header called `P6` in PPM.
-     */
+    */
     pub fn new(width: u32, height: u32) -> Self {
         let mut image = Self { buffer: Vec::new() };
         image.buffer.extend("P6\n".as_bytes());

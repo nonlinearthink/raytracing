@@ -3,20 +3,32 @@ use crate::core::{compare_hittable_objects, HitRecord, Hittable, HittableList, I
 use rand::Rng;
 use std::rc::Rc;
 
-#[derive(Debug, Clone)]
+/**
+Bounding Volume Hierarchy Node
+
+Bounding volume hierarchy (BVH) is a tree data structure for storing a collection of objects in a
+way that allows for fast intersection tests. For more details: [BVH](https://en.wikipedia.org/wiki/Bounding_volume_hierarchy).
+*/
+#[derive(Debug)]
 pub struct BVHNode {
+    /// Bounding box of this node, which is the union of the bounding boxes of it's children.
     pub bbox: AxisAlignedBoundingBox,
+    /// Left children of this node.
     pub left: Option<Rc<dyn Hittable>>,
+    /// Right children of this node.
     pub right: Option<Rc<dyn Hittable>>,
 }
 
 impl BVHNode {
+    /// Create a new `BVHNode` from a `HittableList`.
     pub fn new(list: &mut HittableList) -> Self {
         let length = list.objects.len();
         Self::split(&mut list.objects, 0, length)
     }
 
     fn split(objects: &mut Vec<Rc<dyn Hittable>>, start: usize, end: usize) -> Self {
+        // Internal method, to create a `BVHNode`, split the `HittableList` into two parts and recursively create
+        // `BVHNode`s for each part.
         let left: Option<Rc<dyn Hittable>>;
         let right: Option<Rc<dyn Hittable>>;
 
@@ -80,6 +92,7 @@ impl Hittable for BVHNode {
         hit_left || hit_right
     }
 
+    /// Get the bounding box of this node.
     fn bounding_box(&self) -> &AxisAlignedBoundingBox {
         &self.bbox
     }

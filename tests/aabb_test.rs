@@ -1,6 +1,9 @@
 extern crate raytracing;
 
-use raytracing::core::{AxisAlignedBoundingBox, Interval, Ray, Vector3};
+use raytracing::core::{
+    AxisAlignedBoundingBox, Color3, Hittable, Interval, LambertianMaterial, Point3, Quad, Vector3,
+};
+use std::rc::Rc;
 
 #[test]
 fn aabb_merge_test() {
@@ -40,16 +43,13 @@ fn aabb_merge_test() {
 }
 
 #[test]
-fn aabb_hit_test() {
-    let ray = Ray::new(Vector3::zero(), Vector3::one());
-
-    let bbox = AxisAlignedBoundingBox::from_bounding_points(
-        &Vector3::new(2., 2., 2.),
-        &Vector3::new(3., 3., 3.),
+fn aabb_pad_test() {
+    let quad = Quad::new(
+        Point3::new(0., 0., 0.),
+        Vector3::new(1., 0., 0.),
+        Vector3::new(0., 1., 0.),
+        Rc::new(LambertianMaterial::new_with_color(Color3::new(1., 1., 1.))),
     );
-
-    assert!(!bbox.hit(&ray, &mut Interval::new(0., 1.999)));
-    assert!(bbox.hit(&ray, &mut Interval::new(0., 2.)));
-    assert!(!bbox.hit(&ray, &mut Interval::new(0., f32::NEG_INFINITY)));
-    assert!(bbox.hit(&ray, &mut Interval::new(0., f32::INFINITY)));
+    println!("{:?}", quad.bounding_box());
+    assert!(quad.bounding_box().z.max - quad.bounding_box().z.min > 0.);
 }
