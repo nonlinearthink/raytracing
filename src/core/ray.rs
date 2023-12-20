@@ -26,12 +26,12 @@ pub struct Ray {
     pub origin: Point3,
     /// Propagation direction of the ray emission.
     pub direction: Vector3,
-    /// Time of the ray emission, compared to the start of this frame, generally between 0 and 1.
+    /// Time of the ray emission, relatived to the start of this frame, generally between 0 and 1.
     pub time: f32,
 }
 
 impl Ray {
-    /// Define a ray by origin(initial position) and direction(propagation direction).
+    /// Create a new `Ray` with origin and direction.
     pub fn new(origin: Point3, direction: Vector3) -> Self {
         Self {
             origin,
@@ -40,7 +40,7 @@ impl Ray {
         }
     }
 
-    /// Define a ray by origin(initial position), direction(propagation direction) and time(time from the start of this frame).
+    /// Create a new `Ray` with origin, direction and time.
     pub fn new_with_time(origin: Point3, direction: Vector3, time: f32) -> Self {
         Self {
             origin,
