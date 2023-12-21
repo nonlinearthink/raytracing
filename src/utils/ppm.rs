@@ -39,8 +39,9 @@ impl PPMImage {
     /// Save the image buffer as a file named `save_path`.
     pub fn save(&mut self, save_path: String) -> Result<(), std::io::Error> {
         let path = std::path::Path::new(&save_path);
-        let prefix = path.parent().unwrap();
-        fs::create_dir_all(prefix)?;
+        if let Some(prefix) = path.parent() {
+            fs::create_dir_all(prefix)?;
+        }
 
         let file = File::create(path)?;
         let mut writer = BufWriter::new(file);

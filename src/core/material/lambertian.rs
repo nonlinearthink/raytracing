@@ -1,5 +1,5 @@
 use super::Material;
-use crate::core::{Color3, HitRecord, Ray, SolidColorTexture, Texture, Vector3};
+use crate::core::{Color3, HitRecord, OrthonormalBasis, Ray, SolidColorTexture, Texture, Vector3};
 use std::rc::Rc;
 
 #[derive(Debug)]
@@ -26,20 +26,28 @@ impl Material for LambertianMaterial {
         hit_record: &HitRecord,
         attenuation: &mut Color3,
         ray_scattered: &mut Ray,
+        pdf: &mut f32,
     ) -> bool {
-        if hit_record.normal.is_some() && hit_record.point.is_some() && hit_record.uv.is_some() {
-            let normal = hit_record.normal.unwrap();
-            let point = hit_record.point.unwrap();
-            let uv = hit_record.uv.unwrap();
-            let mut scatter_direction = Vector3::random_on_hemisphere(&normal);
+        if let HitRecord {
+            normal: Some(normal),
+            point: Some(point),
+            uv: Some(uv),
+            material: _,
+            t: _,
+            front_face: _,
+        } = hit_record
+        {
+            let onb = OrthonormalBasis::new_with_w(normal);
+            let mut scatter_direction = onb.local(&Vector3::random_cosine_direction());
             if scatter_direction.equals_zero() {
-                scatter_direction = normal;
+                scatter_direction = normal.clone();
             }
 
-            attenuation.clone_from(&self.albedo.value(&uv, &point));
-            ray_scattered.origin = point;
+            attenuation.clone_from(&self.albedo.value(uv, point));
+            ray_scattered.origin = point.clone();
             ray_scattered.direction = scatter_direction;
             ray_scattered.time = ray_in.time;
+            *pdf = onb.w().dot(&ray_scattered.direction) / std::f32::consts::PI;
 
             true
         } else {

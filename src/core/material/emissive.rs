@@ -26,6 +26,7 @@ impl Material for EmissiveMaterial {
         _hit_record: &crate::core::HitRecord,
         _attenuation: &mut Color3,
         _ray_scattered: &mut crate::core::Ray,
+        _pdf: &mut f32,
     ) -> bool {
         return false;
     }

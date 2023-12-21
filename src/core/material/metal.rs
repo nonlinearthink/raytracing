@@ -27,6 +27,7 @@ impl Material for MetalMaterial {
         hit_record: &HitRecord,
         attenuation: &mut Color3,
         ray_scattered: &mut Ray,
+        _pdf: &mut f32,
     ) -> bool {
         if hit_record.normal.is_some() && hit_record.point.is_some() {
             let normal = hit_record.normal.unwrap();
