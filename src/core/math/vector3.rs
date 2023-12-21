@@ -85,6 +85,20 @@ impl Vector3 {
         }
     }
 
+    pub fn random_cosine_direction() -> Self {
+        let mut rng = rand::thread_rng();
+        let r1 = rng.gen::<f32>();
+        let r2 = rng.gen::<f32>();
+
+        let phi = 2. * std::f32::consts::PI * r1;
+
+        let x = f32::cos(phi) * f32::sqrt(r2);
+        let y = f32::sin(phi) * f32::sqrt(r2);
+        let z = f32::sqrt(1. - r2);
+
+        Self { x, y, z }
+    }
+
     pub fn r(&self) -> f32 {
         self.x
     }
