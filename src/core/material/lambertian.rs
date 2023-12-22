@@ -1,5 +1,5 @@
 use super::Material;
-use crate::core::{Color3, HitRecord, Ray, SolidColorTexture, Texture, Vector3, OrthonormalBasis};
+use crate::core::{Color3, HitRecord, OrthonormalBasis, Ray, SolidColorTexture, Texture, Vector3};
 use std::rc::Rc;
 
 #[derive(Debug)]
@@ -26,6 +26,7 @@ impl Material for LambertianMaterial {
         hit_record: &HitRecord,
         attenuation: &mut Color3,
         ray_scattered: &mut Ray,
+        pdf: &mut f32,
     ) -> bool {
         if let HitRecord {
             normal: Some(normal),
@@ -46,6 +47,7 @@ impl Material for LambertianMaterial {
             ray_scattered.origin = point.clone();
             ray_scattered.direction = scatter_direction;
             ray_scattered.time = ray_in.time;
+            *pdf = onb.w().dot(&ray_scattered.direction) / std::f32::consts::PI;
 
             true
         } else {

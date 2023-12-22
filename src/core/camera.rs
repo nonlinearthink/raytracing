@@ -200,12 +200,13 @@ impl Camera {
 
         let mut ray_scattered = Ray::new(Point3::zero(), Vector3::zero());
         let mut attenuation = Color3::zero();
-        if !material.scatter(ray, &record, &mut attenuation, &mut ray_scattered) {
+        let mut pdf = 0.;
+        if !material.scatter(ray, &record, &mut attenuation, &mut ray_scattered, &mut pdf) {
             return emission_color;
         }
 
         let scattering_pdf = material.scattering_pdf(ray, &record, &mut ray_scattered);
-        let pdf = scattering_pdf;
+        pdf = scattering_pdf;
         let scatter_color = attenuation
             .mul(scattering_pdf)
             .mul(&self.ray_color(&ray_scattered, world, ray_depth - 1))

@@ -27,6 +27,7 @@ impl Material for DielectricMaterial {
         hit_record: &HitRecord,
         attenuation: &mut Color3,
         ray_scattered: &mut Ray,
+        _pdf: &mut f32,
     ) -> bool {
         attenuation.clone_from(&Color3::one());
         let refraction_ratio = if hit_record.front_face {

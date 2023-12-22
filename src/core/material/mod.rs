@@ -20,6 +20,7 @@ pub trait Material: fmt::Debug {
         hit_record: &HitRecord,
         attenuation: &mut Color3,
         ray_scattered: &mut Ray,
+        pdf: &mut f32,
     ) -> bool;
 
     fn scattering_pdf(
