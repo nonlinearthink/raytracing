@@ -32,7 +32,13 @@ pub trait Material: fmt::Debug {
         return 0.;
     }
 
-    fn emitted(&self, _uv: &Vector2, _point: &Point3) -> Color3 {
+    fn emitted(
+        &self,
+        _ray_in: &Ray,
+        _hit_record: &HitRecord,
+        _uv: &Vector2,
+        _point: &Point3,
+    ) -> Color3 {
         Color3::zero()
     }
 }

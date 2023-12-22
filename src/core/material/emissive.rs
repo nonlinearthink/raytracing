@@ -1,5 +1,5 @@
 use super::Material;
-use crate::core::{Color3, Point3, SolidColorTexture, Texture, Vector2};
+use crate::core::{Color3, HitRecord, Point3, Ray, SolidColorTexture, Texture, Vector2};
 use std::rc::Rc;
 
 #[derive(Debug)]
@@ -31,7 +31,17 @@ impl Material for EmissiveMaterial {
         return false;
     }
 
-    fn emitted(&self, uv: &Vector2, point: &Point3) -> Color3 {
-        self.emit.value(uv, point)
+    fn emitted(
+        &self,
+        _ray_in: &Ray,
+        hit_record: &HitRecord,
+        uv: &Vector2,
+        point: &Point3,
+    ) -> Color3 {
+        if !hit_record.front_face {
+            Color3::zero()
+        } else {
+            self.emit.value(uv, point)
+        }
     }
 }

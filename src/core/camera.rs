@@ -191,12 +191,25 @@ impl Camera {
             return self.background;
         }
 
+        let default_color = Color3::zero();
+        let HitRecord {
+            uv: Some(uv),
+            material: _,
+            point: Some(point),
+            normal: Some(normal),
+            t: _,
+            front_face: _,
+        } = record
+        else {
+            return default_color;
+        };
+
         let material = record
             .material
             .as_ref()
             .expect("material should not be None if hitted.");
 
-        let emission_color = material.emitted(&record.uv.unwrap(), &record.point.unwrap());
+        let emission_color = material.emitted(ray, &record, &uv, &point);
 
         let mut ray_scattered = Ray::new(Point3::zero(), Vector3::zero());
         let mut attenuation = Color3::zero();
@@ -205,8 +218,30 @@ impl Camera {
             return emission_color;
         }
 
+        let on_light = Point3::new(
+            self.rng.gen_range(213.0..343.0),
+            554.,
+            self.rng.gen_range(227.0..332.0),
+        );
+        let mut to_light = on_light.sub(&point);
+        let distance_squared = to_light.length_squared();
+        to_light = to_light.normolize();
+
+        if to_light.dot(&normal) < 0. {
+            return emission_color;
+        }
+
+        let light_area = (343 - 213) * (332 - 227);
+        let light_cosine = f32::abs(to_light.y);
+        if light_cosine < 0.000001 {
+            return emission_color;
+        }
+
+        pdf = distance_squared / (light_cosine * light_area as f32);
+        ray_scattered = Ray::new_with_time(point, to_light, ray.time);
+
         let scattering_pdf = material.scattering_pdf(ray, &record, &mut ray_scattered);
-        pdf = scattering_pdf;
+
         let scatter_color = attenuation
             .mul(scattering_pdf)
             .mul(&self.ray_color(&ray_scattered, world, ray_depth - 1))
