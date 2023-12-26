@@ -51,18 +51,6 @@ impl Vector3 {
         }
     }
 
-    pub fn random_in_unit_sphere2() -> Self {
-        // I used to think it was better than the version above, but it's actually slower
-        let mut rng = rand::thread_rng();
-        let theta = rng.gen_range(0.0..1.0) * (std::f32::consts::PI * 2.);
-        let phi = rng.gen_range(0.0..1.0) * std::f32::consts::PI;
-        let radius = rng.gen_range(0.0..1.0);
-        let x = radius * theta.sin() * phi.cos();
-        let y = radius * theta.sin() * phi.sin();
-        let z = radius * theta.cos();
-        Self::new(x, y, z)
-    }
-
     pub fn random_in_unit_disk() -> Self {
         let mut rng = rand::thread_rng();
         let theta = rng.gen_range(0.0..(std::f32::consts::PI * 2.));

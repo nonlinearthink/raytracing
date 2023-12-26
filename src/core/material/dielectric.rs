@@ -36,8 +36,12 @@ impl Material for DielectricMaterial {
             self.ior
         };
 
-        if hit_record.normal.is_some() && hit_record.point.is_some() {
-            let normal = hit_record.normal.unwrap();
+        if let HitRecord {
+            normal: Some(normal),
+            point: Some(point),
+            ..
+        } = hit_record
+        {
             let unit_direction = ray_in.direction.normolize();
             let cos_theta = f32::min(unit_direction.neg().dot(&normal), 1.);
             let sin_theta = f32::sqrt(1. - cos_theta * cos_theta);
@@ -52,7 +56,7 @@ impl Material for DielectricMaterial {
                 unit_direction.refract(&normal, refraction_ratio)
             };
 
-            ray_scattered.origin = hit_record.point.unwrap();
+            ray_scattered.origin = point.clone();
             ray_scattered.direction = direction;
             ray_scattered.time = ray_in.time;
 

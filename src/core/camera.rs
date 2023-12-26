@@ -1,4 +1,7 @@
-use super::{Color3, HitRecord, Hittable, Interval, Point3, Ray, Vector3};
+use super::{
+    Color3, CosinePDF, HitRecord, Hittable, Interval, Point3, ProbabilityDensityFunction, Ray,
+    Vector3,
+};
 use crate::utils::{deg_to_rad, linear_to_gramma, PPMImage};
 use derive_builder::Builder;
 use indicatif::ProgressBar;
@@ -13,72 +16,95 @@ pub struct Camera {
     /// Point camera is looking from
     #[builder(default = "Point3::new(0., 0., -1.)")]
     pub position: Point3,
+
     /// Point camera is looking at
     #[builder(default = "Point3::zero()")]
     pub target: Point3,
+
     /// Camera-relative "up" direction
     #[builder(default = "Vector3::up()")]
     pub up: Vector3,
+
     /// Camera frame basis vectors
     #[builder(setter(skip))]
     u: Vector3,
+
     /// Camera frame basis vectors
     #[builder(setter(skip))]
     v: Vector3,
+
     /// Camera frame basis vectors
     #[builder(setter(skip))]
     w: Vector3,
+
     /// Variation angle of rays through each pixel
     #[builder(default = "0.")]
     pub defocus_angle: f32,
+
     /// Distance from camera lookfrom point to plane of perfect focus
     #[builder(default = "10.")]
     pub focus_dist: f32,
+
     /// Defocus disk horizontal radius
     #[builder(setter(skip))]
     defocus_disk_u: Vector3,
+
     /// Defocus disk vertical radius
     #[builder(setter(skip))]
     defocus_disk_v: Vector3,
+
     /// Rendered image width in pixel count
     #[builder(default = "400")]
     pub width: u32,
+
     /// Rendered image height
     #[builder(setter(skip))]
     height: u32,
+
     /// Ratio of image width over height
     #[builder(default = "1.")]
     pub aspect: f32,
+
     /// Vertical view angle (field of view)
     #[builder(default = "20.")]
     pub fov: f32,
+
     /// Offset to pixel to the right
     #[builder(setter(skip))]
     pixel_delta_u: Vector3,
+
     /// Offset to pixel below
     #[builder(setter(skip))]
     pixel_delta_v: Vector3,
+
     // Location of pixel 0, 0
     #[builder(setter(skip))]
     pixel_origin: Point3,
+
     /// Count of random samples for each pixel
     #[builder(default = "20")]
     pub samples_per_pixel: u32,
+
     /// Sqrt of self.samples_per_pixel
     #[builder(setter(skip))]
     sqrt_spp: u32,
+
     /// Square of self.sqrt_spp
     #[builder(setter(skip))]
     square_sqrt_spp: f32,
+
     /// Reciprocal of self.sqrt_spp
     #[builder(setter(skip))]
     reciprocal_sqrt_spp: f32,
+
     /// Maximum number of ray bounces into scene
     #[builder(default = "10")]
     pub max_ray_depth: u8,
+
     /// Scene background color
     #[builder(default = "Color3::one()")]
     pub background: Color3,
+
     /// Rand generator
     #[builder(setter(skip))]
     rng: rand::rngs::ThreadRng,
@@ -194,20 +220,14 @@ impl Camera {
         let default_color = Color3::zero();
         let HitRecord {
             uv: Some(uv),
-            material: _,
             point: Some(point),
             normal: Some(normal),
-            t: _,
-            front_face: _,
+            material: Some(ref material),
+            ..
         } = record
         else {
             return default_color;
         };
-
-        let material = record
-            .material
-            .as_ref()
-            .expect("material should not be None if hitted.");
 
         let emission_color = material.emitted(ray, &record, &uv, &point);
 
@@ -218,27 +238,9 @@ impl Camera {
             return emission_color;
         }
 
-        let on_light = Point3::new(
-            self.rng.gen_range(213.0..343.0),
-            554.,
-            self.rng.gen_range(227.0..332.0),
-        );
-        let mut to_light = on_light.sub(&point);
-        let distance_squared = to_light.length_squared();
-        to_light = to_light.normolize();
-
-        if to_light.dot(&normal) < 0. {
-            return emission_color;
-        }
-
-        let light_area = (343 - 213) * (332 - 227);
-        let light_cosine = f32::abs(to_light.y);
-        if light_cosine < 0.000001 {
-            return emission_color;
-        }
-
-        pdf = distance_squared / (light_cosine * light_area as f32);
-        ray_scattered = Ray::new_with_time(point, to_light, ray.time);
+        let surface_pdf = CosinePDF::new(normal);
+        ray_scattered = Ray::new_with_time(point, surface_pdf.generate(), ray.time);
+        pdf = surface_pdf.value(&ray_scattered.direction);
 
         let scattering_pdf = material.scattering_pdf(ray, &record, &mut ray_scattered);
 

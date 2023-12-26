@@ -14,7 +14,7 @@ impl EmissiveMaterial {
 
     pub fn new_with_color(color: Color3) -> Self {
         Self {
-            emit: Rc::new(SolidColorTexture::new(color)),
+            emit: Rc::new(SolidColorTexture::new_with_color(color)),
         }
     }
 }

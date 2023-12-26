@@ -23,7 +23,7 @@ fn load_objects(world: &mut HittableList, motion_blur_test: bool, checker_textur
             Color3::new(0.9, 0.9, 0.9),
         ))
     } else {
-        Rc::new(SolidColorTexture::new_with_floats(0.5, 0.5, 0.5))
+        Rc::new(SolidColorTexture::new(0.5, 0.5, 0.5))
     };
     let material_ground = Rc::new(LambertianMaterial::new(ground_texture));
     world.add(Rc::new(Sphere::new(
@@ -47,7 +47,7 @@ fn load_objects(world: &mut HittableList, motion_blur_test: bool, checker_textur
 
                 if choose_material < 0.8 {
                     // diffuse
-                    let albedo_texture = Rc::new(SolidColorTexture::new(
+                    let albedo_texture = Rc::new(SolidColorTexture::new_with_color(
                         &Color3::random(0., 1., &mut rng) * &Color3::random(0., 1., &mut rng),
                     ));
                     sphere_material = Rc::new(LambertianMaterial::new(albedo_texture));
@@ -64,8 +64,9 @@ fn load_objects(world: &mut HittableList, motion_blur_test: bool, checker_textur
                     }
                 } else if choose_material < 0.95 {
                     // metal
-                    let albedo_texture =
-                        Rc::new(SolidColorTexture::new(Color3::random(0.5, 1., &mut rng)));
+                    let albedo_texture = Rc::new(SolidColorTexture::new_with_color(
+                        Color3::random(0.5, 1., &mut rng),
+                    ));
                     let fuzz = rng.gen_range(0.0..0.5);
                     sphere_material = Rc::new(MetalMaterial::new(albedo_texture, fuzz));
                     world.add(Rc::new(Sphere::new(center, 0.2, sphere_material)));
@@ -87,16 +88,16 @@ fn load_objects(world: &mut HittableList, motion_blur_test: bool, checker_textur
     world.add(Rc::new(Sphere::new(
         Point3::new(-4., 1., 0.),
         1.,
-        Rc::new(LambertianMaterial::new(Rc::new(
-            SolidColorTexture::new_with_floats(0.4, 0.2, 0.1),
-        ))),
+        Rc::new(LambertianMaterial::new(Rc::new(SolidColorTexture::new(
+            0.4, 0.2, 0.1,
+        )))),
     )));
 
     world.add(Rc::new(Sphere::new(
         Point3::new(4., 1., 0.),
         1.,
         Rc::new(MetalMaterial::new(
-            Rc::new(SolidColorTexture::new_with_floats(0.7, 0.6, 0.5)),
+            Rc::new(SolidColorTexture::new(0.7, 0.6, 0.5)),
             0.,
         )),
     )));

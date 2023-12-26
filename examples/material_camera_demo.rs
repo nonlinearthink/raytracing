@@ -22,15 +22,15 @@ fn main() {
     let mut world = HittableList::new();
 
     // Materials
-    let material_ground = Rc::new(LambertianMaterial::new(Rc::new(
-        SolidColorTexture::new_with_floats(0.8, 0.8, 0.),
-    )));
-    let material_center = Rc::new(LambertianMaterial::new(Rc::new(
-        SolidColorTexture::new_with_floats(0.1, 0.2, 0.5),
-    )));
+    let material_ground = Rc::new(LambertianMaterial::new(Rc::new(SolidColorTexture::new(
+        0.8, 0.8, 0.,
+    ))));
+    let material_center = Rc::new(LambertianMaterial::new(Rc::new(SolidColorTexture::new(
+        0.1, 0.2, 0.5,
+    ))));
     let material_left = Rc::new(DielectricMaterial::new(1.5));
     let material_right = Rc::new(MetalMaterial::new(
-        Rc::new(SolidColorTexture::new_with_floats(0.8, 0.6, 0.2)),
+        Rc::new(SolidColorTexture::new(0.8, 0.6, 0.2)),
         0.,
     ));
 

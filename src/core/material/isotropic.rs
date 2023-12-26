@@ -14,7 +14,7 @@ impl IsotropicMaterial {
 
     pub fn new_with_color(color: Color3) -> IsotropicMaterial {
         IsotropicMaterial {
-            albedo: Rc::new(SolidColorTexture::new(color)),
+            albedo: Rc::new(SolidColorTexture::new_with_color(color)),
         }
     }
 }

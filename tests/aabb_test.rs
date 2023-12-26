@@ -50,6 +50,5 @@ fn aabb_pad_test() {
         Vector3::new(0., 1., 0.),
         Rc::new(LambertianMaterial::new_with_color(Color3::new(1., 1., 1.))),
     );
-    println!("{:?}", quad.bounding_box());
     assert!(quad.bounding_box().z.max - quad.bounding_box().z.min > 0.);
 }

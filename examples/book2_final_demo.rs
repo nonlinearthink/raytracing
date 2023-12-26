@@ -74,7 +74,7 @@ fn load_sphere_with_materials(world: &mut HittableList) {
         Point3::new(0., 150., 145.),
         50.,
         Rc::new(MetalMaterial::new(
-            Rc::new(SolidColorTexture::new(Color3::new(0.8, 0.8, 0.9))),
+            Rc::new(SolidColorTexture::new(0.8, 0.8, 0.9)),
             1.0,
         )),
     )));

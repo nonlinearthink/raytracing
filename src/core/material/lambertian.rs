@@ -14,7 +14,7 @@ impl LambertianMaterial {
 
     pub fn new_with_color(color: Color3) -> Self {
         Self {
-            albedo: Rc::new(SolidColorTexture::new(color)),
+            albedo: Rc::new(SolidColorTexture::new_with_color(color)),
         }
     }
 }
@@ -32,9 +32,7 @@ impl Material for LambertianMaterial {
             normal: Some(normal),
             point: Some(point),
             uv: Some(uv),
-            material: _,
-            t: _,
-            front_face: _,
+            ..
         } = hit_record
         {
             let onb = OrthonormalBasis::new_with_w(normal);

@@ -11,9 +11,9 @@ fn main() {
     let noise_texture = Rc::new(NoiseTexture::new_with_marble_effect(4.));
 
     // Materials
-    let emissive_material = Rc::new(EmissiveMaterial::new(Rc::new(
-        SolidColorTexture::new_with_floats(4., 4., 4.),
-    )));
+    let emissive_material = Rc::new(EmissiveMaterial::new(Rc::new(SolidColorTexture::new(
+        4., 4., 4.,
+    ))));
 
     // Primitives
     world.add(Rc::new(Sphere::new(

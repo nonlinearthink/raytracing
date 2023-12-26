@@ -2,14 +2,25 @@ use super::{SolidColorTexture, Texture};
 use crate::core::{Color3, Point3};
 use std::rc::Rc;
 
+/**
+Checker Texture
+
+A Texture that alternates between two textures.
+ */
 #[derive(Debug)]
 pub struct CheckerTexture {
+    /// The texture using when the uv coordinates are even.
     pub even: Rc<dyn Texture>,
+
+    /// The texture using when the uv coordinates are odd.
     pub odd: Rc<dyn Texture>,
+
+    /// The inverted uv scale.
     invert_scale: f32,
 }
 
 impl CheckerTexture {
+    /// Create a new `CheckerTexture` with the given scale and two textures.
     pub fn new(scale: f32, even: Rc<dyn Texture>, odd: Rc<dyn Texture>) -> Self {
         Self {
             even,
@@ -18,10 +29,11 @@ impl CheckerTexture {
         }
     }
 
+    /// Create a new `CheckerTexture` with the given scale and two colors.
     pub fn new_with_solid_color(scale: f32, even_color: Color3, odd_color: Color3) -> Self {
         Self {
-            even: Rc::new(SolidColorTexture::new(even_color)),
-            odd: Rc::new(SolidColorTexture::new(odd_color)),
+            even: Rc::new(SolidColorTexture::new_with_color(even_color)),
+            odd: Rc::new(SolidColorTexture::new_with_color(odd_color)),
             invert_scale: 1. / scale,
         }
     }

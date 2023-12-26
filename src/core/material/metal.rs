@@ -29,12 +29,15 @@ impl Material for MetalMaterial {
         ray_scattered: &mut Ray,
         _pdf: &mut f32,
     ) -> bool {
-        if hit_record.normal.is_some() && hit_record.point.is_some() {
-            let normal = hit_record.normal.unwrap();
-            let point = hit_record.point.unwrap();
+        if let HitRecord {
+            point: Some(point),
+            normal: Some(normal),
+            ..
+        } = hit_record
+        {
             let reflected = ray_in.direction.normolize().reflect(&normal);
 
-            ray_scattered.origin = point;
+            ray_scattered.origin = point.clone();
             ray_scattered.direction =
                 reflected.add(&(Vector3::random_unit_vector().mul(self.fuzz)));
             ray_scattered.time = ray_in.time;

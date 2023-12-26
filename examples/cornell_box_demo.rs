@@ -20,19 +20,19 @@ fn main() {
     let mut world = HittableList::new();
 
     // Materials
-    let red = Rc::new(LambertianMaterial::new(Rc::new(
-        SolidColorTexture::new_with_floats(0.65, 0.05, 0.05),
-    )));
-    let white = Rc::new(LambertianMaterial::new(Rc::new(
-        SolidColorTexture::new_with_floats(0.73, 0.73, 0.73),
-    )));
-    let green = Rc::new(LambertianMaterial::new(Rc::new(
-        SolidColorTexture::new_with_floats(0.12, 0.45, 0.15),
-    )));
+    let red = Rc::new(LambertianMaterial::new(Rc::new(SolidColorTexture::new(
+        0.65, 0.05, 0.05,
+    ))));
+    let white = Rc::new(LambertianMaterial::new(Rc::new(SolidColorTexture::new(
+        0.73, 0.73, 0.73,
+    ))));
+    let green = Rc::new(LambertianMaterial::new(Rc::new(SolidColorTexture::new(
+        0.12, 0.45, 0.15,
+    ))));
     let light = Rc::new(EmissiveMaterial::new(Rc::new(if options.smoke_test {
-        SolidColorTexture::new_with_floats(7., 7., 7.)
+        SolidColorTexture::new(7., 7., 7.)
     } else {
-        SolidColorTexture::new_with_floats(15., 15., 15.)
+        SolidColorTexture::new(15., 15., 15.)
     })));
 
     // Primitives

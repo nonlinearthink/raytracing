@@ -1,12 +1,14 @@
-use crate::core::{Interval, Ray, Vector3};
+use crate::core::{Interval, Point3, Ray, Vector3};
 
 /// Axis-aligned bounding box
 #[derive(Debug, Default)]
 pub struct AxisAlignedBoundingBox {
     /// x coordinate interval
     pub x: Interval,
+
     /// y coordinate interval
     pub y: Interval,
+
     /// z coordinate interval
     pub z: Interval,
 }
@@ -17,8 +19,12 @@ impl AxisAlignedBoundingBox {
         Self { x, y, z }
     }
 
-    /// Create a new `AxisAlignedBoundingBox` with min and max bounding vector.
-    pub fn from_bounding_points(min: &Vector3, max: &Vector3) -> Self {
+    /**
+    Create a new `AxisAlignedBoundingBox` with min and max points.
+
+    Note: The min point is the lower bound of the axis interval, and the max point is the upper bound of the axis interval.
+     */
+    pub fn new_with_two_points(min: &Point3, max: &Point3) -> Self {
         Self {
             x: Interval::new(f32::min(min.x, max.x), f32::max(min.x, max.x)),
             y: Interval::new(f32::min(min.y, max.y), f32::max(min.y, max.y)),
@@ -100,7 +106,7 @@ impl AxisAlignedBoundingBox {
     use raytracing::core::{AxisAlignedBoundingBox, Interval, Ray, Vector3};
 
     let ray = Ray::new(Vector3::zero(), Vector3::one());
-    let bbox = AxisAlignedBoundingBox::from_bounding_points(&Vector3::new(2., 2., 2.), &Vector3::new(3., 3., 3.));
+    let bbox = AxisAlignedBoundingBox::new_with_two_points(&Vector3::new(2., 2., 2.), &Vector3::new(3., 3., 3.));
 
     # assert!(!bbox.hit(&ray, &Interval::new(0., 1.999)));
     # assert!(bbox.hit(&ray, &Interval::new(0., 2.)));

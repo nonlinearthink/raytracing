@@ -9,21 +9,21 @@ fn main() {
     let mut world = HittableList::new();
 
     // Materials
-    let left_red = Rc::new(LambertianMaterial::new(Rc::new(
-        SolidColorTexture::new_with_floats(1.0, 0.2, 0.2),
-    )));
-    let back_green = Rc::new(LambertianMaterial::new(Rc::new(
-        SolidColorTexture::new_with_floats(0.2, 1.0, 0.2),
-    )));
-    let right_blue = Rc::new(LambertianMaterial::new(Rc::new(
-        SolidColorTexture::new_with_floats(0.2, 0.2, 1.0),
-    )));
-    let upper_orange = Rc::new(LambertianMaterial::new(Rc::new(
-        SolidColorTexture::new_with_floats(1.0, 0.5, 0.0),
-    )));
-    let lower_teal = Rc::new(LambertianMaterial::new(Rc::new(
-        SolidColorTexture::new_with_floats(0.2, 0.8, 0.8),
-    )));
+    let left_red = Rc::new(LambertianMaterial::new(Rc::new(SolidColorTexture::new(
+        1.0, 0.2, 0.2,
+    ))));
+    let back_green = Rc::new(LambertianMaterial::new(Rc::new(SolidColorTexture::new(
+        0.2, 1.0, 0.2,
+    ))));
+    let right_blue = Rc::new(LambertianMaterial::new(Rc::new(SolidColorTexture::new(
+        0.2, 0.2, 1.0,
+    ))));
+    let upper_orange = Rc::new(LambertianMaterial::new(Rc::new(SolidColorTexture::new(
+        1.0, 0.5, 0.0,
+    ))));
+    let lower_teal = Rc::new(LambertianMaterial::new(Rc::new(SolidColorTexture::new(
+        0.2, 0.8, 0.8,
+    ))));
 
     // Primitives
     world.add(Rc::new(Quad::new(
