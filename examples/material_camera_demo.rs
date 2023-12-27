@@ -83,7 +83,8 @@ fn main() {
         camera_builder_mut_ref = camera_builder_mut_ref.defocus_angle(10.).focus_dist(3.4);
     }
     let mut camera = camera_builder_mut_ref.build().unwrap();
+    let world = Rc::new(world);
     camera
-        .render(&world, "out/material-camera-demo.ppm".to_owned())
+        .render(world, None, "out/material-camera-demo.ppm".to_owned())
         .err();
 }

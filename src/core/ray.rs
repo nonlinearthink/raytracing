@@ -19,7 +19,7 @@ let target = ray.at(2.);
 # assert_eq!(direction, Vector3::new(4., 5., 6.));
 # assert_eq!(target, Vector3::new(9., 12., 15.));
 ```
- */
+*/
 #[derive(Debug)]
 pub struct Ray {
     /// Initial position of the ray emission.

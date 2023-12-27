@@ -189,7 +189,8 @@ fn main() {
         .max_ray_depth(10)
         .build()
         .unwrap();
+    let world = Rc::new(world);
     camera
-        .render(&world, "out/book2-final-demo.ppm".to_owned())
+        .render(world, None, "out/book2-final-demo.ppm".to_owned())
         .err();
 }

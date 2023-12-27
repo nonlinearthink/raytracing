@@ -6,7 +6,7 @@ use std::rc::Rc;
 Checker Texture
 
 A Texture that alternates between two textures.
- */
+*/
 #[derive(Debug)]
 pub struct CheckerTexture {
     /// The texture using when the uv coordinates are even.

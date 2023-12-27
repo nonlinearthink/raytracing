@@ -4,7 +4,7 @@ mod hittable_list;
 pub use hit_record::*;
 pub use hittable_list::*;
 
-use super::{AxisAlignedBoundingBox, Interval, Ray};
+use super::{AxisAlignedBoundingBox, Interval, Point3, Ray, Vector3};
 use core::fmt;
 use std::cmp::Ordering;
 
@@ -15,6 +15,14 @@ pub trait Hittable: fmt::Debug {
 
     /// Returns the bounding box of this object.
     fn bounding_box(&self) -> &AxisAlignedBoundingBox;
+
+    fn pdf_value(&self, _origin: &Point3, _direction: &Vector3) -> f32 {
+        0.0
+    }
+
+    fn random(&self, _origin: &Point3) -> Vector3 {
+        Vector3::new(1., 0., 0.)
+    }
 }
 
 /// Returns the order of the two hittable objects.

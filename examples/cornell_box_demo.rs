@@ -1,7 +1,7 @@
 use raytracing::core::{
-    get_cube_box, BVHNode, CameraBuilder, Color3, ConstantMedium, EmissiveMaterial, HittableList,
-    LambertianMaterial, Point3, Quad, RotateYInstance, SolidColorTexture, TranslateInstance,
-    Vector3,
+    get_cube_box, BVHNode, CameraBuilder, Color3, ConstantMedium, EmissiveMaterial, Hittable,
+    HittableList, LambertianMaterial, Point3, Quad, RotateYInstance, SolidColorTexture,
+    TranslateInstance, Vector3,
 };
 use std::rc::Rc;
 
@@ -18,6 +18,7 @@ fn main() {
     };
 
     let mut world = HittableList::new();
+    let mut lights = HittableList::new();
 
     // Materials
     let red = Rc::new(LambertianMaterial::new(Rc::new(SolidColorTexture::new(
@@ -49,7 +50,7 @@ fn main() {
         red,
     )));
     if options.smoke_test {
-        world.add(Rc::new(Quad::new(
+        lights.add(Rc::new(Quad::new(
             Point3::new(113., 554., 127.),
             Vector3::new(330., 0., 0.),
             Vector3::new(0., 0., 305.),
@@ -62,12 +63,14 @@ fn main() {
             white.clone(),
         )));
     } else {
-        world.add(Rc::new(Quad::new(
+        let light_source = Rc::new(Quad::new(
             Point3::new(343., 554., 332.),
             Vector3::new(-130., 0., 0.),
             Vector3::new(0., 0., -105.),
             light,
-        )));
+        ));
+        world.add(light_source.clone());
+        lights.add(light_source);
         world.add(Rc::new(Quad::new(
             Point3::new(555., 555., 555.),
             Vector3::new(-555., 0., 0.),
@@ -138,7 +141,9 @@ fn main() {
         .max_ray_depth(20)
         .build()
         .unwrap();
+    let world = Rc::new(world);
+    let lights: Option<Rc<dyn Hittable>> = Some(Rc::new(lights));
     camera
-        .render(&world, "out/cornell-box-demo.ppm".to_owned())
+        .render(world, lights, "out/cornell-box-demo.ppm".to_owned())
         .err();
 }

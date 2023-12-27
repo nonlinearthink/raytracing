@@ -19,11 +19,10 @@ impl AxisAlignedBoundingBox {
         Self { x, y, z }
     }
 
-    /**
-    Create a new `AxisAlignedBoundingBox` with min and max points.
-
-    Note: The min point is the lower bound of the axis interval, and the max point is the upper bound of the axis interval.
-     */
+    /// Create a new `AxisAlignedBoundingBox` with min and max points.
+    ///
+    /// Note: The min point is the lower bound of the axis interval, and the max point is the upper
+    /// bound of the axis interval.
     pub fn new_with_two_points(min: &Point3, max: &Point3) -> Self {
         Self {
             x: Interval::new(f32::min(min.x, max.x), f32::max(min.x, max.x)),
@@ -34,6 +33,7 @@ impl AxisAlignedBoundingBox {
 
     /**
     Get the axis of the bounding box with the given index.
+
     1: y axis, 2: z axis, otherwise: x axis.
 
     # Examples
@@ -53,7 +53,7 @@ impl AxisAlignedBoundingBox {
     # assert_eq!(z_axis, &Interval::new(0.0, 3.0));
     # assert_eq!(unknown_axis, x_axis);
     ```
-     */
+    */
     pub fn axis(&self, n: usize) -> &Interval {
         match n {
             1 => &self.y,

@@ -6,7 +6,7 @@ use image::{ImageResult, RgbImage};
 Image Texture
 
 A Texture that reads image data from a file.
- */
+*/
 #[derive(Debug)]
 pub struct ImageTexture {
     /// Image data.

@@ -46,7 +46,8 @@ fn main() {
         .max_ray_depth(10)
         .build()
         .unwrap();
+    let world = Rc::new(world);
     camera
-        .render(&world, "out/perlin-noise-demo.ppm".to_owned())
+        .render(world, None, "out/perlin-noise-demo.ppm".to_owned())
         .err();
 }

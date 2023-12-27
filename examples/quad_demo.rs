@@ -69,5 +69,8 @@ fn main() {
         .max_ray_depth(10)
         .build()
         .unwrap();
-    camera.render(&world, "out/quad-demo.ppm".to_owned()).err();
+    let world = Rc::new(world);
+    camera
+        .render(world, None, "out/quad-demo.ppm".to_owned())
+        .err();
 }

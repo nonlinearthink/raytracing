@@ -58,7 +58,8 @@ fn main() {
         .max_ray_depth(10)
         .build()
         .unwrap();
+    let world = Rc::new(world);
     camera
-        .render(&world, "out/checker-texture-demo.ppm".to_owned())
+        .render(world, None, "out/checker-texture-demo.ppm".to_owned())
         .err();
 }

@@ -1,5 +1,6 @@
 use super::{HitRecord, Hittable};
-use crate::core::{AxisAlignedBoundingBox, Interval, Ray};
+use crate::core::{AxisAlignedBoundingBox, Interval, Point3, Ray, Vector3};
+use rand::Rng;
 use std::rc::Rc;
 
 #[derive(Debug)]
@@ -53,5 +54,25 @@ impl Hittable for HittableList {
 
     fn bounding_box(&self) -> &AxisAlignedBoundingBox {
         &self.bbox
+    }
+
+    fn pdf_value(&self, origin: &Point3, direction: &Vector3) -> f32 {
+        let weight = 1.0 / self.objects.len() as f32;
+
+        let mut sum = 0.0;
+        for object in &self.objects {
+            sum += weight * object.pdf_value(origin, direction);
+        }
+
+        return sum;
+    }
+
+    fn random(&self, origin: &Point3) -> Vector3 {
+        let mut rng = rand::thread_rng();
+
+        let size = self.objects.len();
+        let random_index = rng.gen_range(0..size);
+
+        self.objects[random_index].random(origin)
     }
 }

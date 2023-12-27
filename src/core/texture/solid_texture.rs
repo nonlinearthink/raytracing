@@ -11,9 +11,10 @@ A Texture that always returns a single color.
 use raytracing::core::{Color3, Point3, SolidColorTexture, Texture, Vector2};
 
 let texture = SolidColorTexture::new(1., 0., 0.);
-# assert_eq!(texture.value(&Vector2::new(0., 0.), &Point3::new(0., 0., 0.)), Color3::new(1., 0., 0.));
+let color = texture.value(&Vector2::new(0., 0.), &Point3::new(0., 0., 0.));
+# assert_eq!(color, Color3::new(1., 0., 0.));
 ```
- */
+*/
 #[derive(Debug)]
 pub struct SolidColorTexture {
     /// Color of the texture.

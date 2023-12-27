@@ -16,14 +16,15 @@ use std::rc::Rc;
 
 let material = Rc::new(LambertianMaterial::new_with_color(Color3::new(1., 0., 0.)));
 let cube_box = get_cube_box(Point3::new(0., 0., 0.), Point3::new(1., 1., 1.), material);
-assert!(
-    cube_box.hit(
-        &Ray::new(Point3::new(0., 0., 0.), Vector3::new(0., 0., 1.)),
-        &Interval::new(0., 1.),
-        &mut HitRecord::new()
-    )
-);
- */
+# assert!(
+#     cube_box.hit(
+#         &Ray::new(Point3::new(0., 0., 0.), Vector3::new(0., 0., 1.)),
+#         &Interval::new(0., 1.),
+#         &mut HitRecord::new()
+#     )
+# );
+```
+*/
 pub fn get_cube_box(start: Point3, end: Point3, material: Rc<dyn Material>) -> Rc<dyn Hittable> {
     let mut cube_box = Rc::new(HittableList::new());
     let cube_box_mut_ref = Rc::get_mut(&mut cube_box).unwrap();

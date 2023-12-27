@@ -1,5 +1,5 @@
 use super::{
-    Color3, CosinePDF, HitRecord, Hittable, Interval, Point3, ProbabilityDensityFunction, Ray,
+    Color3, HitRecord, Hittable, HittablePDF, Interval, Point3, ProbabilityDensityFunction, Ray,
     Vector3,
 };
 use crate::utils::{deg_to_rad, linear_to_gramma, PPMImage};
@@ -8,6 +8,7 @@ use indicatif::ProgressBar;
 use rand::Rng;
 use std::{
     ops::{Add, Div, Mul, Neg, Sub},
+    rc::Rc,
     time,
 };
 
@@ -205,28 +206,32 @@ impl Camera {
         Ray::new_with_time(ray_origin, ray_direction, ray_time)
     }
 
-    fn ray_color(&mut self, ray: &Ray, world: &dyn Hittable, ray_depth: u8) -> Color3 {
+    fn ray_color(
+        &mut self,
+        ray: &Ray,
+        world: Rc<dyn Hittable>,
+        lights: Option<Rc<dyn Hittable>>,
+        ray_depth: u8,
+    ) -> Color3 {
         // If we've exceeded the ray bounce limit, no more light is gathered.
         if ray_depth <= 0 {
             return Color3::zero();
         }
 
-        let mut record: HitRecord = HitRecord::new();
+        let mut record = HitRecord::new();
         // Fixing shadow acne by setting the nearest surface to 0.001
         if !world.hit(ray, &Interval::new(0.001, f32::INFINITY), &mut record) {
             return self.background;
         }
 
-        let default_color = Color3::zero();
         let HitRecord {
             uv: Some(uv),
             point: Some(point),
-            normal: Some(normal),
             material: Some(ref material),
             ..
         } = record
         else {
-            return default_color;
+            return Color3::zero();
         };
 
         let emission_color = material.emitted(ray, &record, &uv, &point);
@@ -238,21 +243,26 @@ impl Camera {
             return emission_color;
         }
 
-        let surface_pdf = CosinePDF::new(normal);
-        ray_scattered = Ray::new_with_time(point, surface_pdf.generate(), ray.time);
-        pdf = surface_pdf.value(&ray_scattered.direction);
+        if let Some(ref lights_some) = lights {
+            let light_pdf = HittablePDF::new(lights_some.clone(), point);
+            ray_scattered = Ray::new_with_time(point, light_pdf.generate(), ray.time);
+            pdf = light_pdf.value(&ray_scattered.direction);
+        }
 
         let scattering_pdf = material.scattering_pdf(ray, &record, &mut ray_scattered);
 
-        let scatter_color = attenuation
-            .mul(scattering_pdf)
-            .mul(&self.ray_color(&ray_scattered, world, ray_depth - 1))
-            .div(pdf);
+        let sample_color = self.ray_color(&ray_scattered, world, lights, ray_depth - 1);
+        let scatter_color = attenuation.mul(scattering_pdf).mul(&sample_color).div(pdf);
 
         &emission_color + &scatter_color
     }
 
-    pub fn render(&mut self, world: &dyn Hittable, save_path: String) -> std::io::Result<()> {
+    pub fn render(
+        &mut self,
+        world: Rc<dyn Hittable>,
+        lights: Option<Rc<dyn Hittable>>,
+        save_path: String,
+    ) -> std::io::Result<()> {
         self.initialize();
 
         let render_timer = time::Instant::now();
@@ -266,7 +276,12 @@ impl Camera {
                 for sub_y in 0..self.sqrt_spp {
                     for sub_x in 0..self.sqrt_spp {
                         let ray = self.get_ray(x, y, sub_x, sub_y);
-                        color += &self.ray_color(&ray, world, self.max_ray_depth);
+                        color += &self.ray_color(
+                            &ray,
+                            world.clone(),
+                            lights.clone(),
+                            self.max_ray_depth,
+                        );
                     }
                 }
 

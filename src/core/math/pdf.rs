@@ -1,4 +1,6 @@
-use super::{OrthonormalBasis, Vector3};
+use super::{OrthonormalBasis, Point3, Vector3};
+use crate::core::Hittable;
+use std::rc::Rc;
 
 pub trait ProbabilityDensityFunction {
     fn value(&self, direction: &Vector3) -> f32;
@@ -37,5 +39,26 @@ impl ProbabilityDensityFunction for CosinePDF {
 
     fn generate(&self) -> Vector3 {
         self.onb.local(&Vector3::random_cosine_direction())
+    }
+}
+
+pub struct HittablePDF {
+    objects: Rc<dyn Hittable>,
+    origin: Point3,
+}
+
+impl HittablePDF {
+    pub fn new(objects: Rc<dyn Hittable>, origin: Point3) -> Self {
+        Self { objects, origin }
+    }
+}
+
+impl ProbabilityDensityFunction for HittablePDF {
+    fn value(&self, direction: &Vector3) -> f32 {
+        self.objects.pdf_value(&self.origin, direction)
+    }
+
+    fn generate(&self) -> Vector3 {
+        self.objects.random(&self.origin)
     }
 }

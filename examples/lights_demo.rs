@@ -1,11 +1,12 @@
 use raytracing::core::{
-    CameraBuilder, Color3, EmissiveMaterial, HittableList, LambertianMaterial, NoiseTexture,
-    Point3, Quad, SolidColorTexture, Sphere, Vector3,
+    CameraBuilder, Color3, EmissiveMaterial, Hittable, HittableList, LambertianMaterial,
+    NoiseTexture, Point3, Quad, SolidColorTexture, Sphere, Vector3,
 };
 use std::rc::Rc;
 
 fn main() {
     let mut world = HittableList::new();
+    let mut lights = HittableList::new();
 
     // Textures
     let noise_texture = Rc::new(NoiseTexture::new_with_marble_effect(4.));
@@ -26,12 +27,12 @@ fn main() {
         2.,
         Rc::new(LambertianMaterial::new(noise_texture.clone())),
     )));
-    world.add(Rc::new(Sphere::new(
+    lights.add(Rc::new(Sphere::new(
         Point3::new(0., 7., 0.),
         2.,
         emissive_material.clone(),
     )));
-    world.add(Rc::new(Quad::new(
+    lights.add(Rc::new(Quad::new(
         Point3::new(3., 1., -2.),
         Vector3::new(2., 0., 0.),
         Vector3::new(0., 2., 0.),
@@ -50,7 +51,9 @@ fn main() {
         .max_ray_depth(10)
         .build()
         .unwrap();
+    let world = Rc::new(world);
+    let lights: Option<Rc<dyn Hittable>> = Some(Rc::new(lights));
     camera
-        .render(&world, "out/lights-demo.ppm".to_owned())
+        .render(world, lights, "out/lights-demo.ppm".to_owned())
         .err();
 }
