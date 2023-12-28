@@ -1,6 +1,7 @@
-use super::Texture;
 use crate::core::{Color3, PerlinNoise, Point3, Vector2};
 use std::ops::Mul;
+
+pub use crate::traits::Texture;
 
 #[derive(Debug)]
 pub struct NoiseTexture {

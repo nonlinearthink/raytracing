@@ -1,5 +1,7 @@
-use super::Material;
-use crate::core::{Color3, HitRecord, Ray, Texture, Vector2, Vector3};
+use crate::{
+    core::{HitRecord, Ray, ScatterRecord, Vector2, Vector3},
+    traits::{Material, Texture},
+};
 use std::{
     ops::{Add, Mul},
     rc::Rc,
@@ -25,9 +27,7 @@ impl Material for MetalMaterial {
         &self,
         ray_in: &Ray,
         hit_record: &HitRecord,
-        attenuation: &mut Color3,
-        ray_scattered: &mut Ray,
-        _pdf: &mut f32,
+        scatter_record: &mut ScatterRecord,
     ) -> bool {
         if let HitRecord {
             point: Some(point),
@@ -36,14 +36,21 @@ impl Material for MetalMaterial {
         } = hit_record
         {
             let reflected = ray_in.direction.normolize().reflect(&normal);
+            let ray_scattered = Ray::new_with_time(
+                point.clone(),
+                reflected.add(&(Vector3::random_unit_vector().mul(self.fuzz))),
+                ray_in.time,
+            );
 
-            ray_scattered.origin = point.clone();
-            ray_scattered.direction =
-                reflected.add(&(Vector3::random_unit_vector().mul(self.fuzz)));
-            ray_scattered.time = ray_in.time;
-            attenuation.clone_from(&self.albedo.value(&Vector2::zero(), &point));
+            let is_hitted = ray_scattered.direction.dot(&normal) > 0.;
 
-            ray_scattered.direction.dot(&normal) > 0.
+            scatter_record.ray_scattered = Some(ray_scattered);
+            scatter_record.attenuation = self.albedo.value(&Vector2::zero(), &point);
+            scatter_record.pdf = None;
+            scatter_record.skip_pdf = true;
+
+            // TODO: test if return true directly
+            is_hitted
         } else {
             false
         }

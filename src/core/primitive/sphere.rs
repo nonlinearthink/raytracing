@@ -1,6 +1,11 @@
-use crate::core::{
-    AxisAlignedBoundingBox, HitRecord, Hittable, Interval, Material, Point3, Ray, Vector2, Vector3,
+use crate::{
+    core::{
+        AxisAlignedBoundingBox, HitRecord, Interval, OrthonormalBasis, Point3, Ray, Vector2,
+        Vector3,
+    },
+    traits::{Hittable, Material},
 };
+use rand::Rng;
 use std::{
     ops::{Add, Div, Mul, Sub},
     rc::Rc,
@@ -70,6 +75,19 @@ impl Sphere {
             theta / std::f32::consts::PI,
         )
     }
+
+    fn random_to_sphere(radius: f32, distance_squared: f32) -> Vector3 {
+        let mut rng = rand::thread_rng();
+        let r1 = rng.gen::<f32>();
+        let r2 = rng.gen::<f32>();
+        let z = 1. + r2 * (f32::sqrt(1. - radius * radius / distance_squared) - 1.);
+
+        let phi = 2. * std::f32::consts::PI * r1;
+        let x = f32::cos(phi) * f32::sqrt(1. - z * z);
+        let y = f32::sin(phi) * f32::sqrt(1. - z * z);
+
+        Vector3::new(x, y, z)
+    }
 }
 
 impl Hittable for Sphere {
@@ -114,5 +132,30 @@ impl Hittable for Sphere {
 
     fn bounding_box(&self) -> &AxisAlignedBoundingBox {
         &self.bbox
+    }
+
+    fn pdf_value(&self, origin: &Vector3, direction: &Vector3) -> f32 {
+        // This method only works for stationary spheres.
+        let mut record = HitRecord::new();
+        if !self.hit(
+            &Ray::new(*origin, *direction),
+            &Interval::new(0.001, f32::INFINITY),
+            &mut record,
+        ) {
+            return 0.;
+        }
+
+        let cos_theta_max =
+            f32::sqrt(1. - self.radius * self.radius / (&self.center - origin).length_squared());
+        let solid_angle = 2. * std::f32::consts::PI * (1. - cos_theta_max);
+
+        1. / solid_angle
+    }
+
+    fn random(&self, origin: &Vector3) -> Vector3 {
+        let direction = &self.center - origin;
+        let distance_squared = direction.length_squared();
+        let onb = OrthonormalBasis::new_with_w(&direction);
+        onb.local(&Sphere::random_to_sphere(self.radius, distance_squared))
     }
 }

@@ -1,5 +1,7 @@
-use super::Material;
-use crate::core::{Color3, HitRecord, Ray};
+use crate::{
+    core::{Color3, HitRecord, Ray, ScatterRecord},
+    traits::Material,
+};
 use std::ops::Neg;
 
 #[derive(Debug)]
@@ -25,11 +27,12 @@ impl Material for DielectricMaterial {
         &self,
         ray_in: &Ray,
         hit_record: &HitRecord,
-        attenuation: &mut Color3,
-        ray_scattered: &mut Ray,
-        _pdf: &mut f32,
+        scatter_record: &mut ScatterRecord,
     ) -> bool {
-        attenuation.clone_from(&Color3::one());
+        scatter_record.attenuation = Color3::one();
+        scatter_record.pdf = None;
+        scatter_record.skip_pdf = true;
+
         let refraction_ratio = if hit_record.front_face {
             1.0 / self.ior
         } else {
@@ -56,9 +59,8 @@ impl Material for DielectricMaterial {
                 unit_direction.refract(&normal, refraction_ratio)
             };
 
-            ray_scattered.origin = point.clone();
-            ray_scattered.direction = direction;
-            ray_scattered.time = ray_in.time;
+            scatter_record.ray_scattered =
+                Some(Ray::new_with_time(point.clone(), direction, ray_in.time));
 
             true
         } else {

@@ -1,8 +1,11 @@
 use super::{
-    Color3, HitRecord, Hittable, HittablePDF, Interval, Point3, ProbabilityDensityFunction, Ray,
-    Vector3,
+    deg_to_rad, linear_to_gramma, Color3, HitRecord, HittablePDF, Interval, MixturePDF, Point3,
+    Ray, ScatterRecord, Vector3,
 };
-use crate::utils::{deg_to_rad, linear_to_gramma, PPMImage};
+use crate::{
+    traits::{Hittable, ProbabilityDensityFunction},
+    utils::PPMImage,
+};
 use derive_builder::Builder;
 use indicatif::ProgressBar;
 use rand::Rng;
@@ -218,41 +221,57 @@ impl Camera {
             return Color3::zero();
         }
 
-        let mut record = HitRecord::new();
+        let mut hit_record = HitRecord::new();
         // Fixing shadow acne by setting the nearest surface to 0.001
-        if !world.hit(ray, &Interval::new(0.001, f32::INFINITY), &mut record) {
+        if !world.hit(ray, &Interval::new(0.001, f32::INFINITY), &mut hit_record) {
             return self.background;
         }
-
         let HitRecord {
             uv: Some(uv),
             point: Some(point),
             material: Some(ref material),
             ..
-        } = record
+        } = hit_record
         else {
-            return Color3::zero();
+            return self.background;
         };
 
-        let emission_color = material.emitted(ray, &record, &uv, &point);
+        let emission_color = material.emitted(ray, &hit_record, &uv, &point);
 
-        let mut ray_scattered = Ray::new(Point3::zero(), Vector3::zero());
-        let mut attenuation = Color3::zero();
-        let mut pdf = 0.;
-        if !material.scatter(ray, &record, &mut attenuation, &mut ray_scattered, &mut pdf) {
+        let mut scatter_record = ScatterRecord::new();
+        if !material.scatter(ray, &hit_record, &mut scatter_record) {
             return emission_color;
         }
 
-        if let Some(ref lights_some) = lights {
-            let light_pdf = HittablePDF::new(lights_some.clone(), point);
-            ray_scattered = Ray::new_with_time(point, light_pdf.generate(), ray.time);
-            pdf = light_pdf.value(&ray_scattered.direction);
+        if scatter_record.skip_pdf {
+            let ray_scattered = scatter_record.ray_scattered.unwrap();
+            return scatter_record.attenuation.mul(&self.ray_color(
+                &ray_scattered,
+                world,
+                lights,
+                ray_depth - 1,
+            ));
         }
 
-        let scattering_pdf = material.scattering_pdf(ray, &record, &mut ray_scattered);
+        let surface_pdf = scatter_record.pdf.unwrap();
+        let pdf: Rc<dyn ProbabilityDensityFunction> = if let Some(ref lights_some) = lights {
+            let light_pdf = Rc::new(HittablePDF::new(lights_some.clone(), point));
+            Rc::new(MixturePDF::new(light_pdf, surface_pdf))
+        } else {
+            surface_pdf
+        };
+
+        let mut ray_scattered = Ray::new_with_time(point, pdf.generate(), ray.time);
+        let pdf_value = pdf.value(&ray_scattered.direction);
+
+        let scattering_pdf = material.scattering_pdf(ray, &hit_record, &mut ray_scattered);
 
         let sample_color = self.ray_color(&ray_scattered, world, lights, ray_depth - 1);
-        let scatter_color = attenuation.mul(scattering_pdf).mul(&sample_color).div(pdf);
+        let scatter_color = scatter_record
+            .attenuation
+            .mul(scattering_pdf)
+            .mul(&sample_color)
+            .div(pdf_value);
 
         &emission_color + &scatter_color
     }

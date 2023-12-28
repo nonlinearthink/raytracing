@@ -13,8 +13,7 @@ struct SceneOptions {
 
 fn main() {
     let options = SceneOptions {
-        // FIXME: BVH make DielectricMaterial the oppsite output.
-        bounding_volume_hierarchical: false,
+        bounding_volume_hierarchical: true,
         larger_fov: false,
         depth_of_field: false,
     };

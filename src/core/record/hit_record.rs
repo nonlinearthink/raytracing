@@ -1,4 +1,7 @@
-use crate::core::{Material, Point3, Ray, Vector2, Vector3};
+use crate::{
+    core::{Point3, Ray, Vector2, Vector3},
+    traits::Material,
+};
 use std::{ops::Neg, rc::Rc};
 
 #[derive(Debug, Clone)]

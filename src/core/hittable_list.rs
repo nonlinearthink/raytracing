@@ -1,5 +1,7 @@
-use super::{HitRecord, Hittable};
-use crate::core::{AxisAlignedBoundingBox, Interval, Point3, Ray, Vector3};
+use crate::{
+    core::{AxisAlignedBoundingBox, HitRecord, Interval, Point3, Ray, Vector3},
+    traits::Hittable,
+};
 use rand::Rng;
 use std::rc::Rc;
 

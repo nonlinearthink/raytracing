@@ -1,10 +1,12 @@
 use rand::Rng;
 use std::rc::Rc;
 
-use raytracing::core::{
-    BVHNode, CameraBuilder, CheckerTexture, Color3, DielectricMaterial, HittableList,
-    LambertianMaterial, Material, MetalMaterial, Point3, SolidColorTexture, Sphere, Texture,
-    Vector3,
+use raytracing::{
+    core::{
+        BVHNode, CameraBuilder, CheckerTexture, Color3, DielectricMaterial, HittableList,
+        LambertianMaterial, MetalMaterial, Point3, SolidColorTexture, Sphere, Vector3,
+    },
+    traits::{Material, Texture},
 };
 
 struct SceneOptions {

@@ -1,9 +1,11 @@
 extern crate raytracing;
 
 use rand::Rng;
-use raytracing::core::{
-    HitRecord, Hittable, Interval, LambertianMaterial, Ray, SolidColorTexture, Sphere, Vector2,
-    Vector3,
+use raytracing::{
+    core::{
+        HitRecord, Interval, LambertianMaterial, Ray, SolidColorTexture, Sphere, Vector2, Vector3,
+    },
+    traits::Hittable,
 };
 use std::rc::Rc;
 

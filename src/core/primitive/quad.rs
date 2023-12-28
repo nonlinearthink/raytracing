@@ -1,5 +1,6 @@
-use crate::core::{
-    AxisAlignedBoundingBox, HitRecord, Hittable, Interval, Material, Point3, Ray, Vector2, Vector3,
+use crate::{
+    core::{AxisAlignedBoundingBox, HitRecord, Interval, Point3, Ray, Vector2, Vector3},
+    traits::{Hittable, Material},
 };
 use rand::Rng;
 use std::{

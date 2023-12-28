@@ -1,5 +1,8 @@
 use super::Quad;
-use crate::core::{Hittable, HittableList, Material, Point3, Vector3};
+use crate::{
+    core::{HittableList, Point3, Vector3},
+    traits::{Hittable, Material},
+};
 use std::{ops::Neg, rc::Rc};
 
 /**

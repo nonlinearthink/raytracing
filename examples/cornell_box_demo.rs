@@ -1,7 +1,10 @@
-use raytracing::core::{
-    get_cube_box, BVHNode, CameraBuilder, Color3, ConstantMedium, EmissiveMaterial, Hittable,
-    HittableList, LambertianMaterial, Point3, Quad, RotateYInstance, SolidColorTexture,
-    TranslateInstance, Vector3,
+use raytracing::{
+    core::{
+        get_cube_box, BVHNode, CameraBuilder, Color3, ConstantMedium, EmissiveMaterial,
+        HittableList, LambertianMaterial, Point3, Quad, RotateYInstance, SolidColorTexture,
+        TranslateInstance, Vector3,
+    },
+    traits::Hittable,
 };
 use std::rc::Rc;
 

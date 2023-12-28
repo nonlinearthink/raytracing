@@ -1,5 +1,7 @@
-use super::Material;
-use crate::core::{Color3, HitRecord, Point3, Ray, SolidColorTexture, Texture, Vector2};
+use crate::{
+    core::{Color3, HitRecord, Point3, Ray, ScatterRecord, SolidColorTexture, Vector2},
+    traits::{Material, Texture},
+};
 use std::rc::Rc;
 
 #[derive(Debug)]
@@ -22,11 +24,9 @@ impl EmissiveMaterial {
 impl Material for EmissiveMaterial {
     fn scatter(
         &self,
-        _ray_in: &crate::core::Ray,
-        _hit_record: &crate::core::HitRecord,
-        _attenuation: &mut Color3,
-        _ray_scattered: &mut crate::core::Ray,
-        _pdf: &mut f32,
+        _ray_in: &Ray,
+        _hit_record: &HitRecord,
+        _scatter_record: &mut ScatterRecord,
     ) -> bool {
         return false;
     }

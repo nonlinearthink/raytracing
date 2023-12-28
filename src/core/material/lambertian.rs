@@ -1,5 +1,7 @@
-use super::Material;
-use crate::core::{Color3, HitRecord, OrthonormalBasis, Ray, SolidColorTexture, Texture, Vector3};
+use crate::{
+    core::{Color3, CosinePDF, HitRecord, Ray, ScatterRecord, SolidColorTexture},
+    traits::{Material, Texture},
+};
 use std::rc::Rc;
 
 #[derive(Debug)]
@@ -22,11 +24,9 @@ impl LambertianMaterial {
 impl Material for LambertianMaterial {
     fn scatter(
         &self,
-        ray_in: &Ray,
+        _ray_in: &Ray,
         hit_record: &HitRecord,
-        attenuation: &mut Color3,
-        ray_scattered: &mut Ray,
-        pdf: &mut f32,
+        scatter_record: &mut ScatterRecord,
     ) -> bool {
         if let HitRecord {
             normal: Some(normal),
@@ -35,17 +35,9 @@ impl Material for LambertianMaterial {
             ..
         } = hit_record
         {
-            let onb = OrthonormalBasis::new_with_w(normal);
-            let mut scatter_direction = onb.local(&Vector3::random_cosine_direction());
-            if scatter_direction.equals_zero() {
-                scatter_direction = normal.clone();
-            }
-
-            attenuation.clone_from(&self.albedo.value(uv, point));
-            ray_scattered.origin = point.clone();
-            ray_scattered.direction = scatter_direction;
-            ray_scattered.time = ray_in.time;
-            *pdf = onb.w().dot(&ray_scattered.direction) / std::f32::consts::PI;
+            scatter_record.attenuation = self.albedo.value(uv, point);
+            scatter_record.pdf = Some(Rc::new(CosinePDF::new(*normal)));
+            scatter_record.skip_pdf = false;
 
             true
         } else {

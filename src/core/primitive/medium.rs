@@ -1,6 +1,6 @@
-use crate::core::{
-    Color3, HitRecord, Hittable, Interval, IsotropicMaterial, Material, Ray, Texture, Vector2,
-    Vector3,
+use crate::{
+    core::{Color3, HitRecord, Interval, IsotropicMaterial, Ray, Vector2, Vector3},
+    traits::{Hittable, Material, Texture},
 };
 use std::rc::Rc;
 

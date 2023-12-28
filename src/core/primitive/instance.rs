@@ -1,6 +1,6 @@
 use crate::{
-    core::{AxisAlignedBoundingBox, HitRecord, Hittable, Interval, Point3, Ray, Vector3},
-    utils::deg_to_rad,
+    core::{deg_to_rad, AxisAlignedBoundingBox, HitRecord, Interval, Point3, Ray, Vector3},
+    traits::Hittable,
 };
 use std::{
     ops::{Add, Sub},
@@ -93,8 +93,8 @@ impl RotateYInstance {
 impl Hittable for RotateYInstance {
     fn hit(&self, ray: &Ray, ray_interval: &Interval, record: &mut HitRecord) -> bool {
         // Change the ray from world space to object space
-        let mut origin = ray.origin;
-        let mut direction = ray.direction;
+        let mut origin = ray.origin.clone();
+        let mut direction = ray.direction.clone();
 
         origin[0] = self.cos_theta * ray.origin[0] - self.sin_theta * ray.origin[2];
         origin[2] = self.sin_theta * ray.origin[0] + self.cos_theta * ray.origin[2];

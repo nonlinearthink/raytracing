@@ -1,6 +1,8 @@
-use super::{SolidColorTexture, Texture};
+use super::SolidColorTexture;
 use crate::core::{Color3, Point3};
 use std::rc::Rc;
+
+pub use crate::traits::Texture;
 
 /**
 Checker Texture

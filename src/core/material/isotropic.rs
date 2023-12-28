@@ -1,5 +1,7 @@
-use super::Material;
-use crate::core::{Color3, HitRecord, Ray, SolidColorTexture, Texture, Vector3};
+use crate::{
+    core::{Color3, HitRecord, Ray, ScatterRecord, SolidColorTexture, SpherePDF},
+    traits::{Material, Texture},
+};
 use std::rc::Rc;
 
 #[derive(Debug)]
@@ -22,22 +24,24 @@ impl IsotropicMaterial {
 impl Material for IsotropicMaterial {
     fn scatter(
         &self,
-        ray_in: &Ray,
+        _ray_in: &Ray,
         hit_record: &HitRecord,
-        attenuation: &mut Color3,
-        ray_scattered: &mut Ray,
-        pdf: &mut f32,
+        scatter_record: &mut ScatterRecord,
     ) -> bool {
-        let point = hit_record.point.unwrap();
-        let uv = hit_record.uv.unwrap();
+        if let HitRecord {
+            point: Some(point),
+            uv: Some(uv),
+            ..
+        } = hit_record
+        {
+            scatter_record.attenuation = self.albedo.value(uv, point);
+            scatter_record.pdf = Some(Rc::new(SpherePDF::new()));
+            scatter_record.skip_pdf = false;
 
-        ray_scattered.origin = point;
-        ray_scattered.direction = Vector3::random_unit_vector();
-        ray_scattered.time = ray_in.time;
-        attenuation.clone_from(&self.albedo.value(&uv, &point));
-        *pdf = 1. / (4. * std::f32::consts::PI);
-
-        true
+            true
+        } else {
+            false
+        }
     }
 
     fn scattering_pdf(

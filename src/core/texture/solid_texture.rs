@@ -1,5 +1,6 @@
-use super::Texture;
 use crate::core::{Color3, Point3, Vector2};
+
+pub use crate::traits::Texture;
 
 /**
 Solid Color Texture
@@ -8,7 +9,10 @@ A Texture that always returns a single color.
 
 # Examples
 ```
-use raytracing::core::{Color3, Point3, SolidColorTexture, Texture, Vector2};
+use raytracing::{
+    core::{Color3, Point3, SolidColorTexture, Vector2},
+    traits::Texture,
+};
 
 let texture = SolidColorTexture::new(1., 0., 0.);
 let color = texture.value(&Vector2::new(0., 0.), &Point3::new(0., 0., 0.));

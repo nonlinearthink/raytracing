@@ -1,5 +1,8 @@
 use super::AxisAlignedBoundingBox;
-use crate::core::{compare_hittable_objects, HitRecord, Hittable, HittableList, Interval, Ray};
+use crate::{
+    core::{HitRecord, HittableList, Interval, Ray},
+    traits::{compare_hittable_objects, Hittable},
+};
 use rand::Rng;
 use std::rc::Rc;
 

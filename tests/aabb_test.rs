@@ -1,7 +1,8 @@
 extern crate raytracing;
 
-use raytracing::core::{
-    AxisAlignedBoundingBox, Color3, Hittable, Interval, LambertianMaterial, Point3, Quad, Vector3,
+use raytracing::{
+    core::{AxisAlignedBoundingBox, Color3, Interval, LambertianMaterial, Point3, Quad, Vector3},
+    traits::Hittable,
 };
 use std::rc::Rc;
 

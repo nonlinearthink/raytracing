@@ -1,12 +1,5 @@
-mod hit_record;
-mod hittable_list;
-
-pub use hit_record::*;
-pub use hittable_list::*;
-
-use super::{AxisAlignedBoundingBox, Interval, Point3, Ray, Vector3};
-use core::fmt;
-use std::cmp::Ordering;
+use crate::core::{AxisAlignedBoundingBox, HitRecord, Interval, Point3, Ray, Vector3};
+use std::{cmp::Ordering, fmt};
 
 /// Interface for all hittable objects.
 pub trait Hittable: fmt::Debug {

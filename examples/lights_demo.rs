@@ -1,6 +1,9 @@
-use raytracing::core::{
-    CameraBuilder, Color3, EmissiveMaterial, Hittable, HittableList, LambertianMaterial,
-    NoiseTexture, Point3, Quad, SolidColorTexture, Sphere, Vector3,
+use raytracing::{
+    core::{
+        CameraBuilder, Color3, EmissiveMaterial, HittableList, LambertianMaterial, NoiseTexture,
+        Point3, Quad, SolidColorTexture, Sphere, Vector3,
+    },
+    traits::Hittable,
 };
 use std::rc::Rc;
 

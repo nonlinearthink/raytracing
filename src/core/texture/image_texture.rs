@@ -1,6 +1,7 @@
-use super::Texture;
 use crate::core::{Color3, Interval, Point3, Vector2};
 use image::{ImageResult, RgbImage};
+
+pub use crate::traits::Texture;
 
 /**
 Image Texture

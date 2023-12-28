@@ -1,19 +1,21 @@
 mod bounding;
+mod bvh;
 mod camera;
-mod hit;
+mod hittable_list;
 mod material;
 mod math;
-mod noise;
 mod primitive;
 mod ray;
+mod record;
 mod texture;
 
 pub use bounding::*;
+pub use bvh::*;
 pub use camera::*;
-pub use hit::*;
+pub use hittable_list::*;
 pub use material::*;
 pub use math::*;
-pub use noise::*;
 pub use primitive::*;
 pub use ray::*;
+pub use record::*;
 pub use texture::*;
