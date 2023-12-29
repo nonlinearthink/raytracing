@@ -109,7 +109,6 @@ fn main() {
     let options = SceneOptions {
         depth_of_field: true,
         high_quality: false,
-        // FIXME: motion blur is weird.
         motion_blur_test: false,
         bounding_volume_hierarchical: true,
         checker_texture_test: false,
@@ -145,6 +144,6 @@ fn main() {
         .unwrap();
     let world = Rc::new(world);
     camera
-        .render(world, None, "out/book1-final-demo.ppm".to_owned())
+        .render(world, None, "out/one-week.ppm".to_owned())
         .err();
 }

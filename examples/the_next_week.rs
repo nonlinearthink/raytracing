@@ -191,6 +191,6 @@ fn main() {
         .unwrap();
     let world = Rc::new(world);
     camera
-        .render(world, None, "out/book2-final-demo.ppm".to_owned())
+        .render(world, None, "out/the-next-week.ppm".to_owned())
         .err();
 }

@@ -49,7 +49,6 @@ impl Material for MetalMaterial {
             scatter_record.pdf = None;
             scatter_record.skip_pdf = true;
 
-            // TODO: test if return true directly
             is_hitted
         } else {
             false
