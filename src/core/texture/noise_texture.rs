@@ -3,6 +3,11 @@ use std::ops::Mul;
 
 pub use crate::traits::Texture;
 
+/**
+Noise Texture
+
+A Texture that uses Perlin noise to generate a color.
+*/
 #[derive(Debug)]
 pub struct NoiseTexture {
     noise: PerlinNoise,
@@ -11,6 +16,7 @@ pub struct NoiseTexture {
 }
 
 impl NoiseTexture {
+    /// Create a new `NoiseTexture` with a given uv scale.
     pub fn new(scale: f32) -> Self {
         NoiseTexture {
             noise: PerlinNoise::new(),
@@ -19,6 +25,7 @@ impl NoiseTexture {
         }
     }
 
+    /// Create a new marble effect `NoiseTexture` with a given uv scale.
     pub fn new_with_marble_effect(scale: f32) -> Self {
         NoiseTexture {
             noise: PerlinNoise::new(),

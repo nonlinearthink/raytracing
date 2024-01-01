@@ -45,12 +45,7 @@ impl Material for LambertianMaterial {
         }
     }
 
-    fn scattering_pdf(
-        &self,
-        _ray_in: &Ray,
-        _hit_record: &HitRecord,
-        _ray_scattered: &mut Ray,
-    ) -> f32 {
+    fn scattering_pdf(&self, _ray_in: &Ray, _hit_record: &HitRecord, _ray_scattered: &Ray) -> f32 {
         1. / (2. * std::f32::consts::PI)
     }
 }

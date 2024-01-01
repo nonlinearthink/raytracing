@@ -134,6 +134,7 @@ impl Camera {
         }
     }
 
+    /// Initialize camera, calculating some properties for rendering.
     fn initialize(&mut self) {
         // Calculate the u,v,w unit basis vectors for the camera coordinate frame.
         self.w = (&self.position - &self.target).normolize();
@@ -222,7 +223,7 @@ impl Camera {
         }
 
         let mut hit_record = HitRecord::new();
-        // Fixing shadow acne by setting the nearest surface to 0.001
+        // Fixing shadow acne by setting the nearest surface to 0.001.
         if !world.hit(ray, &Interval::new(0.001, f32::INFINITY), &mut hit_record) {
             return self.background;
         }
@@ -233,17 +234,21 @@ impl Camera {
             ..
         } = hit_record
         else {
+            // return background color if there is no hit.
             return self.background;
         };
 
+        // compute the emission color of the material at the hit point.
         let emission_color = material.emitted(ray, &hit_record, &uv, &point);
 
         let mut scatter_record = ScatterRecord::new();
         if !material.scatter(ray, &hit_record, &mut scatter_record) {
+            // return the emission color only if the ray is not scattered.
             return emission_color;
         }
 
         if scatter_record.skip_pdf {
+            // it means that the material is a perfect reflection or refraction.
             let ray_scattered = scatter_record.ray_scattered.unwrap();
             return scatter_record.attenuation.mul(&self.ray_color(
                 &ray_scattered,
@@ -261,10 +266,10 @@ impl Camera {
             surface_pdf
         };
 
-        let mut ray_scattered = Ray::new_with_time(point, pdf.generate(), ray.time);
+        let ray_scattered = Ray::new_with_time(point, pdf.generate(), ray.time);
         let pdf_value = pdf.value(&ray_scattered.direction);
 
-        let scattering_pdf = material.scattering_pdf(ray, &hit_record, &mut ray_scattered);
+        let scattering_pdf = material.scattering_pdf(ray, &hit_record, &ray_scattered);
 
         let sample_color = self.ray_color(&ray_scattered, world, lights, ray_depth - 1);
         let scatter_color = scatter_record
